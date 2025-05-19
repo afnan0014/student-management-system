@@ -24,6 +24,7 @@ from django.conf.urls import include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('accounts.urls')),
+    path('courses/', include('courses.urls')),
 ]
 
 if settings.DEBUG:

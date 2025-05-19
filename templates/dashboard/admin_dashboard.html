@@ -2,17 +2,18 @@
 {% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-  <h2 class="mb-4">Welcome to Admin Dashboard</h2>
-  <p>Hello, {{ user.username }}! You are logged in as an Admin.</p>
+<div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="card-title mb-3">Welcome to the Admin Dashboard</h2>
+            <p class="card-text">
+                Hello, <strong>{{ user.username }}</strong>!<br>
+                You are logged in as an <span class="badge bg-primary">Admin</span>.
+            </p>
+            <a class="btn btn-success mt-3" href="{% url 'add_user' %}">➕ Add New User</a>
+            <a class="btn btn-outline-primary mb-2" href="{% url 'view_users_by_role' 'Student' %}">👨‍🎓 View Students</a>
+            <a class="btn btn-outline-success mb-2" href="{% url 'view_users_by_role' 'Staff' %}">👩‍🏫 View Staff</a>
+            <a class="btn btn-outline-warning mb-2" href="{% url 'view_users_by_role' 'Admin' %}">🛠️ View Admins</a>
 
-  <div class="row mt-4">
-    <div class="col-md-6">
-      <a href="{% url 'add_student' %}" class="btn btn-success btn-block mb-2">➕ Add Student</a>
+        </div>
     </div>
-    <div class="col-md-6">
-      <a href="{% url 'add_staff' %}" class="btn btn-primary btn-block mb-2">➕ Add Staff</a>
-    </div>
-  </div>
-</div>
 {% endblock %}
