@@ -6,14 +6,17 @@ from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.contrib.auth import logout
+from django.shortcuts import redirect
+from django.contrib.auth.models import Group
+from accounts.forms import CustomUserCreationForm
+
+
+
 
 # Create your views here.
-from django.shortcuts import redirect
 
 def home_redirect(request):
     return redirect('login')
-
-
 
 # detects the user's group and redirects them to the correct view, right after login.@login_required
 def login_view(request):
@@ -56,6 +59,24 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
+#to add users and their roles
+@login_required
+def add_user(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password'])  # Hash password
+            user.save()
 
+            role = form.cleaned_data['role']
+            group = Group.objects.get(name=role)
+            user.groups.add(group)
 
+            messages.success(request, f"{role} account created for {user.username}")
+            return redirect('admin_dashboard')
+    else:
+        form = CustomUserCreationForm()
+    
+    return render(request, 'accounts/add_user.html', {'form': form})
 
