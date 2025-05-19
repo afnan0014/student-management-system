@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 {% block title %}Staff Dashboard{% endblock %}
 {% block content %}
-    <h2 class="mb-4">Welcome to Staff Dashboard</h2>
-    <p>Hello, {{ user.username }}! You are logged in as a Staff member.</p>
+<div class="card shadow-sm p-4">
+    <h2 class="card-title mb-4">Welcome to the Staff Dashboard</h2>
+    <p class="card-text">
+        Hello, <strong>{{ user.username }}</strong>!<br>
+        You are logged in as a <span class="badge bg-success">Staff</span>.
+    </p>
+</div>
 {% endblock %}
