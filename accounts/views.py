@@ -6,17 +6,22 @@ from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.contrib.auth import logout
-from django.shortcuts import redirect
 from django.contrib.auth.models import Group
-from accounts.forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm
+
+
+
 
 
 
 
 # Create your views here.
+from django.shortcuts import redirect
 
 def home_redirect(request):
     return redirect('login')
+
+
 
 # detects the user's group and redirects them to the correct view, right after login.@login_required
 def login_view(request):
@@ -59,7 +64,7 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
-#to add users and their roles
+
 @login_required
 def add_user(request):
     if request.method == 'POST':
@@ -79,4 +84,39 @@ def add_user(request):
         form = CustomUserCreationForm()
     
     return render(request, 'accounts/add_user.html', {'form': form})
+
+    from django.contrib.auth.models import User, Group
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .forms import CustomUserCreationForm
+
+@login_required
+def view_users_by_role(request, role):
+    users = User.objects.filter(groups__name=role)
+    return render(request, 'accounts/user_list.html', {
+        'users': users,
+        'role': role
+    })
+
+@login_required
+def delete_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    user.delete()
+    messages.success(request, "User deleted successfully.")
+    return redirect(request.META.get('HTTP_REFERER'))
+
+@login_required
+def change_user_password(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+
+    if request.method == 'POST':
+        new_password = request.POST.get('new_password')
+        user.set_password(new_password)
+        user.save()
+        messages.success(request, "Password updated successfully.")
+        return redirect(request.META.get('HTTP_REFERER'))
+
+    return render(request, 'accounts/change_user_password.html', {'user': user})
+
 
