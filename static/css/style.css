@@ -1,0 +1,172 @@
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: 'Arial', sans-serif; /* Improved typography */
+}
+
+.header {
+    background-color: #32485e; /* Dark gray header */
+}
+
+.sidebar {
+    min-width: 100px;
+    background-color: #0e0e0f;
+}
+
+.sidebar .nav-link {
+    color: #adb5bd;
+    margin: 10px 0;
+    padding: 12px 20px;
+}
+
+.sidebar .nav-link:hover {
+    color: #ffffff;
+    background-color: #495057;
+}
+
+.content {
+    display: flex;
+    justify-content: center; /* Center horizontally across the entire viewport */
+    padding-top: 10px; /* Add top padding to position content above center */
+    min-height: calc(100vh - 60px - 60px - 40px); /* Adjust for header, footer, and date-time heights */
+    margin-left: 0; /* Remove sidebar offset */
+    transition: none; /* Remove transition to avoid shifting effects */
+}
+
+@media (min-width: 768px) {
+    .content {
+        margin-left: 0; /* Ensure no offset for sidebar */
+    }
+}
+
+.btn-primary:hover, .btn-warning:hover, .btn-danger:hover {
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow on hover */
+}
+
+.card {
+    max-width: 900px; /* Increased width for login page */
+    margin: 30px; /* Adjusted margin for spacing */
+    background: linear-gradient(145deg, #ffffff, #e6e6e6); /* Subtle gradient for card */
+    border: none; /* Remove default border */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Enhanced shadow */
+    border-radius: 20px; /* Rounded corners */
+}
+
+.card-large {
+    max-width: 800px; /* Increased width for add_user */
+    min-height: 300px; /* Retain height for add_user */
+    padding: 30px; /* More padding for spacious feel */
+}
+
+.card-user-list {
+    max-width: 900px; /* Match table-container width */
+    min-height: 200px; /* Decreased height for user list pages */
+    margin: 20px; /* Consistent margin */
+    background: linear-gradient(145deg, #ffffff, #e6e6e6);
+    border: none;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.card-title {
+    font-weight: 600;
+    color: #2c3e50; /* Match header color */
+}
+
+.table-container {
+    max-width: 900px; /* Consistent width for tables */
+    margin: 20px; /* Adjusted margin for spacing */
+}
+
+.table {
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    overflow: hidden; /* Ensure rounded corners apply to table */
+}
+
+.table thead {
+    background-color: #2c3e50; /* Match header color */
+    color: #fff;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa; /* Light gray on hover */
+    transition: background-color 0.2s ease;
+}
+
+.d-grid .btn {
+    margin-bottom: 15px; /* Increased spacing between buttons */
+    padding: 12px; /* Larger buttons */
+    font-size: 1.1rem; /* Larger text */
+}
+
+.btn-sm {
+    padding: 6px 12px; /* Consistent padding for small buttons */
+}
+
+.date-time {
+    text-align: center; /* Center the text */
+    color: #2c3e50; /* Match header color */
+    font-size: 1.1rem; /* Slightly larger for visibility */
+    font-weight: 500; /* Medium weight for professionalism */
+    padding: 10px 0; /* Vertical spacing */
+    background: rgba(255, 255, 255, 0.8); /* Subtle background for contrast */
+    border-radius: 5px; /* Rounded corners */
+    margin: 10px auto; /* Center horizontally with auto margins */
+    max-width: 300px; /* Limit width for aesthetics */
+}
+
+/* Enhanced form styling for add_user.html */
+.form-group {
+    margin-bottom: 20px; /* Increased spacing between form fields */
+}
+
+.form-group label {
+    font-weight: 500;
+    color: #2c3e50;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.form-group select,
+.form-group input {
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 1rem;
+    width: 100%;
+    transition: border-color 0.3s ease;
+}
+
+.form-group select:focus,
+.form-group input:focus {
+    border-color: #2c3e50;
+    box-shadow: 0 0 5px rgba(44, 62, 80, 0.2);
+    outline: none;
+}
+
+/* Improved card body for better spacing */
+.card-body {
+    padding: 25px;
+}
+
+/* Hover effect for cards */
+.card:hover,
+.card-large:hover,
+.card-user-list:hover {
+    transform: translateY(-5px);
+    transition: transform 0.3s ease;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Styling for table heading in user_list.html */
+.table-heading {
+    font-size: 1.8rem; /* Slightly larger for emphasis */
+    font-weight: 600;
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 25px; /* Increased spacing below heading */
+    text-transform: uppercase; /* For better visual hierarchy */
+}
