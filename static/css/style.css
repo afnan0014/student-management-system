@@ -1,20 +1,41 @@
+/* Define CSS custom properties with default dark mode values */
 :root {
-  /* ChatGPT‑inspired palette */
-  --bg-dark: #0A0F1A;
-  --bg-card: #1E2A38;
-  --bg-alt: #131A26;
-  --text-main: #ECEFF1;
-  --text-muted: #A4ABB3;
-  --accent: #10A37F;
-  --border: #273141;
-  --btn-primary-hover: #0E8C6E;
+  --bg-dark: #0A0F1A; /* Dark background for body */
+  --bg-card: #1E2A38; /* Darker background for cards, tables */
+  --bg-alt: #131A26; /* Alternative background for headers, footers */
+  --text-main: #ECEFF1; /* White text for main content */
+  --text-muted: #A4ABB3; /* Muted text for labels, secondary content */
+  --accent: #10A37F; /* Accent color for headings, borders */
+  --border: #273141; /* Border color for inputs, tables */
+  --btn-primary-hover: #0E8C6E; /* Hover color for primary buttons */
 }
 
+/* Light mode overrides */
+body.light-mode {
+  --bg-dark: #F8F9FA; /* Light background for body */
+  --bg-card: #FFFFFF; /* White background for cards, tables */
+  --bg-alt: #E9ECEF; /* Light alternative background for headers, footers */
+  --text-main: #4d5257; /* Black text for main content */
+  --text-muted: #6C757D; /* Muted text for labels, secondary content */
+  --accent: #0D7A5F; /* Slightly darker accent for light mode */
+  --border: #606365; /* Light border color for inputs, tables */
+  --btn-primary-hover: #0B6B54; /* Hover color for primary buttons */
+}
+
+/* Ensure body uses the variables and is a flex container */
 body {
   background-color: var(--bg-dark);
   color: var(--text-main);
   font-family: 'Segoe UI', sans-serif;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Make main content grow to fill available space */
+main {
+  flex-grow: 1;
 }
 
 /* Header */
@@ -40,6 +61,18 @@ body {
   color: var(--text-main);
   background-color: var(--bg-alt);
 }
+.sidebar .offcanvas-title {
+  color: var(--text-main);
+}
+.sidebar .dropdown-menu {
+  background-color: var(--bg-alt);
+}
+.sidebar .dropdown-item {
+  color: var(--text-main);
+}
+.sidebar .dropdown-item:hover {
+  background-color: var(--bg-card);
+}
 
 /* Content wrapper */
 .content {
@@ -47,14 +80,13 @@ body {
   display: flex;
   justify-content: center;
   background-color: var(--bg-dark);
-  min-height: 100vh;
 }
 
 /* Card styles */
 .card, .card-large, .card-user-list {
   background-color: var(--bg-card);
   color: var(--text-main);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+  box-shadow: 0 8px 16px rgba(61, 60, 60, 0.4);
   border-radius: 1rem;
   padding: 2rem;
   margin-bottom: 2rem;
@@ -73,13 +105,40 @@ body {
   color: var(--text-main);
   border-radius: 0.5rem;
   overflow: hidden;
+  border: 2px solid #000000; /* Black border for table */
 }
 .table thead {
   background-color: var(--bg-alt);
   color: var(--text-main);
+  border-bottom: 2px solid var(--accent); /* Highlight table header with accent border */
+}
+body.dark-mode .table thead {
+  background-color: #2A3B4C; /* Lighter shade for dark mode header */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Subtle shadow for highlight */
+}
+body.light-mode .table thead {
+  background-color: #D3D6DA; /* Darker shade for light mode header */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for highlight */
 }
 .table tbody tr:hover {
   background-color: var(--bg-alt);
+}
+.table th, .table td {
+  border-color: var(--border);
+}
+
+/* Search bar container */
+.search-container {
+  border: 2px solid #000000; /* Black border for search bar */
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+.input-group-text {
+  background-color: var(--bg-card) !important;
+  color: var(--text-muted) !important;
+}
+.form-control.bg-secondary::placeholder {
+  color: var(--text-muted);
 }
 
 /* Buttons */
@@ -120,6 +179,21 @@ body {
   box-shadow: 0 0 0.5rem rgba(16,163,127,0.4);
   outline: none;
 }
+.form-control.bg-secondary {
+  background-color: var(--bg-card) !important;
+  color: var(--text-main) !important;
+}
+
+/* Dark mode specific: Make username and password fields white */
+body.dark-mode .form-control.bg-secondary {
+  background-color: #FFFFFF !important;
+  color: #000000 !important; /* Black text for contrast */
+}
+
+/* Light mode specific: Make labels above username and password fields white */
+body.light-mode .form-group label {
+  color: #FFFFFF !important;
+}
 
 /* Alerts */
 .alert {
@@ -136,7 +210,7 @@ body {
   margin-bottom: 1.5rem;
 }
 
-/* Date‑time box */
+/* Date-time box */
 .date-time {
   background-color: var(--bg-card);
   color: var(--text-main);
@@ -145,4 +219,96 @@ body {
   text-align: center;
   margin: 1rem auto;
   max-width: 300px;
+}
+
+/* Footer */
+.footer {
+  background-color: var(--bg-alt);
+  color: var(--text-main);
+}
+
+/* Light mode specific adjustments */
+body.light-mode .text-light {
+  color: var(--text-main) !important;
+}
+body.light-mode .btn-outline-light {
+  color: var(--text-main);
+  border-color: var(--text-main);
+}
+body.light-mode .btn-outline-light:hover {
+  background-color: var(--text-main);
+  color: var(--bg-dark);
+}
+body.light-mode .offcanvas-header .btn-close-white,
+body.light-mode .alert-dismissible .btn-close-white {
+  filter: invert(1);
+}
+body.light-mode .table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+body.light-mode .card, 
+body.light-mode .card-large, 
+body.light-mode .card-user-list {
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+body.light-mode .table {
+  background-color: var(--bg-card);
+  color: var(--text-main);
+}
+body.light-mode .table th,
+body.light-mode .table td {
+  border-color: var(--border);
+}
+body.light-mode .sidebar .dropdown-menu {
+  background-color: var(--bg-alt);
+}
+body.light-mode .sidebar .dropdown-item {
+  color: var(--text-main);
+}
+body.light-mode .sidebar .dropdown-item:hover {
+  background-color: var(--bg-card);
+}
+
+/* Ensure the search container takes up the desired space */
+.search-container {
+  border: 2px solid #000000; /* Black border for search bar */
+  border-radius: 0.5rem;
+  overflow: hidden;
+  flex-grow: 1; /* Allow it to grow */
+}
+
+/* Adjust the input group to align properly */
+.input-group {
+  width: 100%;
+  margin: 0; /* Remove any default margins */
+}
+
+/* Remove extra padding and ensure the search input takes full width */
+.search-container .form-control {
+  flex-grow: 1; /* Take available space */
+  min-width: 200px; /* Prevent shrinking too much */
+  padding: 0.5rem 0.75rem; /* Reduce padding for a tighter look */
+  margin: 0; /* Remove any margins */
+}
+
+/* Fine-tune the search button */
+.search-container .btn-info {
+  padding: 0.5rem 1rem; /* Consistent padding */
+  border-radius: 0.5rem; /* Match the input's border-radius */
+  margin: 0; /* Remove any margins */
+}
+
+/* Ensure the input group text (search icon) has minimal padding */
+.search-container .input-group-text {
+  padding: 0.5rem 0.75rem; /* Match input padding */
+}
+
+/* Ensure buttons in the flex container don't shrink */
+.d-flex.flex-nowrap .btn {
+  white-space: nowrap; /* Prevent button text from wrapping */
+}
+
+/* Tighten the layout of the search bar container */
+.d-flex.flex-wrap.align-items-center {
+  gap: 0.5rem; /* Reduce gap between elements */
 }
