@@ -12,5 +12,6 @@ urlpatterns = [
     path('view-users/<str:role>/', views.view_users_by_role, name='view_users_by_role'),
     path('delete-user/<int:user_id>/', views.delete_user, name='delete_user'),
     path('change-user-password/<int:user_id>/', views.change_user_password, name='change_user_password'),
+    path('bulk-delete-users/', views.bulk_delete_users, name='bulk_delete_users'),
 
 ]

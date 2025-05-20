@@ -1,51 +1,72 @@
 {% extends 'base.html' %}
 {% block title %}Add New User{% endblock %}
 {% block content %}
-<div class="card card-large shadow-sm">
-    <div class="card-body">
-        <h2 class="card-title mb-4">Add New User</h2>
+
+<div class="container d-flex align-items-center justify-content-center" style="min-height:80vh">
+  <div class="col-md-6 col-lg-5">
+    <div class="card bg-dark text-light shadow-lg border-0">
+      <div class="card-body">
+        <h2 class="card-title mb-4 text-center">Add New User</h2>
+
         {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
         {% endif %}
-        <form method="POST">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="id_username">Username</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-person"></i></span>
-                    {{ form.username }}
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="id_email">Email</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                    {{ form.email }}
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="id_password">Password</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                    {{ form.password }}
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="id_role">Role</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
-                    {{ form.role }}
-                </div>
-            </div>
-            <button class="btn btn-primary w-100 py-2" type="submit">Create User</button>
+
+        {% if form.errors %}
+          <div class="alert alert-danger">
+            <ul class="mb-0">
+              {% for field in form %}
+                {% for error in field.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              {% endfor %}
+              {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        <form method="POST" novalidate>
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label for="id_username" class="form-label">Username</label>
+            {{ form.username }}
+          </div>
+
+          <div class="mb-3">
+            <label for="id_email" class="form-label">Email</label>
+            {{ form.email }}
+          </div>
+
+          <div class="mb-3">
+            <label for="id_password" class="form-label">Password</label>
+            {{ form.password }}
+          </div>
+
+          <div class="mb-3">
+            <label for="id_confirm_password" class="form-label">Confirm Password</label>
+            {{ form.confirm_password }}
+          </div>
+
+          <div class="mb-4">
+            <label for="id_role" class="form-label">Role</label>
+            {{ form.role }}
+          </div>
+
+          <div class="d-grid">
+            <button type="submit" class="btn btn-info py-2">➕ Create User</button>
+          </div>
         </form>
+      </div>
     </div>
+  </div>
 </div>
-<!-- Bootstrap Icons for form field icons -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
 {% endblock %}

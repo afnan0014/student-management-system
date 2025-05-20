@@ -1,37 +1,56 @@
 {% extends 'base.html' %}
 {% block title %}Login{% endblock %}
 {% block content %}
-<div class="card shadow-lg border-0">
-    <div class="card-body">
+
+<div class="container d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+  <div class="col-md-6 col-lg-4">
+    <div class="card bg-dark text-light shadow-lg border-0">
+      <div class="card-body">
         <h2 class="card-title mb-4 text-center">Login</h2>
+
         {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
+          {% for message in messages %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
         {% endif %}
-        <form method="POST" action="{% url 'login' %}">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="username" class="form-label">Username</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-person"></i></span>
-                    <input type="text" class="form-control" id="username" name="username" required>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="password" class="form-label">Password</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                    <input type="password" class="form-control" id="password" name="password" required>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary w-100 py-2">Login</button>
+
+        <form method="POST" action="{% url 'login' %}" novalidate>
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input
+              type="text"
+              class="form-control bg-secondary text-light border-0"
+              id="username"
+              name="username"
+              placeholder="Enter username"
+              required
+            >
+          </div>
+
+          <div class="mb-4">
+            <label for="password" class="form-label">Password</label>
+            <input
+              type="password"
+              class="form-control bg-secondary text-light border-0"
+              id="password"
+              name="password"
+              placeholder="Enter password"
+              required
+            >
+          </div>
+
+          <div class="d-grid">
+            <button type="submit" class="btn btn-info py-2">Login</button>
+          </div>
         </form>
+      </div>
     </div>
+  </div>
 </div>
-<!-- Bootstrap Icons for input field icons -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
 {% endblock %}
