@@ -7,43 +7,53 @@
     <div class="col-12 col-lg-10">
       <div class="card bg-card text-light shadow-lg border-0">
         <div class="card-body">
-          <h2 class="card-title table-heading">{{ role }} Users</h2>
+          <h2 class="card-title table-heading mb-4">{{ role }} Users</h2>
 
-        <form method="get" class="row g-1 mb-4 align-items-stretch">
-            <div class="col">
+          <div class="d-flex flex-wrap align-items-center mb-4 gap-2">
+            <!-- Search Form -->
+            <form method="get" class="flex-grow-1 me-2" style="max-width: 600px;">
+              <div class="input-group search-container">
+                <span class="input-group-text bg-transparent border-0 pe-0">
+                  <i class="bi bi-search" style="color: var(--text-muted);"></i>
+                </span>
                 <input 
-                type="text" 
-                name="q" 
-                value="{{ query }}" 
-                class="form-control bg-secondary text-light border-0 h-100" 
-                placeholder="Search by name or email…"
+                  type="text" 
+                  name="q" 
+                  value="{{ query }}" 
+                  class="form-control bg-secondary text-light border-0 ps-2" 
+                  placeholder="Search here"
+                  style="border-radius: 0.5rem;"
                 >
-            </div>
-            <div class="col-auto">
-                <button type="submit" class="btn btn-info w-100 h-100">
-                🔍
+                <button type="submit" class="btn btn-info" style="border-radius: 0.5rem;">
+                  <i class="bi bi-search"></i>
                 </button>
-            </div>
-            <div class="col-auto">
-                <button 
-                id="bulk-delete-btn" 
-                formaction="{% url 'bulk_delete_users' %}" 
-                formmethod="post"
-                class="btn btn-danger w-100 h-100" 
-                style="display: none;"
-                onclick="return confirm('Delete selected users?');"
-                >
-                🗑️
-                </button>
+              </div>
+            </form>
+            <!-- Buttons -->
+            <div class="d-flex flex-nowrap gap-2">
+              {% if role == "Student" or role == "Staff" %}
+                <a href="{% url 'add_user' role|lower %}" class="btn btn-success">Add {{ role }}</a>
+              {% endif %}
+              <form method="post" class="d-inline">
                 {% csrf_token %}
+                <button 
+                  id="bulk-delete-btn" 
+                  formaction="{% url 'bulk_delete_users' %}" 
+                  formmethod="post"
+                  class="btn btn-danger"
+                  style="display: none;"
+                  onclick="return confirm('Delete selected users?');"
+                >
+                  🗑️
+                </button>
+              </form>
             </div>
-         </form>
-
+          </div>
 
           <form method="POST" action="{% url 'bulk_delete_users' %}">
             {% csrf_token %}
             <div class="table-responsive">
-              <table class="table table-dark table-striped align-middle mb-0">
+              <table class="table table-striped align-middle mb-0">
                 <thead>
                   <tr>
                     <th style="width:1%"><input type="checkbox" id="select_all"></th>
