@@ -2,6 +2,12 @@
 {% block title %}{{ role }} Users{% endblock %}
 {% block content %}
 
+<div class="mb-3">
+    <a href="javascript:history.back()" class="text-light" style="font-size: 1.5rem; text-decoration: none;" title="Go back">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+</div>
+
 <div class="container mt-5 mb-5">
   <div class="row justify-content-center">
     <div class="col-12 col-lg-10">
@@ -9,16 +15,17 @@
         <div class="card-body">
           <h2 class="card-title table-heading mb-4">{{ role }} Users</h2>
 
+          <!-- Single row for search, add, and delete -->
           <div class="d-flex flex-wrap align-items-center mb-4 gap-2">
             <!-- Search Form -->
-            <form method="get" class="flex-grow-1 me-1" style="max-width: 800px;">
+            <form method="get" class="flex-grow-1 me-2" style="max-width: 820px;">
               <div class="input-group search-container">
                 <input 
                   type="text" 
                   name="q" 
                   value="{{ query }}" 
                   class="form-control bg-secondary text-light border-0 ps-2" 
-                  placeholder="🔍 Search"
+                  placeholder="🔍 Search by username"
                   style="border-radius: 0.5rem;"
                 >
                 <button type="submit" class="btn btn-info" style="border-radius: 0.5rem;">
@@ -26,28 +33,26 @@
                 </button>
               </div>
             </form>
-            <!-- Buttons -->
+
+            <!-- Add and Delete Buttons -->
             <div class="d-flex flex-nowrap gap-2">
               {% if role == "Student" or role == "Staff" %}
-                <a href="{% url 'add_user' role|lower %}" class="btn btn-success">Add {{ role }}</a>
+                <a href="{% url 'add_user' role|lower %}" class="btn btn-success">➕ Add {{ role }}</a>
               {% endif %}
-              <form method="post" class="d-inline">
-                {% csrf_token %}
-                <button 
-                  id="bulk-delete-btn" 
-                  formaction="{% url 'bulk_delete_users' %}" 
-                  formmethod="post"
-                  class="btn btn-danger"
-                  style="display: none;"
-                  onclick="return confirm('Delete selected users?');"
-                >
-                  🗑️
-                </button>
-              </form>
+              <button 
+                id="bulk-delete-btn" 
+                form="bulk-delete-form"
+                type="submit"
+                class="btn btn-danger"
+                style="display: none;"
+              >
+                🗑️ Delete
+              </button>
             </div>
           </div>
 
-          <form method="POST" action="{% url 'bulk_delete_users' %}">
+          <!-- Bulk Delete Form -->
+          <form id="bulk-delete-form" method="POST" action="{% url 'bulk_delete_users' %}">
             {% csrf_token %}
             <div class="table-responsive">
               <table class="table table-striped align-middle mb-0">
@@ -55,8 +60,14 @@
                   <tr>
                     <th style="width:1%"><input type="checkbox" id="select_all"></th>
                     <th>Username</th>
-                    <th>Email</th>
-                    <th class="text-center">Change Password</th>
+                    <th>
+                      {% if role == "Student" or role == "Staff" %}
+                        Details
+                      {% else %}
+                        Email
+                      {% endif %}
+                    </th>
+                    <th class="text-center">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -71,18 +82,26 @@
                       >
                     </td>
                     <td>{{ user.username }}</td>
-                    <td>{{ user.email }}</td>
+                    <td>
+                      {% if role == "Student" %}
+                        <a href="{% url 'student_profile' user.id %}" class="btn btn-sm btn-info">👁️ View Details</a>
+                      {% elif role == "Staff" %}
+                        <a href="{% url 'staff_profile' user.id %}" class="btn btn-sm btn-info">👁️ View Details</a>
+                      {% else %}
+                        {{ user.email|default:"N/A" }}
+                      {% endif %}
+                    </td>
                     <td class="text-center">
                       <a 
                         href="{% url 'change_user_password' user.id %}" 
                         class="btn btn-sm btn-warning"
-                      >Change</a>
+                      >🔑 Change Password</a>
                     </td>
                   </tr>
                   {% empty %}
                   <tr>
                     <td colspan="4" class="text-center py-4">
-                      No {{ role }} users found.
+                      No {{ role|lower }} users found.
                     </td>
                   </tr>
                   {% endfor %}

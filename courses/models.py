@@ -31,6 +31,18 @@ class Course(models.Model):
         staff_info = f" - {self.assigned_staff.username}" if self.assigned_staff else ""
         return f"{self.name} (Sem {self.semester}){staff_info}"
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.staff:
+            from accounts.models import StaffProfile
+            staff_profile, created = StaffProfile.objects.get_or_create(user=self.staff)
+            # Only update department and course if they are not already set
+            if created or not staff_profile.department:
+                staff_profile.department = self.course.department
+            if created or not staff_profile.course:
+                staff_profile.course = self.course
+            staff_profile.save()
+
     class Meta:
         ordering = ['department', 'semester', 'name']
 
