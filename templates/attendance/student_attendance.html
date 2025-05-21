@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Your Attendance Records</h2>
+
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Subject</th>
+                <th>Present</th>
+                <th>Absent</th>
+                <th>Leave</th>
+                <th>Total Classes</th>
+                <th>Attendance %</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in subject_data %}
+            <tr>
+                <td>{{ item.subject }}</td>
+                <td>{{ item.present }}</td>
+                <td>{{ item.absent }}</td>
+                <td>{{ item.leave }}</td>
+                <td>{{ item.total }}</td>
+                <td>{{ item.percentage }}%</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center">No attendance records available.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
