@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User, Group
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db import models
+from django.contrib.auth.forms import AuthenticationForm
 from .decorators import allowed_users
 from .forms import CustomUserCreationForm, StudentProfileForm, StaffProfileForm
 from .models import StudentProfile, StaffProfile
@@ -14,24 +15,48 @@ def home_redirect(request):
 
 # Login view
 def login_view(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-
-        if user:
-            login(request, user)
-            group = user.groups.first().name
-
-            if group == 'Admin':
-                return redirect('admin_dashboard')
-            elif group == 'Staff':
-                return redirect('staff_dashboard')
-            elif group == 'Student':
-                return redirect('student_dashboard')
+    if request.user.is_authenticated:
+        # Redirect based on user group
+        group_name = request.user.groups.first().name if request.user.groups.exists() else None
+        if group_name == 'Admin':
+            return redirect('admin_dashboard')
+        elif group_name == 'Staff':
+            return redirect('staff_dashboard')
+        elif group_name == 'Student':
+            return redirect('student_dashboard')
         else:
-            messages.error(request, 'Invalid credentials')
-    return render(request, 'login.html')
+            # If user has no group, redirect to login (or handle as needed)
+            messages.warning(request, "User does not belong to any recognized group.")
+            return redirect('login')
+    
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.success(request, f"Welcome back, {username}!")
+                # Redirect to dashboard after login
+                group_name = user.groups.first().name if user.groups.exists() else None
+                if group_name == 'Admin':
+                    return redirect('admin_dashboard')
+                elif group_name == 'Staff':
+                    return redirect('staff_dashboard')
+                elif group_name == 'Student':
+                    return redirect('student_dashboard')
+                else:
+                    messages.warning(request, "User does not belong to any recognized group.")
+                    return redirect('login')
+            else:
+                messages.error(request, "Invalid username or password.")
+        else:
+            messages.error(request, "Invalid username or password.")
+    else:
+        form = AuthenticationForm()
+    
+    return render(request, 'login.html', {'form': form})
 
 # Dashboards
 @login_required
