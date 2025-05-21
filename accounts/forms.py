@@ -6,23 +6,22 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2']
-        widgets = {
-            'username': forms.TextInput(attrs={
-                'class': 'form-control bg-secondary text-light border-0',
-                'placeholder': 'Enter username'
-            }),
-            'email': forms.EmailInput(attrs={
-                'class': 'form-control bg-secondary text-light border-0',
-                'placeholder': 'Enter email'
-            }),
-            'password1': forms.PasswordInput(attrs={
-                'class': 'form-control bg-secondary text-light border-0',
-                'placeholder': 'Enter password',
-                'autocomplete': 'new-password',
-            }),
-            'password2': forms.PasswordInput(attrs={
-                'class': 'form-control bg-secondary text-light border-0',
-                'placeholder': 'Confirm password',
-                'autocomplete': 'new-password',
-            }),
-        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['username'].widget.attrs.update({
+            'class': 'form-control bg-secondary text-light border-0',
+            'placeholder': 'Enter username'
+
+        })
+        self.fields['password1'].widget.attrs.update({
+            'class': 'form-control bg-secondary text-light border-0',
+            'placeholder': 'Enter password',
+            'autocomplete': 'new-password'
+        })
+        self.fields['password2'].widget.attrs.update({
+            'class': 'form-control bg-secondary text-light border-0',
+            'placeholder': 'Confirm password',
+            'autocomplete': 'new-password'
+        })

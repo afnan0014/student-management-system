@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Department List{% endblock %}
+{% block content %}
+
+<div class="container mt-5 mb-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-10">
+      <div class="card bg-card text-light shadow-lg border-0">
+        <div class="card-body">
+          <h2 class="card-title table-heading mb-4">Departments</h2>
+
+          <div class="d-flex justify-content-end mb-3">
+            <a href="{% url 'add_department' %}" class="btn btn-success">➕ Add Department</a>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-striped align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for department in departments %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ department.name }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="2" class="text-center py-4">No departments found.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

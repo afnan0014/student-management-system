@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Add Department{% endblock %}
+{% block title %}Add Course{% endblock %}
 {% block content %}
 <div class="container d-flex align-items-center justify-content-center" style="min-height:80vh">
   <div class="col-md-6 col-lg-5">
     <div class="card bg-dark text-light shadow-lg border-0">
       <div class="card-body">
-        <h2 class="card-title mb-4 text-center">Add Department</h2>
+        <h2 class="card-title mb-4 text-center">Add Course</h2>
 
         {% if messages %}
           {% for message in messages %}
@@ -19,12 +19,16 @@
         <form method="POST">
           {% csrf_token %}
           <div class="mb-3">
-            <label for="id_name" class="form-label">Department Name</label>
+            <label for="id_name" class="form-label">Course Name</label>
             {{ form.name }}
+          </div>
+          <div class="mb-3">
+            <label for="id_department" class="form-label">Department</label>
+            {{ form.department }}
           </div>
 
           <div class="d-grid">
-            <button type="submit" class="btn btn-info py-2">➕ Add Department</button>
+            <button type="submit" class="btn btn-info py-2">➕ Add Course</button>
           </div>
         </form>
       </div>
