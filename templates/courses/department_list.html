@@ -9,27 +9,57 @@
         <div class="card-body">
           <h2 class="card-title table-heading mb-4">Departments</h2>
 
-          <div class="d-flex justify-content-end mb-3">
-            <a href="{% url 'add_department' %}" class="btn btn-success">➕ Add Department</a>
+          <div class="d-flex flex-wrap align-items-center mb-4 gap-2">
+            <!-- Search Form -->
+            <form method="get" class="flex-grow-1 me-2" style="max-width: 800px;">
+              <div class="input-group search-container">
+                <input 
+                  type="text" 
+                  name="q" 
+                  value="{{ query }}" 
+                  class="form-control bg-secondary text-light border-0 ps-2" 
+                  placeholder="🔍 Search"
+                  style="border-radius: 0.5rem;"
+                >
+                <button type="submit" class="btn btn-info" style="border-radius: 0.5rem;">
+                  <i class="bi bi-search"></i>
+                </button>
+              </div>
+            </form>
+            <!-- Add and Delete Buttons -->
+            <div class="d-flex flex-nowrap gap-2">
+              <a href="{% url 'add_department' %}" class="btn btn-success">➕ Add Department</a>
+              <form method="post" action="{% url 'delete_departments' %}" style="display: none;" id="delete-departments-form">
+                {% csrf_token %}
+                <input type="hidden" name="department_ids" id="department-ids">
+                <button type="submit" class="btn btn-danger">🗑️ Delete</button>
+              </form>
+            </div>
           </div>
 
           <div class="table-responsive">
             <table class="table table-striped align-middle mb-0">
               <thead>
                 <tr>
+                  <th><input type="checkbox" id="select-all-departments"></th>
                   <th>#</th>
                   <th>Name</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {% for department in departments %}
                 <tr>
+                  <td><input type="checkbox" class="department-checkbox" value="{{ department.id }}"></td>
                   <td>{{ forloop.counter }}</td>
                   <td>{{ department.name }}</td>
+                  <td>
+                    <a href="{% url 'edit_department' department.id %}" class="btn btn-sm btn-warning">✏️ Edit</a>
+                  </td>
                 </tr>
                 {% empty %}
                 <tr>
-                  <td colspan="2" class="text-center py-4">No departments found.</td>
+                  <td colspan="4" class="text-center py-4">No departments found.</td>
                 </tr>
                 {% endfor %}
               </tbody>
@@ -41,4 +71,37 @@
   </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const selectAllCheckbox = document.getElementById('select-all-departments');
+  const departmentCheckboxes = document.querySelectorAll('.department-checkbox');
+  const deleteForm = document.getElementById('delete-departments-form');
+  const departmentIdsInput = document.getElementById('department-ids');
+
+  // Toggle all checkboxes when "Select All" is clicked
+  selectAllCheckbox.addEventListener('change', function() {
+    departmentCheckboxes.forEach(checkbox => {
+      checkbox.checked = this.checked;
+    });
+    updateDeleteButtonVisibility();
+  });
+
+  // Update "Select All" checkbox state and show/hide delete button
+  departmentCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+      selectAllCheckbox.checked = Array.from(departmentCheckboxes).every(cb => cb.checked);
+      updateDeleteButtonVisibility();
+    });
+  });
+
+  // Show/hide delete button and update selected IDs
+  function updateDeleteButtonVisibility() {
+    const selectedIds = Array.from(departmentCheckboxes)
+      .filter(checkbox => checkbox.checked)
+      .map(checkbox => checkbox.value);
+    deleteForm.style.display = selectedIds.length > 0 ? 'block' : 'none';
+    departmentIdsInput.value = selectedIds.join(',');
+  }
+});
+</script>
 {% endblock %}
