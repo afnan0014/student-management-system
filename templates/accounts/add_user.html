@@ -32,14 +32,42 @@
           </div>
         {% endif %}
 
-        <form method="POST" novalidate>
+        {% if student_form and student_form.errors %}
+          <div class="alert alert-danger">
+            <ul class="mb-0">
+              {% for field in student_form %}
+                {% for error in field.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              {% endfor %}
+              {% for error in student_form.non_field_errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        {% if staff_form and staff_form.errors %}
+          <div class="alert alert-danger">
+            <ul class="mb-0">
+              {% for field in staff_form %}
+                {% for error in field.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              {% endfor %}
+              {% for error in staff_form.non_field_errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        <form method="POST" novalidate id="add-user-form">
           {% csrf_token %}
           <div class="mb-3">
             <label for="id_username" class="form-label">Username</label>
             {{ form.username }}
           </div>
-
-
 
           <div class="mb-3">
             <label for="id_password1" class="form-label">Password</label>
@@ -51,6 +79,25 @@
             {{ form.password2 }}
           </div>
 
+          {% if role == "Student" %}
+            <div class="mb-3">
+              <label for="id_course" class="form-label">Course</label>
+              {{ student_form.course }}
+            </div>
+
+            <div class="mb-3">
+              <label for="id_department" class="form-label">Department</label>
+              {{ student_form.department }}
+            </div>
+
+            <div class="mb-3">
+              <label for="id_batch_number" class="form-label">Batch Year</label>
+              {{ student_form.batch_number }}
+              <small class="form-text text-muted">{{ student_form.batch_number.help_text }}</small>
+            </div>
+            {% endif %}
+
+
           <div class="d-grid">
             <button type="submit" class="btn btn-info py-2">➕ Create {{ role }}</button>
           </div>
@@ -60,4 +107,27 @@
   </div>
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('add-user-form').addEventListener('submit', function(event) {
+    {% if role == "Staff" %}
+        const department = document.querySelector('select[name="department"]');
+        const course = document.querySelector('select[name="course"]');
+        
+        if (!department.value) {
+            event.preventDefault();
+            alert('Please select a department.');
+            return;
+        }
+        
+        if (!course.value) {
+            event.preventDefault();
+            alert('Please select a course.');
+            return;
+        }
+    {% endif %}
+});
+</script>
 {% endblock %}

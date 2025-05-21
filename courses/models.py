@@ -2,18 +2,14 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-
 class Department(models.Model):
     name = models.CharField(max_length=100)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
 
     class Meta:
         ordering = ['name']
-
 
 class Course(models.Model):
     name = models.CharField(max_length=100)
@@ -26,7 +22,6 @@ class Course(models.Model):
 
     class Meta:
         ordering = ['department', 'name']
-
 
 class Subject(models.Model):
     name = models.CharField(max_length=100)
@@ -45,12 +40,22 @@ class Subject(models.Model):
         limit_choices_to={'groups__name': 'Staff'},
         related_name='subjects'
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         staff_info = f" - Staff: {self.staff.username}" if self.staff else ""
         return f"{self.name} - Sem {self.semester} ({self.course.name}){staff_info}"
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.staff:
+            from accounts.models import StaffProfile
+            staff_profile, created = StaffProfile.objects.get_or_create(user=self.staff)
+            # Only update department and course if they are not already set
+            if created or not staff_profile.department:
+                staff_profile.department = self.course.department
+            if created or not staff_profile.course:
+                staff_profile.course = self.course
+            staff_profile.save()
 
     class Meta:
         ordering = ['course', 'semester', 'name']
