@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load widget_tweaks %}
 {% block title %}Add Department{% endblock %}
 {% block content %}
 <div class="container d-flex align-items-center justify-content-center" style="min-height:80vh">
@@ -20,7 +21,7 @@
           {% csrf_token %}
           <div class="mb-3">
             <label for="id_name" class="form-label">Department Name</label>
-            {{ form.name }}
+            {{ form.name|add_class:"bg-secondary" }}
           </div>
 
           <div class="d-grid">

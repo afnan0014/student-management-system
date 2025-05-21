@@ -9,39 +9,101 @@
         <div class="card-body">
           <h2 class="card-title table-heading mb-4">Courses</h2>
 
-          <div class="d-flex justify-content-end mb-3">
-            <a href="{% url 'add_course' %}" class="btn btn-success">➕ Add Course</a>
+          <div class="d-flex flex-wrap align-items-center mb-4 gap-2">
+            <!-- Search Form -->
+            <form method="get" class="flex-grow-1 me-2" style="max-width: 750px;">
+              <div class="input-group search-container">
+                <input 
+                  type="text" 
+                  name="q" 
+                  value="{{ query }}" 
+                  class="form-control bg-secondary text-light border-0 ps-2" 
+                  placeholder="🔍 Search"
+                  style="border-radius: 0.5rem;"
+                >
+                <button type="submit" class="btn btn-info" style="border-radius: 0.5rem;">
+                  <i class="bi bi-search"></i>
+                </button>
+              </div>
+            </form>
+            <!-- Add and Delete Buttons -->
+            <div class="d-flex flex-nowrap gap-2">
+              <a href="{% url 'add_course' %}" class="btn btn-success">➕ Add Course</a>
+              <form method="post" action="{% url 'delete_courses' %}" style="display: none;" id="delete-courses-form">
+                {% csrf_token %}
+                <input type="hidden" name="course_ids" id="course-ids">
+                <button type="submit" class="btn btn-danger">🗑️</button>
+              </form>
+            </div>
           </div>
 
           <div class="table-responsive">
             <table class="table table-striped align-middle mb-0">
               <thead>
                 <tr>
+                  <th><input type="checkbox" id="select-all-courses"></th>
                   <th>#</th>
                   <th>Name</th>
                   <th>Department</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {% for course in courses %}
                 <tr>
+                  <td><input type="checkbox" class="course-checkbox" value="{{ course.id }}"></td>
                   <td>{{ forloop.counter }}</td>
                   <td>{{ course.name }}</td>
                   <td>{{ course.department.name }}</td>
+                  <td>
+                    <a href="{% url 'edit_course' course.id %}" class="btn btn-sm btn-warning">✏️ Edit</a>
+                  </td>
                 </tr>
                 {% empty %}
                 <tr>
-                  <td colspan="3" class="text-center py-4">No courses found.</td>
+                  <td colspan="5" class="text-center py-4">No courses found.</td>
                 </tr>
                 {% endfor %}
               </tbody>
             </table>
           </div>
-
         </div>
       </div>
     </div>
   </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const selectAllCheckbox = document.getElementById('select-all-courses');
+  const courseCheckboxes = document.querySelectorAll('.course-checkbox');
+  const deleteForm = document.getElementById('delete-courses-form');
+  const courseIdsInput = document.getElementById('course-ids');
+
+  // Toggle all checkboxes when "Select All" is clicked
+  selectAllCheckbox.addEventListener('change', function() {
+    courseCheckboxes.forEach(checkbox => {
+      checkbox.checked = this.checked;
+    });
+    updateDeleteButtonVisibility();
+  });
+
+  // Update "Select All" checkbox state and show/hide delete button
+  courseCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+      selectAllCheckbox.checked = Array.from(courseCheckboxes).every(cb => cb.checked);
+      updateDeleteButtonVisibility();
+    });
+  });
+
+  // Show/hide delete button and update selected IDs
+  function updateDeleteButtonVisibility() {
+    const selectedIds = Array.from(courseCheckboxes)
+      .filter(checkbox => checkbox.checked)
+      .map(checkbox => checkbox.value);
+    deleteForm.style.display = selectedIds.length > 0 ? 'block' : 'none';
+    courseIdsInput.value = selectedIds.join(',');
+  }
+});
+</script>
 {% endblock %}
