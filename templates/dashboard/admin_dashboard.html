@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 {% block title %}Admin Dashboard{% endblock %}
 {% block content %}
-    <h2 class="mb-4">Welcome to Admin Dashboard</h2>
-    <p>Hello, {{ user.username }}! You are logged in as an Admin.</p>
+<div class="card shadow-sm p-4">
+    <h2 class="card-title mb-4">Welcome to the Admin Dashboard</h2>
+    <p class="card-text">
+        Hello, <strong>{{ user.username }}</strong>!<br>
+        You are logged in as an <span class="badge bg-primary">Admin</span>.
+    </p>
+</div>
 {% endblock %}

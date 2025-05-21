@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Add {{ role }}{% endblock %}
+{% block content %}
+
+<div class="container d-flex align-items-center justify-content-center" style="min-height:80vh">
+  <div class="col-md-6 col-lg-5">
+    <div class="card bg-dark text-light shadow-lg border-0">
+      <div class="card-body">
+        <h2 class="card-title mb-4 text-center">Add {{ role }}</h2>
+
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        {% if form.errors %}
+          <div class="alert alert-danger">
+            <ul class="mb-0">
+              {% for field in form %}
+                {% for error in field.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              {% endfor %}
+              {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        <form method="POST" novalidate>
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="id_username" class="form-label">Username</label>
+            {{ form.username }}
+          </div>
+
+
+
+          <div class="mb-3">
+            <label for="id_password1" class="form-label">Password</label>
+            {{ form.password1 }}
+          </div>
+
+          <div class="mb-3">
+            <label for="id_password2" class="form-label">Confirm Password</label>
+            {{ form.password2 }}
+          </div>
+
+          <div class="d-grid">
+            <button type="submit" class="btn btn-info py-2">➕ Create {{ role }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -24,7 +24,11 @@ from django.conf.urls import include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('accounts.urls')),
+<<<<<<< HEAD
     path('attendance/', include('attendance.urls')),
+=======
+    path('courses/', include('courses.urls')),
+>>>>>>> c08bd692cd8f36e2699912210ee491d71b778e41
 ]
 
 if settings.DEBUG:

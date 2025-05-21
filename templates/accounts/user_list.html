@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}{{ role }} Users{% endblock %}
+{% block content %}
+
+<div class="container mt-5 mb-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-10">
+      <div class="card bg-card text-light shadow-lg border-0">
+        <div class="card-body">
+          <h2 class="card-title table-heading mb-4">{{ role }} Users</h2>
+
+          <div class="d-flex flex-wrap align-items-center mb-4 gap-2">
+            <!-- Search Form -->
+            <form method="get" class="flex-grow-1 me-1" style="max-width: 800px;">
+              <div class="input-group search-container">
+                <input 
+                  type="text" 
+                  name="q" 
+                  value="{{ query }}" 
+                  class="form-control bg-secondary text-light border-0 ps-2" 
+                  placeholder="Search here"
+                  style="border-radius: 0.5rem;"
+                >
+                <button type="submit" class="btn btn-info" style="border-radius: 0.5rem;">
+                  <i class="bi bi-search"></i>
+                </button>
+              </div>
+            </form>
+            <!-- Buttons -->
+            <div class="d-flex flex-nowrap gap-2">
+              {% if role == "Student" or role == "Staff" %}
+                <a href="{% url 'add_user' role|lower %}" class="btn btn-success">Add {{ role }}</a>
+              {% endif %}
+              <form method="post" class="d-inline">
+                {% csrf_token %}
+                <button 
+                  id="bulk-delete-btn" 
+                  formaction="{% url 'bulk_delete_users' %}" 
+                  formmethod="post"
+                  class="btn btn-danger"
+                  style="display: none;"
+                  onclick="return confirm('Delete selected users?');"
+                >
+                  🗑️
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <form method="POST" action="{% url 'bulk_delete_users' %}">
+            {% csrf_token %}
+            <div class="table-responsive">
+              <table class="table table-striped align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th style="width:1%"><input type="checkbox" id="select_all"></th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th class="text-center">Change Password</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for user in users %}
+                  <tr>
+                    <td>
+                      <input 
+                        type="checkbox" 
+                        name="selected_users" 
+                        value="{{ user.id }}" 
+                        class="row-checkbox"
+                      >
+                    </td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td class="text-center">
+                      <a 
+                        href="{% url 'change_user_password' user.id %}" 
+                        class="btn btn-sm btn-warning"
+                      >Change</a>
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="4" class="text-center py-4">
+                      No {{ role }} users found.
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const selectAll = document.getElementById('select_all');
+  const checkboxes = document.querySelectorAll('.row-checkbox');
+  const bulkBtn = document.getElementById('bulk-delete-btn');
+
+  function updateBulkButton() {
+    bulkBtn.style.display = [...checkboxes].some(cb => cb.checked)
+      ? 'inline-block' : 'none';
+  }
+
+  selectAll.addEventListener('change', () => {
+    checkboxes.forEach(cb => cb.checked = selectAll.checked);
+    updateBulkButton();
+  });
+
+  checkboxes.forEach(cb => {
+    cb.addEventListener('change', () => {
+      if (!cb.checked) selectAll.checked = false;
+      else if ([...checkboxes].every(c => c.checked)) selectAll.checked = true;
+      updateBulkButton();
+    });
+  });
+});
+</script>
+
+{% endblock %}
