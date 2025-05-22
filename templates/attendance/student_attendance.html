@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}My Attendance{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-3">📊 My Attendance</h2>
+
+    <!-- Attendance Percentage -->
+    <div class="mb-4">
+        <h5>Attendance Percentage:
+            {% if percentage >= 75 %}
+                <span class="badge bg-success">{{ percentage }}%</span>
+            {% elif percentage >= 50 %}
+                <span class="badge bg-warning text-dark">{{ percentage }}%</span>
+            {% else %}
+                <span class="badge bg-danger">{{ percentage }}%</span>
+            {% endif %}
+        </h5>
+    </div>
+
+    <!-- Attendance Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Date</th>
+                    <th>Course</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ record.date }}</td>
+                    <td>{{ record.course.name }}</td>
+                    <td>
+                        {% if record.status == "Present" %}
+                            <span class="badge bg-success">Present</span>
+                        {% else %}
+                            <span class="badge bg-danger">Absent</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center text-muted">No attendance records found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
