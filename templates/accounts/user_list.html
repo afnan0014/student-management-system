@@ -15,6 +15,16 @@
         <div class="card-body">
           <h2 class="card-title table-heading mb-4">{{ role }} Users</h2>
 
+          <!-- Add this block just below the heading -->
+            {% if messages %}
+              {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              {% endfor %}
+            {% endif %}
+
           <!-- Single row for search, add, and delete -->
           <div class="d-flex flex-wrap align-items-center mb-4 gap-2">
             <!-- Search Form -->
@@ -93,7 +103,7 @@
                     </td>
                     <td class="text-center">
                       <a 
-                        href="{% url 'change_user_password' user.id %}" 
+                        href="{% url 'change_password' user.id %}" 
                         class="btn btn-sm btn-warning"
                       >🔑 Change Password</a>
                     </td>

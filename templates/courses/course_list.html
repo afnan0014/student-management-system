@@ -15,6 +15,16 @@
         <div class="card-body">
           <h2 class="card-title table-heading mb-4">Courses</h2>
 
+          <!-- Add this block just below the heading -->
+            {% if messages %}
+              {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              {% endfor %}
+            {% endif %}
+
           <div class="d-flex flex-wrap align-items-center mb-4 gap-2">
             <!-- Search Form -->
             <form method="get" class="flex-grow-1 me-2" style="max-width: 825px;">
