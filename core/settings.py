@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'messaging',
     'notifications',
     'dashboard',
+    'reports',
     
 ]
 
