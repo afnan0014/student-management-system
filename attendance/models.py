@@ -1,18 +1,20 @@
 from django.db import models
-from django.contrib.auth.models import User
-from courses.models import Subject
+from courses.models import Course
+from accounts.models import StudentProfile  
 
 class Attendance(models.Model):
     STATUS_CHOICES = [
-          ('Present', 'Present'),
-          ('Absent', 'Absent'),
-          ('Leave', 'Leave'),
-]
+        ('Present', 'Present'),
+        ('Absent', 'Absent')
+    ]
+
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE)
     date = models.DateField()
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
-    student = models.ForeignKey(User, on_delete=models.CASCADE,
-    limit_choices_to={'groups__name': 'Student'})
     status = models.CharField(max_length=10, choices=STATUS_CHOICES)
-    
+
+    class Meta:
+        unique_together = ('student', 'date', 'course')  
+
     def __str__(self):
-        return f"{self.date} - {self.subject.name} - {self.student.username} - {self.status}"
+        return f"{self.student.user.username} - {self.course.name} - {self.date} - {self.status}"

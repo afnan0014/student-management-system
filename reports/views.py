@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth.models import User
-from courses.models import Department, Course, Subject
+from courses.models import Department, Course
 
 from reportlab.pdfgen import canvas
 from io import BytesIO

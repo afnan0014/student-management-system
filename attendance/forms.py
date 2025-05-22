@@ -1,5 +1,4 @@
 from django import forms
-from courses.models import Subject
 from django.contrib.auth.models import User
 from attendance.models import Attendance
 from django.forms import modelformset_factory
