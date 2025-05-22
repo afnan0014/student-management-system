@@ -196,19 +196,19 @@ def bulk_delete_users(request):
 @login_required
 @user_passes_test(is_admin)
 def student_profile(request, user_id):
-    user = get_object_or_404(User, id=user_id, groups__name='Student')
-    student_profile = get_object_or_404(StudentProfile, user=user)
+    profile_user = get_object_or_404(User, id=user_id, groups__name='Student')
+    student_profile = get_object_or_404(StudentProfile, user=profile_user)
     return render(request, 'accounts/student_profile.html', {
-        'user': user,
+        'profile_user': profile_user,
         'student_profile': student_profile,
     })
 
 @login_required
 @user_passes_test(is_admin)
 def staff_profile(request, user_id):
-    user = get_object_or_404(User, id=user_id, groups__name='Staff')
-    staff_profile = get_object_or_404(StaffProfile, user=user)
+    profile_user = get_object_or_404(User, id=user_id, groups__name='Staff')
+    staff_profile = get_object_or_404(StaffProfile, user=profile_user)
     return render(request, 'accounts/staff_profile.html', {
-        'user': user,
+        'profile_user': profile_user,
         'staff_profile': staff_profile,
     })
