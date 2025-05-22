@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load widget_tweaks %}
-{% block title %}Add Course{% endblock %}
+{% block title %}Edit Department{% endblock %}
 {% block content %}
 
 <div class="mb-3">
@@ -13,7 +13,7 @@
   <div class="col-md-6 col-lg-5">
     <div class="card bg-dark text-light shadow-lg border-0">
       <div class="card-body">
-        <h2 class="card-title mb-4 text-center">Add Course</h2>
+        <h2 class="card-title mb-4 text-center">Edit Department</h2>
 
         {% if messages %}
           {% for message in messages %}
@@ -26,29 +26,13 @@
 
         <form method="POST">
           {% csrf_token %}
-          
           <div class="mb-3">
-            <label for="id_name" class="form-label">Course Name</label>
-            {{ form.name|add_class:"form-control bg-secondary text-light border-0" }}
-          </div>
-
-          <div class="mb-3">
-            <label for="id_department" class="form-label">Department</label>
-            {{ form.department|add_class:"form-select bg-secondary text-light border-0" }}
-          </div>
-
-          <div class="mb-3">
-            <label for="id_semester" class="form-label">Semester</label>
-            {{ form.semester|add_class:"form-control bg-secondary text-light border-0" }}
-          </div>
-
-          <div class="mb-4">
-            <label for="id_assigned_staff" class="form-label">Assign Staff</label>
-            {{ form.assigned_staff|add_class:"form-select bg-secondary text-light border-0" }}
+            <label for="id_name" class="form-label">Department Name</label>
+            {{ form.name }}
           </div>
 
           <div class="d-grid">
-            <button type="submit" class="btn btn-info py-2">➕ Add Course</button>
+            <button type="submit" class="btn btn-info py-2">💾 Save Changes</button>
           </div>
         </form>
       </div>

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Staff Profile - {{ user.username }}{% endblock %}
+{% block content %}
+
+<div class="mb-3">
+    <a href="javascript:history.back()" class="text-light" style="font-size: 1.5rem; text-decoration: none;" title="Go back">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+</div>
+
+<div class="container d-flex align-items-center justify-content-center" style="min-height:80vh">
+  <div class="col-md-6 col-lg-5">
+    <div class="card bg-dark text-light shadow-lg border-0">
+      <div class="card-body">
+        <h2 class="card-title mb-4 text-center">Staff Profile</h2>
+
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Name</label>
+          <p class="form-control bg-secondary text-light border-0">{{ user.username }}</p>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Assigned Department</label>
+          <p class="form-control bg-secondary text-light border-0">
+            {{ staff_profile.department.name|default:"Not assigned" }}
+          </p>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Assigned Course</label>
+          <p class="form-control bg-secondary text-light border-0">
+            {{ staff_profile.course.name|default:"Not assigned" }}
+          </p>
+        </div>
+
+        <div class="d-grid">
+          <a href="{% url 'view_users_by_role' role='staff' %}" class="btn btn-info py-2">⬅ Back to Staff List</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

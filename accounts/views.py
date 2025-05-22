@@ -4,8 +4,10 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User, Group
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db import models
+from django.contrib.auth.forms import AuthenticationForm
 from .decorators import allowed_users
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, StudentProfileForm, StaffProfileForm
+from .models import StudentProfile, StaffProfile
 
 # Redirect to login
 def home_redirect(request):
@@ -13,24 +15,48 @@ def home_redirect(request):
 
 # Login view
 def login_view(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-
-        if user:
-            login(request, user)
-            group = user.groups.first().name
-
-            if group == 'Admin':
-                return redirect('admin_dashboard')
-            elif group == 'Staff':
-                return redirect('staff_dashboard')
-            elif group == 'Student':
-                return redirect('student_dashboard')
+    if request.user.is_authenticated:
+        # Redirect based on user group
+        group_name = request.user.groups.first().name if request.user.groups.exists() else None
+        if group_name == 'Admin':
+            return redirect('admin_dashboard')
+        elif group_name == 'Staff':
+            return redirect('staff_dashboard')
+        elif group_name == 'Student':
+            return redirect('student_dashboard')
         else:
-            messages.error(request, 'Invalid credentials')
-    return render(request, 'login.html')
+            # If user has no group, redirect to login (or handle as needed)
+            messages.warning(request, "User does not belong to any recognized group.")
+            return redirect('login')
+    
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.success(request, f"Welcome back, {username}!")
+                # Redirect to dashboard after login
+                group_name = user.groups.first().name if user.groups.exists() else None
+                if group_name == 'Admin':
+                    return redirect('admin_dashboard')
+                elif group_name == 'Staff':
+                    return redirect('staff_dashboard')
+                elif group_name == 'Student':
+                    return redirect('student_dashboard')
+                else:
+                    messages.warning(request, "User does not belong to any recognized group.")
+                    return redirect('login')
+            else:
+                messages.error(request, "Invalid username or password.")
+        else:
+            messages.error(request, "Invalid username or password.")
+    else:
+        form = AuthenticationForm()
+    
+    return render(request, 'login.html', {'form': form})
 
 # Dashboards
 @login_required
@@ -57,24 +83,53 @@ def logout_view(request):
 @login_required
 @allowed_users(allowed_roles=['Admin'])
 def add_user(request, role):
+    student_form = None
+    staff_form = None
+
+    if role.lower() == 'student':
+        student_form = StudentProfileForm(request.POST or None)
+    elif role.lower() == 'staff':
+        staff_form = StaffProfileForm(request.POST or None)
+
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()  # Password already hashed by UserCreationForm
+        if form.is_valid() and (role.lower() != 'student' or student_form.is_valid()) and (role.lower() != 'staff' or staff_form.is_valid()):
+            user = form.save()
             try:
                 group = Group.objects.get(name=role.capitalize())
                 user.groups.add(group)
+
+                if role.lower() == 'student':
+                    StudentProfile.objects.create(
+                        user=user,
+                        course=student_form.cleaned_data['course'],
+                        department=student_form.cleaned_data['department'],
+                        batch_number=student_form.cleaned_data['batch_number']
+                    )
+                elif role.lower() == 'staff':
+                    # Create StaffProfile with optional department and course
+                    StaffProfile.objects.create(
+                        user=user,
+                        department=staff_form.cleaned_data['department'] or None,
+                        course=staff_form.cleaned_data['course'] or None
+                    )
+
                 messages.success(request, f"{role.capitalize()} account created for {user.username}")
                 return redirect('view_users_by_role', role=role.lower())
             except Group.DoesNotExist:
                 messages.error(request, f"Group '{role.capitalize()}' does not exist.")
-                user.delete()  # Clean up if group assignment fails
+                user.delete()
         else:
             messages.error(request, "Form is invalid. Please check the input.")
     else:
         form = CustomUserCreationForm()
 
-    return render(request, 'accounts/add_user.html', {'form': form, 'role': role.capitalize()})
+    return render(request, 'accounts/add_user.html', {
+        'form': form,
+        'role': role.capitalize(),
+        'student_form': student_form,
+        'staff_form': staff_form,
+    })
 
 # Role check
 def is_admin(user):
@@ -88,7 +143,7 @@ def view_users_by_role(request, role):
     users = User.objects.filter(groups__name=role.capitalize())
 
     if query:
-        users = users.filter(models.Q(username__icontains=query) | models.Q(email__icontains=query))
+        users = users.filter(models.Q(username__icontains=query))
 
     return render(request, 'accounts/user_list.html', {
         'users': users,
@@ -131,3 +186,23 @@ def bulk_delete_users(request):
         else:
             messages.warning(request, "No users selected for deletion.")
     return redirect(request.META.get('HTTP_REFERER', 'admin_dashboard'))
+
+@login_required
+@user_passes_test(is_admin)
+def student_profile(request, user_id):
+    user = get_object_or_404(User, id=user_id, groups__name='Student')
+    student_profile = get_object_or_404(StudentProfile, user=user)
+    return render(request, 'accounts/student_profile.html', {
+        'user': user,
+        'student_profile': student_profile,
+    })
+
+@login_required
+@user_passes_test(is_admin)
+def staff_profile(request, user_id):
+    user = get_object_or_404(User, id=user_id, groups__name='Staff')
+    staff_profile = get_object_or_404(StaffProfile, user=user)
+    return render(request, 'accounts/staff_profile.html', {
+        'user': user,
+        'staff_profile': staff_profile,
+    })
