@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from .models import Department, Course, Subject
-from .forms import DepartmentForm, CourseForm, SubjectForm
+from .models import Department, Course
+from .forms import DepartmentForm, CourseForm
 from django.db.models import Q
 
 # Existing views for listing (assumed)
@@ -49,16 +49,7 @@ def add_course(request):
         form = CourseForm()
     return render(request, 'courses/add_course.html', {'form': form})
 
-def add_subject(request):
-    if request.method == 'POST':
-        form = SubjectForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Subject added successfully!')
-            return redirect('subject_list')
-    else:
-        form = SubjectForm()
-    return render(request, 'courses/add_subject.html', {'form': form})
+
 
 # New views for editing
 def edit_department(request, department_id):
@@ -75,6 +66,7 @@ def edit_department(request, department_id):
 
 def edit_course(request, course_id):
     course = get_object_or_404(Course, id=course_id)
+
     if request.method == 'POST':
         form = CourseForm(request.POST, instance=course)
         if form.is_valid():
@@ -83,19 +75,12 @@ def edit_course(request, course_id):
             return redirect('course_list')
     else:
         form = CourseForm(instance=course)
+
     return render(request, 'courses/edit_course.html', {'form': form})
 
-def edit_subject(request, subject_id):
-    subject = get_object_or_404(Subject, id=subject_id)
-    if request.method == 'POST':
-        form = SubjectForm(request.POST, instance=subject)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Subject updated successfully!')
-            return redirect('subject_list')
-    else:
-        form = SubjectForm(instance=subject)
-    return render(request, 'courses/edit_subject.html', {'form': form})
+
+
+   
 
 # New views for deleting
 def delete_departments(request):
@@ -118,12 +103,3 @@ def delete_courses(request):
             messages.error(request, 'No courses selected for deletion.')
     return redirect('course_list')
 
-def delete_subjects(request):
-    if request.method == 'POST':
-        subject_ids = request.POST.get('subject_ids', '').split(',')
-        if subject_ids and subject_ids[0]:
-            Subject.objects.filter(id__in=subject_ids).delete()
-            messages.success(request, 'Selected subjects deleted successfully!')
-        else:
-            messages.error(request, 'No subjects selected for deletion.')
-    return redirect('subject_list')
