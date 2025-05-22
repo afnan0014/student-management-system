@@ -22,7 +22,67 @@ body.light-mode {
   --btn-primary-hover: #0B6B54; /* Hover color for primary buttons */
 }
 
-/* Ensure body uses the variables and is a flex container */
+/* Form elements */
+.form-group label {
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 1.1rem; /* Slightly larger for readability */
+  margin-bottom: 0.5rem; /* Consistent spacing below labels */
+}
+
+.form-control, .form-select {
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem; /* Slightly more padding for a polished look */
+  font-size: 1rem; /* Consistent font size */
+  margin-bottom: 1rem;
+  transition: all 0.3s ease; /* Smooth transitions for hover/focus */
+}
+
+/* Specific styling for inputs with bg-secondary class */
+.form-control.bg-secondary,
+.form-select.bg-secondary {
+  background-color: var(--bg-card) !important;
+  color: var(--text-main) !important;
+}
+
+/* Placeholder text styling */
+.form-control.bg-secondary::placeholder,
+.form-select.bg-secondary::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7; /* Subtle placeholder */
+}
+
+/* Hover effect for inputs */
+.form-control.bg-secondary:hover,
+.form-select.bg-secondary:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle lift effect */
+  border-color: var(--accent); /* Highlight border on hover */
+}
+
+/* Focus effect for inputs */
+.form-control.bg-secondary:focus,
+.form-select.bg-secondary:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0.5rem rgba(16, 163, 127, 0.4);
+  outline: none;
+}
+
+/* Dark mode specific: Make form fields white with black text */
+body.dark-mode .form-control.bg-secondary,
+body.dark-mode .form-select.bg-secondary {
+  background-color: #FFFFFF !important;
+  color: #000000 !important; /* Black text for contrast */
+}
+
+/* Light mode specific: Fix label color (previously white, which might be incorrect) */
+body.light-mode .form-group label {
+  color: var(--text-muted) !important; /* Use muted color instead of white for better contrast */
+}
+
+/* Rest of the CSS remains unchanged */
 body {
   background-color: var(--bg-dark);
   color: var(--text-main);
@@ -33,19 +93,17 @@ body {
   min-height: 100vh;
 }
 
-/* Make main content grow to fill available space */
 main {
   flex-grow: 1;
 }
 
-/* Header */
+/* Header, Sidebar, Card, Table, Search, Buttons, Alerts, Headings, Date-time, Footer, etc. remain as they were */
 .header {
   background-color: var(--bg-alt);
   padding: 1rem 1.5rem;
   color: var(--text-main);
 }
 
-/* Sidebar */
 .sidebar {
   background-color: var(--bg-card);
   padding-top: 2rem;
@@ -74,7 +132,6 @@ main {
   background-color: var(--bg-card);
 }
 
-/* Content wrapper */
 .content {
   padding: 2rem;
   display: flex;
@@ -82,7 +139,6 @@ main {
   background-color: var(--bg-dark);
 }
 
-/* Card styles */
 .card, .card-large, .card-user-list {
   background-color: var(--bg-card);
   color: var(--text-main);
@@ -96,7 +152,6 @@ main {
   transform: translateY(-4px);
 }
 
-/* Tables */
 .table-container {
   max-width: 960px;
 }
@@ -105,20 +160,20 @@ main {
   color: var(--text-main);
   border-radius: 0.5rem;
   overflow: hidden;
-  border: 2px solid #000000; /* Black border for table */
+  border: 2px solid #000000;
 }
 .table thead {
   background-color: var(--bg-alt);
   color: var(--text-main);
-  border-bottom: 2px solid var(--accent); /* Highlight table header with accent border */
+  border-bottom: 2px solid var(--accent);
 }
 body.dark-mode .table thead {
-  background-color: #2A3B4C; /* Lighter shade for dark mode header */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Subtle shadow for highlight */
+  background-color: #2A3B4C;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 body.light-mode .table thead {
-  background-color: #D3D6DA; /* Darker shade for light mode header */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for highlight */
+  background-color: #D3D6DA;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 .table tbody tr:hover {
   background-color: var(--bg-alt);
@@ -127,21 +182,43 @@ body.light-mode .table thead {
   border-color: var(--border);
 }
 
-/* Search bar container */
 .search-container {
-  border: 2px solid #000000; /* Black border for search bar */
+  border: 2px solid #000000;
   border-radius: 0.5rem;
   overflow: hidden;
+  flex-grow: 1;
 }
-.input-group-text {
-  background-color: var(--bg-card) !important;
-  color: var(--text-muted) !important;
+
+.input-group {
+  width: 100%;
+  margin: 0;
 }
-.form-control.bg-secondary::placeholder {
+
+.search-container .form-control {
+  flex-grow: 1;
+  min-width: 200px;
+  padding: 0.5rem 0.75rem;
+  margin: 0;
+}
+
+.search-container .form-control::placeholder {
   color: var(--text-muted);
 }
 
-/* Buttons */
+.search-container .btn-info {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  margin: 0;
+}
+
+.d-flex.flex-nowrap .btn {
+  white-space: nowrap;
+}
+
+.d-flex.flex-wrap.align-items-center {
+  gap: 0.5rem;
+}
+
 .btn {
   border: none;
   transition: background-color 0.2s, transform 0.2s;
@@ -154,54 +231,31 @@ body.light-mode .table thead {
   background-color: var(--btn-primary-hover);
   transform: translateY(-2px);
 }
-.btn-success { background-color: #2D9CDB; }
-.btn-success:hover { background-color: #2377B8; }
-.btn-warning { background-color: #F2C94C; color: #000; }
-.btn-warning:hover { background-color: #D1A830; }
-.btn-danger { background-color: #EB5757; }
-.btn-danger:hover { background-color: #C94444; }
-
-/* Form elements */
-.form-group label {
-  color: var(--text-muted);
-  font-weight: 500;
+.btn-success {
+  background-color: #2D9CDB;
 }
-.form-control, .form-select {
-  background-color: var(--bg-card);
-  color: var(--text-main);
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  padding: 0.75rem;
-  margin-bottom: 1rem;
+.btn-success:hover {
+  background-color: #2377B8;
 }
-.form-control:focus, .form-select:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0.5rem rgba(16,163,127,0.4);
-  outline: none;
+.btn-warning {
+  background-color: #F2C94C;
+  color: #000;
 }
-.form-control.bg-secondary {
-  background-color: var(--bg-card) !important;
-  color: var(--text-main) !important;
+.btn-warning:hover {
+  background-color: #D1A830;
+}
+.btn-danger {
+  background-color: #EB5757;
+}
+.btn-danger:hover {
+  background-color: #C94444;
 }
 
-/* Dark mode specific: Make username and password fields white */
-body.dark-mode .form-control.bg-secondary {
-  background-color: #FFFFFF !important;
-  color: #000000 !important; /* Black text for contrast */
-}
-
-/* Light mode specific: Make labels above username and password fields white */
-body.light-mode .form-group label {
-  color: #FFFFFF !important;
-}
-
-/* Alerts */
 .alert {
   border-radius: 0.5rem;
   font-size: 1rem;
 }
 
-/* Headings */
 .card-title, .table-heading {
   color: var(--accent);
   font-weight: 600;
@@ -210,7 +264,6 @@ body.light-mode .form-group label {
   margin-bottom: 1.5rem;
 }
 
-/* Date-time box */
 .date-time {
   background-color: var(--bg-card);
   color: var(--text-main);
@@ -221,13 +274,11 @@ body.light-mode .form-group label {
   max-width: 300px;
 }
 
-/* Footer */
 .footer {
   background-color: var(--bg-alt);
   color: var(--text-main);
 }
 
-/* Light mode specific adjustments */
 body.light-mode .text-light {
   color: var(--text-main) !important;
 }
@@ -267,48 +318,4 @@ body.light-mode .sidebar .dropdown-item {
 }
 body.light-mode .sidebar .dropdown-item:hover {
   background-color: var(--bg-card);
-}
-
-/* Ensure the search container takes up the desired space */
-.search-container {
-  border: 2px solid #000000; /* Black border for search bar */
-  border-radius: 0.5rem;
-  overflow: hidden;
-  flex-grow: 1; /* Allow it to grow */
-}
-
-/* Adjust the input group to align properly */
-.input-group {
-  width: 100%;
-  margin: 0; /* Remove any default margins */
-}
-
-/* Remove extra padding and ensure the search input takes full width */
-.search-container .form-control {
-  flex-grow: 1; /* Take available space */
-  min-width: 200px; /* Prevent shrinking too much */
-  padding: 0.5rem 0.75rem; /* Reduce padding for a tighter look */
-  margin: 0; /* Remove any margins */
-}
-
-/* Fine-tune the search button */
-.search-container .btn-info {
-  padding: 0.5rem 1rem; /* Consistent padding */
-  border-radius: 0.5rem; /* Match the input's border-radius */
-  margin: 0; /* Remove any margins */
-}
-
-/* Ensure the input group text (search icon) has minimal padding */
-.search-container .input-group-text {
-  padding: 0.5rem 0.75rem; /* Match input padding */
-}
-
-/* Ensure buttons in the flex container don't shrink */
-.d-flex.flex-nowrap .btn {
-  white-space: nowrap; /* Prevent button text from wrapping */
-}
-
-/* Tighten the layout of the search bar container */
-.d-flex.flex-wrap.align-items-center {
-  gap: 0.5rem; /* Reduce gap between elements */
 }

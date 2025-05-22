@@ -1,11 +1,19 @@
 {% extends "base.html" %}
-{% block title %}Add Subject{% endblock %}
+{% load widget_tweaks %}
+{% block title %}Edit Course{% endblock %}
 {% block content %}
+
+<div class="mb-3">
+    <a href="javascript:history.back()" class="text-light" style="font-size: 1.5rem; text-decoration: none;" title="Go back">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+</div>
+
 <div class="container d-flex align-items-center justify-content-center" style="min-height:80vh">
   <div class="col-md-6 col-lg-5">
     <div class="card bg-dark text-light shadow-lg border-0">
       <div class="card-body">
-        <h2 class="card-title mb-4 text-center">Add Subject</h2>
+        <h2 class="card-title mb-4 text-center">Edit Course</h2>
 
         {% if messages %}
           {% for message in messages %}
@@ -19,24 +27,27 @@
         <form method="POST">
           {% csrf_token %}
           <div class="mb-3">
-            <label for="id_name" class="form-label">Subject Name</label>
-            {{ form.name }}
+            <label for="id_name" class="form-label">Course Name</label>
+            {{ form.name|add_class:"form-control bg-secondary text-light border-0" }}
           </div>
+
           <div class="mb-3">
-            <label for="id_course" class="form-label">Course</label>
-            {{ form.course }}
+            <label for="id_department" class="form-label">Department</label>
+            {{ form.department|add_class:"form-select bg-secondary text-light border-0" }}
           </div>
+
           <div class="mb-3">
             <label for="id_semester" class="form-label">Semester</label>
-            {{ form.semester }}
+            {{ form.semester|add_class:"form-control bg-secondary text-light border-0" }}
           </div>
+
           <div class="mb-3">
-            <label for="id_staff" class="form-label">Assign Staff</label>
-            {{ form.staff }}
+            <label for="id_assigned_staff" class="form-label">Assigned Staff</label>
+            {{ form.assigned_staff|add_class:"form-select bg-secondary text-light border-0" }}
           </div>
 
           <div class="d-grid">
-            <button type="submit" class="btn btn-info py-2">➕ Add Subject</button>
+            <button type="submit" class="btn btn-info py-2">💾 Save Changes</button>
           </div>
         </form>
       </div>
