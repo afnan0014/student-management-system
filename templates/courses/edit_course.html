@@ -28,11 +28,22 @@
           {% csrf_token %}
           <div class="mb-3">
             <label for="id_name" class="form-label">Course Name</label>
-            {{ form.name }}
+            {{ form.name|add_class:"form-control bg-secondary text-light border-0" }}
           </div>
+
           <div class="mb-3">
             <label for="id_department" class="form-label">Department</label>
-            {{ form.department }}
+            {{ form.department|add_class:"form-select bg-secondary text-light border-0" }}
+          </div>
+
+          <div class="mb-3">
+            <label for="id_semester" class="form-label">Semester</label>
+            {{ form.semester|add_class:"form-control bg-secondary text-light border-0" }}
+          </div>
+
+          <div class="mb-3">
+            <label for="id_assigned_staff" class="form-label">Assigned Staff</label>
+            {{ form.assigned_staff|add_class:"form-select bg-secondary text-light border-0" }}
           </div>
 
           <div class="d-grid">

@@ -66,6 +66,7 @@ def edit_department(request, department_id):
 
 def edit_course(request, course_id):
     course = get_object_or_404(Course, id=course_id)
+
     if request.method == 'POST':
         form = CourseForm(request.POST, instance=course)
         if form.is_valid():
@@ -74,7 +75,9 @@ def edit_course(request, course_id):
             return redirect('course_list')
     else:
         form = CourseForm(instance=course)
+
     return render(request, 'courses/edit_course.html', {'form': form})
+
 
 
    
