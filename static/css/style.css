@@ -1,33 +1,38 @@
 /* Define CSS custom properties with default dark mode values */
 :root {
-  --bg-dark: #0A0F1A; /* Dark background for body */
-  --bg-card: #1E2A38; /* Darker background for cards, tables */
-  --bg-alt: #131A26; /* Alternative background for headers, footers */
-  --text-main: #ECEFF1; /* White text for main content */
-  --text-muted: #A4ABB3; /* Muted text for labels, secondary content */
-  --accent: #10A37F; /* Accent color for headings, borders */
-  --border: #273141; /* Border color for inputs, tables */
-  --btn-primary-hover: #0E8C6E; /* Hover color for primary buttons */
+  --bg-dark: #0A0F1A;
+  --bg-card: #343a40;
+  --bg-alt: #212529;
+  --text-main: #ECEFF1;
+  --text-muted: #adb5bd;
+  --accent: #10A37F;
+  --border: #495057;
+  --btn-primary-hover: #0E8C6E;
+  --sidebar-header-bg: #2c3034;
+  --dropdown-hover-bg: #495057;
+  --sidebar-width: 250px;
 }
 
 /* Light mode overrides */
 body.light-mode {
-  --bg-dark: #F8F9FA; /* Light background for body */
-  --bg-card: #FFFFFF; /* White background for cards, tables */
-  --bg-alt: #E9ECEF; /* Light alternative background for headers, footers */
-  --text-main: #4d5257; /* Black text for main content */
-  --text-muted: #6C757D; /* Muted text for labels, secondary content */
-  --accent: #0D7A5F; /* Slightly darker accent for light mode */
-  --border: #606365; /* Light border color for inputs, tables */
-  --btn-primary-hover: #0B6B54; /* Hover color for primary buttons */
+  --bg-dark: #F8F9FA;
+  --bg-card: #E9ECEF;
+  --bg-alt: #D3D6DA;
+  --text-main: #4d5257;
+  --text-muted: #6C757D;
+  --accent: #0D7A5F;
+  --border: #606365;
+  --btn-primary-hover: #0B6B54;
+  --sidebar-header-bg: #CED4DA;
+  --dropdown-hover-bg: #CED4DA;
 }
 
 /* Form elements */
 .form-group label {
   color: var(--text-muted);
   font-weight: 500;
-  font-size: 1.1rem; /* Slightly larger for readability */
-  margin-bottom: 0.5rem; /* Consistent spacing below labels */
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
 }
 
 .form-control, .form-select {
@@ -35,10 +40,10 @@ body.light-mode {
   color: var(--text-main);
   border: 1px solid var(--border);
   border-radius: 0.5rem;
-  padding: 0.75rem 1rem; /* Slightly more padding for a polished look */
-  font-size: 1rem; /* Consistent font size */
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
   margin-bottom: 1rem;
-  transition: all 0.3s ease; /* Smooth transitions for hover/focus */
+  transition: all 0.3s ease;
 }
 
 /* Specific styling for inputs with bg-secondary class */
@@ -52,14 +57,14 @@ body.light-mode {
 .form-control.bg-secondary::placeholder,
 .form-select.bg-secondary::placeholder {
   color: var(--text-muted);
-  opacity: 0.7; /* Subtle placeholder */
+  opacity: 0.7;
 }
 
 /* Hover effect for inputs */
 .form-control.bg-secondary:hover,
 .form-select.bg-secondary:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle lift effect */
-  border-color: var(--accent); /* Highlight border on hover */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-color: var(--accent);
 }
 
 /* Focus effect for inputs */
@@ -74,64 +79,125 @@ body.light-mode {
 body.dark-mode .form-control.bg-secondary,
 body.dark-mode .form-select.bg-secondary {
   background-color: #FFFFFF !important;
-  color: #000000 !important; /* Black text for contrast */
+  color: #000000 !important;
 }
 
-/* Light mode specific: Fix label color (previously white, which might be incorrect) */
+/* Light mode specific: Fix label color */
 body.light-mode .form-group label {
-  color: var(--text-muted) !important; /* Use muted color instead of white for better contrast */
+  color: var(--text-muted) !important;
 }
 
-/* Rest of the CSS remains unchanged */
+/* Body and Page Wrapper */
 body {
   background-color: var(--bg-dark);
   color: var(--text-main);
   font-family: 'Segoe UI', sans-serif;
   margin: 0;
+  min-height: 100vh;
+  position: relative; /* Ensure body can handle sidebar positioning */
+}
+
+.page-wrapper {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  transition: margin-left 0.3s ease-in-out;
+  margin-left: 0;
 }
 
+.page-wrapper.shifted {
+  margin-left: var(--sidebar-width);
+}
+
+/* Ensure main content grows to fill space */
 main {
   flex-grow: 1;
 }
 
-/* Header, Sidebar, Card, Table, Search, Buttons, Alerts, Headings, Date-time, Footer, etc. remain as they were */
+/* Header, Sidebar, Card, Table, Search, Buttons, Alerts, Headings, Date-time, Footer */
 .header {
   background-color: var(--bg-alt);
-  padding: 1rem 1.5rem;
+  padding: 15px 0;
   color: var(--text-main);
+  border-bottom: 1px solid var(--border);
 }
 
+/* Updated Sidebar Styling */
 .sidebar {
-  background-color: var(--bg-card);
-  padding-top: 2rem;
+  width: var(--sidebar-width) !important;
+  background-color: var(--bg-alt) !important;
+  color: var(--text-main) !important;
+  transition: transform 0.3s ease-in-out !important;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 1000;
 }
-.sidebar .nav-link {
-  color: var(--text-muted);
-  margin: 0.5rem 0;
-  padding: 0.75rem 1rem;
-  border-radius: 0.375rem;
-  transition: background-color 0.2s;
+
+.sidebar .offcanvas-header {
+  background-color: var(--sidebar-header-bg);
+  border-bottom: 1px solid var(--border);
 }
-.sidebar .nav-link:hover {
-  color: var(--text-main);
-  background-color: var(--bg-alt);
-}
+
 .sidebar .offcanvas-title {
   color: var(--text-main);
-}
-.sidebar .dropdown-menu {
-  background-color: var(--bg-alt);
-}
-.sidebar .dropdown-item {
-  color: var(--text-main);
-}
-.sidebar .dropdown-item:hover {
-  background-color: var(--bg-card);
+  font-weight: 600;
 }
 
+.sidebar .sidebar-menu {
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar .nav-link {
+  color: var(--text-muted) !important;
+  padding: 12px 20px !important;
+  border-radius: 5px;
+  margin: 5px 10px;
+  transition: all 0.3s ease !important;
+  display: flex;
+  align-items: center;
+}
+
+.sidebar .nav-link:hover {
+  background-color: var(--bg-card) !important;
+  color: var(--text-main) !important;
+}
+
+/* Toggle Icon Styling */
+.sidebar .toggle-icon {
+  transition: transform 0.3s ease;
+}
+
+.sidebar .toggle-icon.rotate {
+  transform: rotate(180deg);
+}
+
+/* Submenu Styling */
+.sidebar .submenu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
+}
+
+.sidebar .submenu.open {
+  max-height: 500px;
+}
+
+.sidebar .submenu-item {
+  padding-left: 40px !important;
+  font-size: 0.95rem;
+}
+
+.sidebar .submenu-item:hover {
+  background-color: var(--dropdown-hover-bg) !important;
+  color: var(--text-main) !important;
+}
+
+/* Content Styling */
 .content {
   padding: 2rem;
   display: flex;
@@ -139,6 +205,30 @@ main {
   background-color: var(--bg-dark);
 }
 
+/* Footer */
+.footer {
+  background-color: var(--bg-alt);
+  color: var(--text-main);
+  border-top: 1px solid var(--border);
+}
+
+/* Ensure sidebar behaves as offcanvas on mobile */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    transform: translateX(-100%);
+  }
+
+  .sidebar.show {
+    transform: translateX(0);
+  }
+
+  .page-wrapper.shifted {
+    margin-left: 0 !important; /* No shift on mobile */
+  }
+}
+
+/* Card, Table, Search, Buttons, Alerts, Headings, Date-time */
 .card, .card-large, .card-user-list {
   background-color: var(--bg-card);
   color: var(--text-main);
@@ -221,7 +311,7 @@ body.light-mode .table thead {
 
 .btn {
   border: none;
-  transition: background-color 0.2s, transform 0.2s;
+  transition: background-color 0.2s, transform 0.3s;
 }
 .btn-primary {
   background-color: var(--accent);
@@ -274,11 +364,6 @@ body.light-mode .table thead {
   max-width: 300px;
 }
 
-.footer {
-  background-color: var(--bg-alt);
-  color: var(--text-main);
-}
-
 body.light-mode .text-light {
   color: var(--text-main) !important;
 }
@@ -309,13 +394,4 @@ body.light-mode .table {
 body.light-mode .table th,
 body.light-mode .table td {
   border-color: var(--border);
-}
-body.light-mode .sidebar .dropdown-menu {
-  background-color: var(--bg-alt);
-}
-body.light-mode .sidebar .dropdown-item {
-  color: var(--text-main);
-}
-body.light-mode .sidebar .dropdown-item:hover {
-  background-color: var(--bg-card);
 }
