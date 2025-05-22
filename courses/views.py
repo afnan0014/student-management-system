@@ -19,12 +19,7 @@ def course_list(request):
     ).order_by('department', 'name')
     return render(request, 'courses/course_list.html', {'courses': courses, 'query': query})
 
-def subject_list(request):
-    query = request.GET.get('q', '')
-    subjects = Subject.objects.filter(
-        Q(name__icontains=query) | Q(course__name__icontains=query) | Q(staff__username__icontains=query)
-    ).order_by('course', 'semester', 'name')
-    return render(request, 'courses/subject_list.html', {'subjects': subjects, 'query': query})
+
 
 # Existing views for adding (assumed)
 def add_department(request):

@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Mark Attendance{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">📝 Mark Attendance</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Course and Date Selection -->
+    <form method="get" class="mb-4">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label for="course" class="form-label">Select Course:</label>
+                <select name="course" id="course" class="form-select" onchange="this.form.submit();">
+                    <option value="">-- Select Course --</option>
+                    {% for course in courses %}
+                        <option value="{{ course.id }}" {% if course.id|stringformat:"s" == course_id %}selected{% endif %}>
+                            {{ course.name }} (Semester {{ course.semester }})
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="date" class="form-label">Select Date:</label>
+                <input type="date" name="date" id="date" class="form-control" value="{{ selected_date }}" onchange="this.form.submit();" required>
+            </div>
+        </div>
+    </form>
+
+    {% if students %}
+    <!-- Attendance Marking Form -->
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="course" value="{{ course_id }}">
+        <input type="hidden" name="date" value="{{ selected_date }}">
+
+        <table class="table table-hover table-bordered mt-4">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Student Name</th>
+                    <th>Course</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ student.user.get_full_name|default:student.user.username }}</td>
+                    <td>{{ student.course.name }}</td>
+                    <td>
+                        <select name="status_{{ student.id }}" class="form-select" required>
+                            <option value="Present">Present</option>
+                            <option value="Absent">Absent</option>
+                        </select>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <button type="submit" class="btn btn-success mt-3">✅ Submit Attendance</button>
+    </form>
+    {% elif course_id and selected_date %}
+        <div class="alert alert-info mt-4">
+            No students found for the selected course.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm p-4">
+    <h2 class="card-title mb-4">📊 Reports Dashboard</h2>
+
+    <p>Total Departments: <strong>{{ department_count }}</strong></p>
+    <p>Total Courses: <strong>{{ course_count }}</strong></p>
+    <p>Total Students: <strong>{{ students.count }}</strong></p>
+    <p>Total Staff: <strong>{{ staff.count }}</strong></p>
+
+    <div class="mt-4">
+        <a href="{% url 'export_students_csv' %}" class="btn btn-success me-2">
+            📥 Export Students (CSV)
+        </a>
+        <a href="{% url 'export_students_pdf' %}" class="btn btn-danger">
+            🧾 Export Students (PDF)
+        </a>
+    </div>
+</div>
+{% endblock %}
