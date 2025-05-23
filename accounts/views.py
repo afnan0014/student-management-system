@@ -1,13 +1,15 @@
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User, Group
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db import models
 from django.contrib.auth.forms import AuthenticationForm
 from .decorators import allowed_users
-from .forms import CustomUserCreationForm, StudentProfileForm, StaffProfileForm
+from .forms import CustomUserCreationForm, StudentProfileForm, StaffProfileForm, PasswordChangeForm
 from .models import StudentProfile, StaffProfile
+
+
 
 # Redirect to login
 def home_redirect(request):
@@ -163,16 +165,20 @@ def delete_user(request, user_id):
 # Change user password
 @login_required
 @user_passes_test(is_admin)
-def change_user_password(request, user_id):
+def change_password(request, user_id):
     user = get_object_or_404(User, id=user_id)
-    if request.method == 'POST':
-        new_password = request.POST.get('new_password')
-        user.set_password(new_password)
-        user.save()
-        messages.success(request, "Password updated successfully.")
-        return redirect(request.META.get('HTTP_REFERER', 'admin_dashboard'))
 
-    return render(request, 'accounts/change_user_password.html', {'user': user})
+    if request.method == 'POST':
+        form = PasswordChangeForm(user=user, data=request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, '✅ Password changed successfully!')
+            return redirect('view_users_by_role', role='Staff')  # or wherever
+    else:
+        form = PasswordChangeForm(user=user)
+
+    return render(request, 'accounts/change_user_password.html', {'form': form})
+
 
 # Bulk delete users
 @login_required
@@ -190,19 +196,19 @@ def bulk_delete_users(request):
 @login_required
 @user_passes_test(is_admin)
 def student_profile(request, user_id):
-    user = get_object_or_404(User, id=user_id, groups__name='Student')
-    student_profile = get_object_or_404(StudentProfile, user=user)
+    profile_user = get_object_or_404(User, id=user_id, groups__name='Student')
+    student_profile = get_object_or_404(StudentProfile, user=profile_user)
     return render(request, 'accounts/student_profile.html', {
-        'user': user,
+        'profile_user': profile_user,
         'student_profile': student_profile,
     })
 
 @login_required
 @user_passes_test(is_admin)
 def staff_profile(request, user_id):
-    user = get_object_or_404(User, id=user_id, groups__name='Staff')
-    staff_profile = get_object_or_404(StaffProfile, user=user)
+    profile_user = get_object_or_404(User, id=user_id, groups__name='Staff')
+    staff_profile = get_object_or_404(StaffProfile, user=profile_user)
     return render(request, 'accounts/staff_profile.html', {
-        'user': user,
+        'profile_user': profile_user,
         'staff_profile': staff_profile,
     })

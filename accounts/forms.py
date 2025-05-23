@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from courses.models import Course, Department
+from django.contrib.auth.forms import PasswordChangeForm
 
 # -----------------------------
 # User Creation Form (Admin Use)
@@ -85,5 +86,32 @@ class StaffProfileForm(forms.Form):
             'class': 'form-select bg-secondary text-light border-0'
         }),
         empty_label="Select a course",
+<<<<<<< HEAD
         required=False  # Optional
     )
+=======
+        required=False  # Make optional
+    )
+
+
+
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        self.fields['old_password'].widget.attrs.update({
+            'class': 'form-control bg-secondary text-light border-0',
+            'placeholder': 'Enter your current password'
+        })
+        self.fields['new_password1'].widget.attrs.update({
+            'class': 'form-control bg-secondary text-light border-0',
+            'placeholder': 'Enter new password'
+        })
+        self.fields['new_password2'].widget.attrs.update({
+            'class': 'form-control bg-secondary text-light border-0',
+            'placeholder': 'Confirm new password'
+        })
+
+
+>>>>>>> 0ae2486214f439546d76331a891ed6c77d966022
