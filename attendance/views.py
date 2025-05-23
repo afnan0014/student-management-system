@@ -66,15 +66,36 @@ def student_attendance_view(request):
         messages.error(request, "Student profile not found.")
         return redirect('home')
 
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
     records = Attendance.objects.filter(student=student).order_by('-date')
+
+    if start_date:
+        try:
+            start = datetime.strptime(start_date, "%Y-%m-%d").date()
+            records = records.filter(date__gte=start)
+        except ValueError:
+            messages.error(request, "Invalid start date format.")
+
+    if end_date:
+        try:
+            end = datetime.strptime(end_date, "%Y-%m-%d").date()
+            records = records.filter(date__lte=end)
+        except ValueError:
+            messages.error(request, "Invalid end date format.")
+
     total = records.count()
     present = records.filter(status='Present').count()
     percentage = round((present / total) * 100) if total > 0 else 0
 
-    return render(request, 'attendance/student_view.html', {
+    return render(request, 'attendance/student_attendance.html', {
         'records': records,
-        'percentage': percentage
+        'percentage': percentage,
+        'start_date': start_date,
+        'end_date': end_date,
     })
+
 
 
 @staff_member_required
