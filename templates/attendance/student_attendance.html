@@ -6,7 +6,7 @@
     <h2 class="mb-3">📊 My Attendance</h2>
 
     <!-- Filter Form -->
-    <form method="get" class="row g-3 align-items-end mb-4">
+    <form method="get" class="row g-3 align-items-end mb-3">
         <div class="col-auto">
             <label for="start_date" class="form-label">From:</label>
             <input type="date" name="start_date" id="start_date" class="form-control" value="{{ start_date }}">
@@ -15,7 +15,7 @@
             <label for="end_date" class="form-label">To:</label>
             <input type="date" name="end_date" id="end_date" class="form-control" value="{{ end_date }}">
         </div>
-        <div class="col-auto">
+        <div >
             <button type="submit" class="btn btn-primary">Filter</button>
             <a href="{% url 'student_attendance_view' %}" class="btn btn-secondary">Reset</a>
         </div>

@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="mb-4">📝 Mark Attendance</h2>
+    <h2 class="card-title table-heading mb-4">📋 Mark Attendance</h2>
 
     {% if messages %}
         {% for message in messages %}
@@ -68,7 +68,7 @@
             </tbody>
         </table>
 
-        <button type="submit" class="btn btn-success mt-3">✅ Submit Attendance</button>
+        <button type="submit" class="btn btn-success mt-3">Submit Attendance</button>
     </form>
     {% elif course_id and selected_date %}
         <div class="alert alert-info mt-4">
