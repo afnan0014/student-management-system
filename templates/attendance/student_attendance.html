@@ -5,6 +5,22 @@
 <div class="container mt-5">
     <h2 class="mb-3">📊 My Attendance</h2>
 
+    <!-- Filter Form -->
+    <form method="get" class="row g-3 align-items-end mb-4">
+        <div class="col-auto">
+            <label for="start_date" class="form-label">From:</label>
+            <input type="date" name="start_date" id="start_date" class="form-control" value="{{ start_date }}">
+        </div>
+        <div class="col-auto">
+            <label for="end_date" class="form-label">To:</label>
+            <input type="date" name="end_date" id="end_date" class="form-control" value="{{ end_date }}">
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a href="{% url 'student_attendance_view' %}" class="btn btn-secondary">Reset</a>
+        </div>
+    </form>
+
     <!-- Attendance Percentage -->
     <div class="mb-4">
         <h5>Attendance Percentage:
@@ -16,6 +32,14 @@
                 <span class="badge bg-danger">{{ percentage }}%</span>
             {% endif %}
         </h5>
+
+        <!-- Attendance Warning -->
+        {% if percentage < 75 %}
+        <div class="alert alert-warning mt-3" role="alert">
+            <strong>⚠ Low Attendance:</strong> Your attendance is below the minimum required threshold of 75%. 
+            Please attend classes regularly to maintain eligibility and avoid academic penalties.
+        </div>
+        {% endif %}
     </div>
 
     <!-- Attendance Table -->
