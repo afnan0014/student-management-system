@@ -14,39 +14,118 @@
       <div class="card-body">
         <h2 class="card-title mb-4 text-center">Student Profile</h2>
 
- 
-        <div class="mb-3">
-          <label class="form-label fw-bold">Username</label>
-          <p class="form-control bg-secondary text-light border-0">{{ profile_user.username }}</p>
+        <!-- Display success message if it exists -->
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        <!-- Read-only view -->
+        <div id="profile-view" class="profile-view">
+          <div class="mb-3">
+            <label class="form-label fw-bold">Username</label>
+            <p class="form-control bg-secondary text-light border-0">{{ profile_user.username }}</p>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold">Course</label>
+            <p class="form-control bg-secondary text-light border-0">
+              {{ student_profile.course.name|default:"Not assigned" }}
+            </p>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold">Department</label>
+            <p class="form-control bg-secondary text-light border-0">
+              {{ student_profile.department.name|default:"Not assigned" }}
+            </p>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold">Batch Year</label>
+            <p class="form-control bg-secondary text-light border-0">
+              {{ student_profile.batch_number }}
+            </p>
+          </div>
+
+          <div class="d-grid mb-3">
+            <button class="btn btn-primary py-2" onclick="toggleEditMode()">Edit Profile</button>
+          </div>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label fw-bold">Course</label>
-          <p class="form-control bg-secondary text-light border-0">
-            {{ student_profile.course.name|default:"Not assigned" }}
-          </p>
-        </div>
+        <!-- Editable form view -->
+        <form id="profile-form" class="profile-form d-none" method="POST" action="{% url 'student_profile' profile_user.id %}">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label fw-bold">Username</label>
+            <p class="form-control bg-secondary text-light border-0">{{ profile_user.username }}</p>
+          </div>
 
-        <div class="mb-3">
-          <label class="form-label fw-bold">Department</label>
-          <p class="form-control bg-secondary text-light border-0">
-            {{ student_profile.department.name|default:"Not assigned" }}
-          </p>
-        </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Course</label>
+            <select name="course" class="form-select bg-secondary text-light border-0">
+              <option value="">-- Select a Course --</option>
+              {% for course in all_courses %}
+                <option value="{{ course.id }}" {% if student_profile.course.id == course.id %}selected{% endif %}>
+                  {{ course.name }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
 
-        <div class="mb-3">
-          <label class="form-label fw-bold">Batch Year</label>
-          <p class="form-control bg-secondary text-light border-0">
-            {{ student_profile.batch_number }}
-          </p>
-        </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Department</label>
+            <select name="department" class="form-select bg-secondary text-light border-0">
+              <option value="">-- Select a Department --</option>
+              {% for dept in all_departments %}
+                <option value="{{ dept.id }}" {% if student_profile.department.id == dept.id %}selected{% endif %}>
+                  {{ dept.name }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
 
-        <div class="d-grid">
+          <div class="mb-3">
+            <label class="form-label fw-bold">Batch Year</label>
+            <input type="number" name="batch_number" class="form-control bg-secondary text-light border-0" 
+                   value="{{ student_profile.batch_number }}" required min="1900" max="9999">
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success flex-grow-1 py-2">Save</button>
+            <button type="button" class="btn btn-danger flex-grow-1 py-2" onclick="toggleEditMode()">Cancel</button>
+          </div>
+        </form>
+
+        <div class="d-grid mt-3">
           <a href="{% url 'view_users_by_role' role='student' %}" class="btn btn-info py-2">⬅ Back to Students List</a>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+{% block scripts %}
+<script>
+  function toggleEditMode() {
+    const profileView = document.getElementById('profile-view');
+    const profileForm = document.getElementById('profile-form');
+    
+    if (profileView.classList.contains('d-none')) {
+      // Switch to read-only view
+      profileView.classList.remove('d-none');
+      profileForm.classList.add('d-none');
+    } else {
+      // Switch to edit mode
+      profileView.classList.add('d-none');
+      profileForm.classList.remove('d-none');
+    }
+  }
+</script>
+{% endblock %}
 
 {% endblock %}
