@@ -14,8 +14,6 @@
       <div class="card-body">
         <h2 class="card-title mb-4 text-center">Add {{ role }}</h2>
 
-
-
         {% if form.errors %}
           <div class="alert alert-danger">
             <ul class="mb-0">
@@ -94,8 +92,17 @@
               {{ student_form.batch_number }}
               <small class="form-text text-muted">{{ student_form.batch_number.help_text }}</small>
             </div>
-            {% endif %}
+          {% elif role == "Staff" %}
+            <div class="mb-3">
+              <label for="id_department" class="form-label">Department</label>
+              {{ staff_form.department }}
+            </div>
 
+            <div class="mb-3">
+              <label for="id_course" class="form-label">Course</label>
+              {{ staff_form.course }}
+            </div>
+          {% endif %}
 
           <div class="d-grid">
             <button type="submit" class="btn btn-info py-2">➕ Create {{ role }}</button>
@@ -105,47 +112,53 @@
     </div>
   </div>
 </div>
-
 {% endblock %}
 
 {% block scripts %}
-{% if role == "Staff" %}
 <script>
 document.getElementById('add-user-form').addEventListener('submit', function(event) {
-<<<<<<< HEAD
-    {% if role == "Staff" %}
-        const department = document.querySelector('select[name="department"]');
+    const role = "{{ role }}";
+
+    if (role === "Student") {
         const course = document.querySelector('select[name="course"]');
-        
+        const department = document.querySelector('select[name="department"]');
+        const batch = document.querySelector('input[name="batch_number"]');
+
         if (!department.value) {
             event.preventDefault();
-            alert('Please select a department.');
-            return;  
-        }
-        
-        if (!course.value) {
-            event.preventDefault();
-            alert('Please select a course.');
+            alert("Please select a department.");
             return;
         }
-    {% endif %}
-=======
-    const department = document.querySelector('select[name="department"]');
-    const course = document.querySelector('select[name="course"]');
-    
-    if (!department.value) {
-        event.preventDefault();
-        alert('Please select a department.');
-        return;
+
+        if (!course.value) {
+            event.preventDefault();
+            alert("Please select a course.");
+            return;
+        }
+
+        if (!batch.value || isNaN(batch.value) || batch.value < 2000 || batch.value > 2030) {
+            event.preventDefault();
+            alert("Please enter a valid batch year between 2000 and 2030.");
+            return;
+        }
     }
-    
-    if (!course.value) {
-        event.preventDefault();
-        alert('Please select a course.');
-        return;
+
+    if (role === "Staff") {
+        const course = document.querySelector('select[name="course"]');
+        const department = document.querySelector('select[name="department"]');
+
+        if (!department.value) {
+            event.preventDefault();
+            alert("Please select a department.");
+            return;
+        }
+
+        if (!course.value) {
+            event.preventDefault();
+            alert("Please select a course.");
+            return;
+        }
     }
->>>>>>> 0ae2486214f439546d76331a891ed6c77d966022
 });
 </script>
-{% endif %}
 {% endblock %}
