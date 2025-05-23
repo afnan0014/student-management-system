@@ -10,7 +10,7 @@
   --btn-primary-hover: #0E8C6E;
   --sidebar-header-bg: #2c3034;
   --dropdown-hover-bg: #495057;
-  --sidebar-width: 250px;
+  --sidebar-width: 300px; /* Increased from 250px to 300px */
 }
 
 /* Light mode overrides */
@@ -94,7 +94,7 @@ body {
   font-family: 'Segoe UI', sans-serif;
   margin: 0;
   min-height: 100vh;
-  position: relative; /* Ensure body can handle sidebar positioning */
+  position: relative;
 }
 
 .page-wrapper {
@@ -120,6 +120,11 @@ main {
   padding: 15px 0;
   color: var(--text-main);
   border-bottom: 1px solid var(--border);
+}
+
+/* Adjust spacing for the sidebar toggle button on the left */
+.header .d-flex.align-items-center #sidebar-toggle {
+  margin-right: 1rem;
 }
 
 /* Updated Sidebar Styling */
@@ -224,7 +229,7 @@ main {
   }
 
   .page-wrapper.shifted {
-    margin-left: 0 !important; /* No shift on mobile */
+    margin-left: 0 !important;
   }
 }
 
