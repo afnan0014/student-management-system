@@ -2,108 +2,119 @@
 {% block title %}All Attendance Records{% endblock %}
 
 {% block content %}
+<div class="col-12 col-lg-10 mx-auto">
+  <!-- Container for Input Fields and Buttons -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h2 class="card-title table-heading mb-4">
+        <i class="bi bi-clipboard-check me-2"></i>All Attendance Records
+      </h2>
 
-  
-    <div class="col-12 col-lg-10">
-      
-        <div class="card-body">
-          <h2 class="card-title table-heading mb-4">📋 All Attendance Records</h2>
+      <!-- Flash Messages -->
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
 
-          <!-- Flash Messages -->
-          {% if messages %}
-              {% for message in messages %}
-                  <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                      {{ message }}
-                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                  </div>
-              {% endfor %}
-          {% endif %}
-
-        <!-- Filter Form -->
-        <form method="get" class="mb-4">
+      <!-- Filter Form -->
+      <form method="get">
         <div class="row g-3 align-items-end">
-            <div class="col-md-4">
-            <label for="date" class="form-label">Date</label>
-            <input type="date" name="date" id="date" class="form-control" value="{{ selected_date }}">
+          <div class="col-md-3 form-group">
+            <label for="date" class="form-label"><i class="bi bi-calendar me-1"></i>Date</label>
+            <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
+              <input type="date" name="date" id="date" class="form-control bg-secondary border-0" value="{{ selected_date }}" placeholder="Select date">
             </div>
+          </div>
 
-            <div class="col-md-4">
-            <label for="staff" class="form-label">Staff</label>
-            <select name="staff" id="staff" class="form-select">
+          <div class="col-md-3 form-group">
+            <label for="staff" class="form-label"><i class="bi bi-person-gear me-1"></i>Staff</label>
+            <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
+              <select name="staff" id="staff" class="form-select bg-secondary border-0">
                 <option value="">-- All Staff --</option>
                 {% for staff in staff_profiles %}
-                <option value="{{ staff.user.id }}" {% if staff.user.id|stringformat:"s" == selected_staff_id %}selected{% endif %}>
+                  <option value="{{ staff.user.id }}" {% if staff.user.id|stringformat:"s" == selected_staff_id %}selected{% endif %}>
                     {{ staff.user.get_full_name|default:staff.user.username }}
-                </option>
+                  </option>
                 {% endfor %}
-            </select>
+              </select>
             </div>
+          </div>
 
-            <div class="col-md-4">
-            <label for="course" class="form-label">Course</label>
-            <select name="course" id="course" class="form-select">
+          <div class="col-md-3 form-group">
+            <label for="course" class="form-label"><i class="bi bi-book me-1"></i>Course</label>
+            <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
+              <select name="course" id="course" class="form-select bg-secondary border-0">
                 <option value="">-- All Courses --</option>
                 {% for course in courses %}
-                <option value="{{ course.id }}" {% if course.id|stringformat:"s" == selected_course_id %}selected{% endif %}>
+                  <option value="{{ course.id }}" {% if course.id|stringformat:"s" == selected_course_id %}selected{% endif %}>
                     {{ course.name }} (Sem {{ course.semester }})
-                </option>
+                  </option>
                 {% endfor %}
-            </select>
+              </select>
             </div>
+          </div>
+
+          <!-- Buttons in the same row -->
+          <div class="col-md-3 d-flex gap-2 align-items-end buttons-container">
+            <button type="submit" class="btn btn-sm btn-success flex-fill">
+              <i class="bi bi-funnel me-1"></i>Filter
+            </button>
+            <a href="{% url 'admin_view_attendance' %}" class="btn btn-sm btn-secondary flex-fill">
+              <i class="bi bi-x-circle me-1"></i>Clear
+            </a>
+            <a href="{% url 'export_attendance_csv' %}?date={{ selected_date }}{% if selected_staff_id %}&staff={{ selected_staff_id }}{% endif %}{% if selected_course_id %}&course={{ selected_course_id }}{% endif %}" class="btn btn-sm btn-primary flex-fill">
+              <i class="bi bi-download me-1"></i>Export
+            </a>
+          </div>
         </div>
+      </form>
+    </div>
+  </div>
 
-        <!-- Buttons in a new row -->
-        <div class="row mt-3">
-            <div class="col d-flex gap-2">
-            <button type="submit" class="btn btn-success">Filter</button>
-            <a href="{% url 'admin_view_attendance' %}" class="btn btn-secondary">Clear</a>
-            <a href="{% url 'export_attendance_csv' %}?date={{ selected_date }}{% if selected_staff_id %}&staff={{ selected_staff_id }}{% endif %}{% if selected_course_id %}&course={{ selected_course_id }}{% endif %}" class="btn btn-primary">Export</a>
-            </div>
+  <!-- Separate Container for Table -->
+  <div class="card">
+    <div class="card-body">
+      {% if records %}
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped table-hover">
+            <thead class="table-dark">
+              <tr>
+                <th><i class="bi bi-hash me-1"></i>No</th>
+                <th><i class="bi bi-calendar me-1"></i>Date</th>
+                <th><i class="bi bi-person me-1"></i>Student Name</th>
+                <th><i class="bi bi-book me-1"></i>Course</th>
+                <th><i class="bi bi-check-circle me-1"></i>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for record in records %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ record.date }}</td>
+                  <td>{{ record.student.user.get_full_name|default:record.student.user.username }}</td>
+                  <td>{{ record.course.name }} (Sem {{ record.course.semester }})</td>
+                  <td>
+                    {% if record.status == "Present" %}
+                      <span class="badge bg-success">{{ record.status }}</span>
+                    {% else %}
+                      <span class="badge bg-danger">{{ record.status }}</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
-        </form>
-
-
-
-
-          {% if records %}
-              <div class="table-responsive">
-                  <table class="table table-bordered table-striped table-hover">
-                      <thead class="table-dark">
-                          <tr>
-                              <th>No</th>
-                              <th>Date</th>
-                              <th>Student Name</th>
-                              <th>Course</th>
-                              <th>Status</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                          {% for record in records %}
-                          <tr>
-                              <td>{{ forloop.counter }}</td>
-                              <td>{{ record.date }}</td>
-                              <td>{{ record.student.user.get_full_name|default:record.student.user.username }}</td>
-                              <td>{{ record.course.name }} (Sem {{ record.course.semester }})</td>
-                              <td>
-                                  {% if record.status == "Present" %}
-                                      <span class="badge bg-success">{{ record.status }}</span>
-                                  {% else %}
-                                      <span class="badge bg-danger">{{ record.status }}</span>
-                                  {% endif %}
-                              </td>
-                          </tr>
-                          {% endfor %}
-                      </tbody>
-                  </table>
-              </div>
-          {% else %}
-              <div class="alert alert-warning mt-4">
-                  No attendance records available.
-              </div>
-          {% endif %}
+      {% else %}
+        <div class="alert alert-warning mt-4">
+          No attendance records available.
         </div>
-      </div>
- 
-  
-
+      {% endif %}
+    </div>
+  </div>
+</div>
 {% endblock %}
