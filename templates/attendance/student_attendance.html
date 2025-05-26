@@ -3,73 +3,44 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="card-title mb-4 text-center">📊 My Attendance</h2>
+    <h2 class="card-title mb-4 text-center">
+      <i class="bi bi-clipboard-check me-2"></i>My Attendance
+    </h2>
 
-<<<<<<< HEAD
-    <!-- Filter Form Container -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="mb-3">Filter Attendance Records</h5>
-            <form method="get" class="row g-3 align-items-end">
-                <div class="col-auto">
-                    <label for="start_date" class="form-label fw-bold">From:</label>
-                    <input type="date" name="start_date" id="start_date" class="form-control bg-secondary text-light border-0" value="{{ start_date }}">
+    <!-- Filter Form in a Separate Container -->
+    <div class="card mb-4 shadow-lg border-0">
+        <div class="card-body p-4">
+            <form method="get" class="d-flex flex-wrap gap-3 align-items-end">
+                <div class="d-flex flex-column" style="flex: 1; min-width: 200px;">
+                    <label for="start_date" class="form-label"><i class="bi bi-calendar me-1"></i>From:</label>
+                    <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
+                        <input type="date" name="start_date" id="start_date" class="form-control border-0" value="{{ start_date }}" placeholder="Select start date">
+                    </div>
                 </div>
-                <div class="col-auto">
-                    <label for="end_date" class="form-label fw-bold">To:</label>
-                    <input type="date" name="end_date" id="end_date" class="form-control bg-secondary text-light border-0" value="{{ end_date }}">
+                <div class="d-flex flex-column" style="flex: 1; min-width: 200px;">
+                    <label for="end_date" class="form-label"><i class="bi bi-calendar me-1"></i>To:</label>
+                    <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
+                        <input type="date" name="end_date" id="end_date" class="form-control border-0" value="{{ end_date }}" placeholder="Select end date">
+                    </div>
                 </div>
-                <div class="col-auto">
-                    <button type="submit" class="btn btn-primary px-4 py-2">Filter</button>
-                    <a href="{% url 'student_attendance_view' %}" class="btn btn-secondary px-4 py-2">Reset</a>
+                <div class="d-flex gap-2 align-self-end">
+                    <button type="submit" class="btn btn-sm btn-primary">
+                        <i class="bi bi-funnel me-1"></i>Filter
+                    </button>
+                    <a href="{% url 'student_attendance_view' %}" class="btn btn-sm btn-secondary">
+                        <i class="bi bi-x-circle me-1"></i>Reset
+                    </a>
                 </div>
             </form>
         </div>
-=======
-    <!-- Filter Form -->
-    <form method="get" class="row g-3 align-items-end mb-3">
-        <div class="col-auto">
-            <label for="start_date" class="form-label">From:</label>
-            <input type="date" name="start_date" id="start_date" class="form-control" value="{{ start_date }}">
-        </div>
-        <div class="col-auto">
-            <label for="end_date" class="form-label">To:</label>
-            <input type="date" name="end_date" id="end_date" class="form-control" value="{{ end_date }}">
-        </div>
-        <div >
-            <button type="submit" class="btn btn-primary">Filter</button>
-            <a href="{% url 'student_attendance_view' %}" class="btn btn-secondary">Reset</a>
-        </div>
-    </form>
-
-    <!-- Attendance Percentage -->
-    <div class="mb-4">
-        <h5>Attendance Percentage:
-            {% if percentage >= 75 %}
-                <span class="badge bg-success">{{ percentage }}%</span>
-            {% elif percentage >= 50 %}
-                <span class="badge bg-warning text-dark">{{ percentage }}%</span>
-            {% else %}
-                <span class="badge bg-danger">{{ percentage }}%</span>
-            {% endif %}
-        </h5>
-
-        <!-- Attendance Warning -->
-        {% if percentage < 75 %}
-        <div class="alert alert-warning mt-3" role="alert">
-            <strong>⚠ Low Attendance:</strong> Your attendance is below the minimum required threshold of 75%. 
-            Please attend classes regularly to maintain eligibility and avoid academic penalties.
-        </div>
-        {% endif %}
->>>>>>> c8b79a441324670e0961eb587e4e32af6f260514
     </div>
 
     <!-- Attendance Percentage and Warning Container -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="mb-3">Attendance Summary</h5>
+    <div class="card mb-4 shadow-lg border-0">
+        <div class="card-body p-4">
+            <h5 class="mb-3"><i class="bi bi-bar-chart me-1"></i>Attendance Summary</h5>
             <div class="d-flex align-items-center mb-3">
-                <span class="fw-bold me-2">Attendance Percentage:</span>
+                <span class="fw-bold me-2"><i class="bi bi-percent me-1"></i>Attendance Percentage:</span>
                 {% if percentage >= 75 %}
                     <span class="badge bg-success fs-5">{{ percentage }}%</span>
                 {% elif percentage >= 50 %}
@@ -93,17 +64,17 @@
     </div>
 
     <!-- Attendance Table Container -->
-    <div class="card">
-        <div class="card-body">
-            <h5 class="mb-3">Attendance Records</h5>
+    <div class="card shadow-lg border-0">
+        <div class="card-body p-4">
+            <h5 class="mb-3"><i class="bi bi-table me-1"></i>Attendance Records</h5>
             <div class="table-responsive">
                 <table class="table table-bordered table-striped align-middle">
                     <thead class="table-dark">
                         <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Date</th>
-                            <th scope="col">Course</th>
-                            <th scope="col">Status</th>
+                            <th scope="col"><i class="bi bi-hash me-1"></i>#</th>
+                            <th scope="col"><i class="bi bi-calendar me-1"></i>Date</th>
+                            <th scope="col"><i class="bi bi-book me-1"></i>Course</th>
+                            <th scope="col"><i class="bi bi-check-circle me-1"></i>Status</th>
                         </tr>
                     </thead>
                     <tbody>

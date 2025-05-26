@@ -13,30 +13,35 @@
     <div class="col-12 col-lg-10">
       <div class="card bg-card text-light shadow-lg border-0">
         <div class="card-body">
-          <h2 class="card-title table-heading mb-4">{{ role }} Users</h2>
+          <h2 class="card-title table-heading mb-4">
+            <i class="bi {% if role == 'Student' %}bi-mortarboard{% else %}bi-person-gear{% endif %} me-2"></i>{{ role }} Users
+          </h2>
 
-          <!-- Add this block just below the heading -->
-            {% if messages %}
-              {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                  {{ message }}
-                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-              {% endfor %}
-            {% endif %}
+          <!-- Messages block -->
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
 
           <!-- Single row for search, add, and delete -->
           <div class="d-flex flex-wrap align-items-center mb-4 gap-2">
-            <!-- Search Form -->
-            <form method="get" class="flex-grow-1 me-2" style="max-width: 820px;">
-              <div class="input-group search-container">
+            <!-- Search Form with dynamic size based on role -->
+            <form method="get" class="flex-grow-1 me-2" style="{% if role == 'Student' %}max-width: 900px;{% else %}max-width: 900px;{% endif %}">
+              <div class="input-group search-container" style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
+                <span class="input-group-text bg-secondary border-0" style="border-radius: 0.5rem 0 0 0.5rem;">
+                  <i class="bi bi-search"></i>
+                </span>
                 <input 
                   type="text" 
                   name="q" 
                   value="{{ query }}" 
                   class="form-control bg-secondary text-light border-0 ps-2" 
-                  placeholder="🔍 Search by username"
-                  style="border-radius: 0.5rem;"
+                  placeholder="Search {{ role|lower }}..."
+                  style="border-radius: 0 0.5rem 0.5rem 0;"
                 >
                 <button type="submit" class="btn btn-info" style="border-radius: 0.5rem;">
                   <i class="bi bi-search"></i>
@@ -47,7 +52,9 @@
             <!-- Add and Delete Buttons -->
             <div class="d-flex flex-nowrap gap-2">
               {% if role == "Student" or role == "Staff" %}
-                <a href="{% url 'add_user' role|lower %}" class="btn btn-success">➕ Add {{ role }}</a>
+                <a href="{% url 'add_user' role|lower %}" class="btn btn-success">
+                  <i class="bi bi-person-plus me-1"></i>Add {{ role }}
+                </a>
               {% endif %}
               <button 
                 id="bulk-delete-btn" 
@@ -56,7 +63,7 @@
                 class="btn btn-danger"
                 style="display: none;"
               >
-                🗑️ Delete
+                <i class="bi bi-trash me-1"></i>Delete
               </button>
             </div>
           </div>
@@ -69,15 +76,15 @@
                 <thead>
                   <tr>
                     <th style="width:1%"><input type="checkbox" id="select_all"></th>
-                    <th>Username</th>
+                    <th><i class="bi bi-person me-1"></i>Username</th>
                     <th>
                       {% if role == "Student" or role == "Staff" %}
-                        Details
+                        <i class="bi bi-info-circle me-1"></i>Details
                       {% else %}
-                        Email
+                        <i class="bi bi-envelope me-1"></i>Email
                       {% endif %}
                     </th>
-                    <th class="text-center">Actions</th>
+                    <th class="text-center"><i class="bi bi-gear me-1"></i>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -94,9 +101,13 @@
                     <td>{{ user.username }}</td>
                     <td>
                       {% if role == "Student" %}
-                        <a href="{% url 'student_profile' user.id %}" class="btn btn-sm btn-info">👁️ View Details</a>
+                        <a href="{% url 'student_profile' user.id %}" class="btn btn-sm btn-info">
+                          <i class="bi bi-eye me-1"></i>View Details
+                        </a>
                       {% elif role == "Staff" %}
-                        <a href="{% url 'staff_profile' user.id %}" class="btn btn-sm btn-info">👁️ View Details</a>
+                        <a href="{% url 'staff_profile' user.id %}" class="btn btn-sm btn-info">
+                          <i class="bi bi-eye me-1"></i>View Details
+                        </a>
                       {% else %}
                         {{ user.email|default:"N/A" }}
                       {% endif %}
@@ -105,7 +116,9 @@
                       <a 
                         href="{% url 'change_password' user.id %}" 
                         class="btn btn-sm btn-warning"
-                      >🔑 Change Password</a>
+                      >
+                        <i class="bi bi-key me-1"></i>Change Password
+                      </a>
                     </td>
                   </tr>
                   {% empty %}

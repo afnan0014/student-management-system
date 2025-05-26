@@ -13,34 +13,44 @@
   <div class="col-md-6 col-lg-5">
     <div class="card bg-dark text-light shadow-lg border-0">
       <div class="card-body">
-        <h2 class="card-title mb-4 text-center">Edit Course</h2>
-
-      
+        <h2 class="card-title mb-4 text-center">
+          <i class="bi bi-book me-2"></i>Edit Course
+        </h2>
 
         <form method="POST">
           {% csrf_token %}
           <div class="mb-3">
-            <label for="id_name" class="form-label">Course Name</label>
-            {{ form.name|add_class:"form-control bg-secondary text-light border-0" }}
+            <label for="id_name" class="form-label"><i class="bi bi-book me-1"></i>Course Name</label>
+            <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
+              {{ form.name|add_class:"form-control bg-secondary text-light border-0"|attr:"placeholder:Enter course name" }}
+            </div>
           </div>
 
           <div class="mb-3">
-            <label for="id_department" class="form-label">Department</label>
-            {{ form.department|add_class:"form-select bg-secondary text-light border-0" }}
+            <label for="id_department" class="form-label"><i class="bi bi-building me-1"></i>Department</label>
+            <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
+              {{ form.department|add_class:"form-select bg-secondary text-light border-0" }}
+            </div>
           </div>
 
           <div class="mb-3">
-            <label for="id_semester" class="form-label">Semester</label>
-            {{ form.semester|add_class:"form-control bg-secondary text-light border-0" }}
+            <label for="id_semester" class="form-label"><i class="bi bi-list-ol me-1"></i>Semester</label>
+            <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
+              {{ form.semester|add_class:"form-control bg-secondary text-light border-0"|attr:"placeholder:Enter semester number" }}
+            </div>
           </div>
 
           <div class="mb-3">
-            <label for="id_assigned_staff" class="form-label">Assigned Staff</label>
-            {{ form.assigned_staff|add_class:"form-select bg-secondary text-light border-0" }}
+            <label for="id_assigned_staff" class="form-label"><i class="bi bi-person-gear me-1"></i>Assigned Staff</label>
+            <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
+              {{ form.assigned_staff|add_class:"form-select bg-secondary text-light border-0" }}
+            </div>
           </div>
 
           <div class="d-grid">
-            <button type="submit" class="btn btn-info py-2">💾 Save Changes</button>
+            <button type="submit" class="btn btn-sm btn-info py-2">
+              <i class="bi bi-check-circle me-1"></i>Save Changes
+            </button>
           </div>
         </form>
       </div>
