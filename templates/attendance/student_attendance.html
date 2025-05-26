@@ -5,6 +5,7 @@
 <div class="container mt-5">
     <h2 class="card-title mb-4 text-center">📊 My Attendance</h2>
 
+<<<<<<< HEAD
     <!-- Filter Form Container -->
     <div class="card mb-4">
         <div class="card-body">
@@ -24,6 +25,43 @@
                 </div>
             </form>
         </div>
+=======
+    <!-- Filter Form -->
+    <form method="get" class="row g-3 align-items-end mb-3">
+        <div class="col-auto">
+            <label for="start_date" class="form-label">From:</label>
+            <input type="date" name="start_date" id="start_date" class="form-control" value="{{ start_date }}">
+        </div>
+        <div class="col-auto">
+            <label for="end_date" class="form-label">To:</label>
+            <input type="date" name="end_date" id="end_date" class="form-control" value="{{ end_date }}">
+        </div>
+        <div >
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a href="{% url 'student_attendance_view' %}" class="btn btn-secondary">Reset</a>
+        </div>
+    </form>
+
+    <!-- Attendance Percentage -->
+    <div class="mb-4">
+        <h5>Attendance Percentage:
+            {% if percentage >= 75 %}
+                <span class="badge bg-success">{{ percentage }}%</span>
+            {% elif percentage >= 50 %}
+                <span class="badge bg-warning text-dark">{{ percentage }}%</span>
+            {% else %}
+                <span class="badge bg-danger">{{ percentage }}%</span>
+            {% endif %}
+        </h5>
+
+        <!-- Attendance Warning -->
+        {% if percentage < 75 %}
+        <div class="alert alert-warning mt-3" role="alert">
+            <strong>⚠ Low Attendance:</strong> Your attendance is below the minimum required threshold of 75%. 
+            Please attend classes regularly to maintain eligibility and avoid academic penalties.
+        </div>
+        {% endif %}
+>>>>>>> c8b79a441324670e0961eb587e4e32af6f260514
     </div>
 
     <!-- Attendance Percentage and Warning Container -->

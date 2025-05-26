@@ -3,7 +3,11 @@
 
 {% block content %}
 <div class="container mt-5">
+<<<<<<< HEAD
     <h2 class="card-title mb-4 text-center">📝 Mark Attendance</h2>
+=======
+    <h2 class="card-title table-heading mb-4">📋 Mark Attendance</h2>
+>>>>>>> c8b79a441324670e0961eb587e4e32af6f260514
 
     <!-- Messages -->
     {% if messages %}
@@ -85,6 +89,46 @@
                 </form>
             </div>
         </div>
+<<<<<<< HEAD
+=======
+    </form>
+
+    {% if students %}
+    <!-- Attendance Marking Form -->
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="course" value="{{ course_id }}">
+        <input type="hidden" name="date" value="{{ selected_date }}">
+
+        <table class="table table-hover table-bordered mt-4">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Student Name</th>
+                    <th>Course</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ student.user.get_full_name|default:student.user.username }}</td>
+                    <td>{{ student.course.name }}</td>
+                    <td>
+                        <select name="status_{{ student.id }}" class="form-select" required>
+                            <option value="Present">Present</option>
+                            <option value="Absent">Absent</option>
+                        </select>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <button type="submit" class="btn btn-success mt-3">Submit Attendance</button>
+    </form>
+>>>>>>> c8b79a441324670e0961eb587e4e32af6f260514
     {% elif course_id and selected_date %}
         <div class="alert alert-info mt-4">
             No students found for the selected course.
