@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="mb-4">📋 All Attendance Records</h2>
+    <h2 class="card-title mb-4 text-center">📋 All Attendance Records</h2>
 
     <!-- Flash Messages -->
     {% if messages %}
@@ -15,81 +15,92 @@
         {% endfor %}
     {% endif %}
 
-    <!-- Filter Form -->
-    <form method="get" class="row g-3 mb-4 align-items-end">
-        <div class="col-md-3">
-            <label for="date" class="form-label">Filter by Date</label>
-            <input type="date" name="date" id="date" class="form-control" value="{{ selected_date }}">
-        </div>
+    <!-- Filter Form Container -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="mb-3">Filter Attendance Records</h5>
+            <form method="get" class="d-flex flex-nowrap gap-3 align-items-end">
+                <div class="flex-fill" style="min-width: 180px;">
+                    <label for="date" class="form-label fw-bold">Filter by Date</label>
+                    <input type="date" name="date" id="date" class="form-control bg-secondary text-light border-0">
+                </div>
 
-        <div class="col-md-3">
-            <label for="staff" class="form-label">Filter by Staff</label>
-            <select name="staff" id="staff" class="form-select">
-                <option value="">-- All Staff --</option>
-                {% for staff in staff_profiles %}
-                    <option value="{{ staff.user.id }}" {% if staff.user.id|stringformat:"s" == selected_staff_id %}selected{% endif %}>
-                        {{ staff.user.get_full_name|default:staff.user.username }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
+                <div class="flex-fill" style="min-width: 180px;">
+                    <label for="staff" class="form-label fw-bold">Filter by Staff</label>
+                    <select name="staff" id="staff" class="form-select bg-secondary text-light border-0">
+                        <option value="">-- All Staff --</option>
+                        {% for staff in staff_profiles %}
+                            <option value="{{ staff.user.id }}" {% if staff.user.id|stringformat:"s" == selected_staff_id %}selected{% endif %}>
+                                {{ staff.user.get_full_name|default:staff.user.username }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-        <div class="col-md-3">
-            <label for="course" class="form-label">Filter by Course</label>
-            <select name="course" id="course" class="form-select">
-                <option value="">-- All Courses --</option>
-                {% for course in courses %}
-                    <option value="{{ course.id }}" {% if course.id|stringformat:"s" == selected_course_id %}selected{% endif %}>
-                        {{ course.name }} (Sem {{ course.semester }})
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
+                <div class="flex-fill" style="min-width: 180px;">
+                    <label for="course" class="form-label fw-bold">Filter by Course</label>
+                    <select name="course" id="course" class="form-select bg-secondary text-light border-0">
+                        <option value="">-- All Courses --</option>
+                        {% for course in courses %}
+                            <option value="{{ course.id }}" {% if course.id|stringformat:"s" == selected_course_id %}selected{% endif %}>
+                                {{ course.name }} (Sem {{ course.semester }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-        <div class="col-md-3 d-flex gap-2">
-            <button type="submit" class="btn btn-primary mt-4">Filter</button>
-            <a href="{% url 'admin_view_attendance' %}" class="btn btn-secondary mt-4">Clear</a>
-            <a href="{% url 'export_attendance_csv' %}?date={{ selected_date }}{% if selected_staff_id %}&staff={{ selected_staff_id }}{% endif %}{% if selected_course_id %}&course={{ selected_course_id }}{% endif %}" class="btn btn-success mt-4">
-                Export CSV
-            </a>
+                <div class="d-flex gap-2 align-items-end" style="min-width: 280px;">
+                    <button type="submit" class="btn btn-primary btn-input-height">Filter</button>
+                    <a href="{% url 'admin_view_attendance' %}" class="btn btn-secondary btn-input-height btn-center-text">Reset</a>
+                    <a href="{% url 'export_attendance_csv' %}?date={{ selected_date }}{% if selected_staff_id %}&staff={{ selected_staff_id }}{% endif %}{% if selected_course_id %}&course={{ selected_course_id }}{% endif %}" class="btn btn-success btn-input-height btn-center-text">
+                        Export CSV
+                    </a>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 
-    {% if records %}
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped table-hover">
-                <thead class="table-dark">
-                    <tr>
-                        <th>No</th>
-                        <th>Date</th>
-                        <th>Student Name</th>
-                        <th>Course</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for record in records %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ record.date }}</td>
-                        <td>{{ record.student.user.username }}</td>
-                        <td>{{ record.course.name }} (Sem {{ record.course.semester }})</td>
-                        <td>
-                            {% if record.status == "Present" %}
-                                <span class="badge bg-success">{{ record.status }}</span>
-                            {% else %}
-                                <span class="badge bg-danger">{{ record.status }}</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <!-- Attendance Table Container -->
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mb-3">Attendance Records</h5>
+            {% if records %}
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th scope="col">No</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Student Name</th>
+                                <th scope="col">Course</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in records %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ record.date }}</td>
+                                    <td>{{ record.student.user.username }}</td>
+                                    <td>{{ record.course.name }} (Sem {{ record.course.semester }})</td>
+                                    <td>
+                                        {% if record.status == "Present" %}
+                                            <span class="badge bg-success">{{ record.status }}</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">{{ record.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-warning mt-3">
+                    No attendance records available.
+                </div>
+            {% endif %}
         </div>
-    {% else %}
-        <div class="alert alert-warning mt-4">
-            No attendance records available.
-        </div>
-    {% endif %}
+    </div>
 </div>
 {% endblock %}

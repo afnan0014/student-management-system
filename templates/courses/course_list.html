@@ -27,14 +27,14 @@
 
           <div class="d-flex flex-wrap align-items-center mb-4 gap-2">
             <!-- Search Form -->
-            <form method="get" class="flex-grow-1 me-2" style="max-width: 825px;">
+            <form method="get" class="flex-grow-1 me-2">
               <div class="input-group search-container">
                 <input 
                   type="text" 
                   name="q" 
                   value="{{ query }}" 
                   class="form-control bg-secondary text-light border-0 ps-2" 
-                  placeholder="🔍 Search"
+                  placeholder="Search courses..."
                   style="border-radius: 0.5rem;"
                 >
                 <button type="submit" class="btn btn-info" style="border-radius: 0.5rem;">
@@ -45,11 +45,11 @@
 
             <!-- Add and Delete Buttons -->
             <div class="d-flex flex-nowrap gap-2">
-              <a href="{% url 'add_course' %}" class="btn btn-success">➕ Add Course</a>
+              <a href="{% url 'add_course' %}" class="btn btn-success">Add Course</a>
               <form method="post" action="{% url 'delete_courses' %}" style="display: none;" id="delete-courses-form">
                 {% csrf_token %}
                 <input type="hidden" name="course_ids" id="course-ids">
-                <button type="submit" class="btn btn-danger">🗑️ Delete</button>
+                <button type="submit" class="btn btn-danger">Delete</button>
               </form>
             </div>
           </div>
