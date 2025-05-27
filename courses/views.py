@@ -33,16 +33,37 @@ def add_department(request):
         form = DepartmentForm()
     return render(request, 'courses/add_department.html', {'form': form})
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import CourseForm, SubjectFormSet
+from .models import Subject
+
 def add_course(request):
     if request.method == 'POST':
-        form = CourseForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Course added successfully!')
+        course_form = CourseForm(request.POST)
+        subject_formset = SubjectFormSet(request.POST, queryset=Subject.objects.none())
+
+        if course_form.is_valid() and subject_formset.is_valid():
+            course = course_form.save()
+            for subject_form in subject_formset:
+                if subject_form.cleaned_data and not subject_form.cleaned_data.get('DELETE'):
+                    subject = subject_form.save(commit=False)
+                    subject.course = course
+                    subject.save()
+
+            messages.success(request, '✅ Course and subjects added successfully!')
             return redirect('course_list')
+        else:
+            messages.error(request, '❌ Please correct the errors below.')
     else:
-        form = CourseForm()
-    return render(request, 'courses/add_course.html', {'form': form})
+        course_form = CourseForm()
+        subject_formset = SubjectFormSet(queryset=Subject.objects.none())
+
+    return render(request, 'courses/add_course.html', {
+        'form': course_form,
+        'subject_formset': subject_formset
+    })
+
 
 
 
@@ -61,17 +82,39 @@ def edit_department(request, department_id):
 
 def edit_course(request, course_id):
     course = get_object_or_404(Course, id=course_id)
+    subject_qs = Subject.objects.filter(course=course)
 
     if request.method == 'POST':
         form = CourseForm(request.POST, instance=course)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Course updated successfully!')
+        subject_formset = SubjectFormSet(request.POST, queryset=subject_qs)
+
+        if form.is_valid() and subject_formset.is_valid():
+            # Save course
+            course = form.save()
+
+            # Save or add new subjects
+            subject_instances = subject_formset.save(commit=False)
+            for subject in subject_instances:
+                subject.course = course
+                subject.save()
+
+            # Delete subjects marked for deletion
+            for obj in subject_formset.deleted_objects:
+                obj.delete()
+
+            messages.success(request, '✅ Course and subjects updated successfully!')
             return redirect('course_list')
+        else:
+            messages.error(request, '❌ Please correct the errors below.')
     else:
         form = CourseForm(instance=course)
+        subject_formset = SubjectFormSet(queryset=subject_qs)
 
-    return render(request, 'courses/edit_course.html', {'form': form})
+    return render(request, 'courses/edit_course.html', {
+        'form': form,
+        'subject_formset': subject_formset,
+    })
+
 
 
 
@@ -98,3 +141,22 @@ def delete_courses(request):
             messages.error(request, 'No courses selected for deletion.')
     return redirect('course_list')
 
+
+def course_subjects(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+    subjects = Subject.objects.filter(course=course)
+
+    return render(request, 'courses/view_subjects.html', {
+        'course': course,
+        'subjects': subjects
+    })
+
+from .models import Subject
+
+def view_subjects_by_course(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+    subjects = Subject.objects.filter(course=course)
+    return render(request, 'courses/subject_list.html', {
+        'course': course,
+        'subjects': subjects
+    })

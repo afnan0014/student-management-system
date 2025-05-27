@@ -66,43 +66,50 @@
           <div class="table-responsive">
             <table class="table table-striped align-middle mb-0">
               <thead>
-                <tr>
-                  <th><input type="checkbox" id="select-all-courses"></th>
-                  <th><i class="bi bi-hash me-1"></i>#</th>
-                  <th><i class="bi bi-book me-1"></i>Name</th>
-                  <th><i class="bi bi-building me-1"></i>Department</th>
-                  <th><i class="bi bi-list-ol me-1"></i>Semester</th>
-                  <th><i class="bi bi-person-gear me-1"></i>Assigned Staff</th>
-                  <th><i class="bi bi-gear me-1"></i>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for course in courses %}
-                <tr>
-                  <td><input type="checkbox" class="course-checkbox" value="{{ course.id }}"></td>
-                  <td>{{ forloop.counter }}</td>
-                  <td>{{ course.name }}</td>
-                  <td>{{ course.department.name }}</td>
-                  <td>{{ course.semester }}</td>
-                  <td>
-                    {% if course.assigned_staff %}
-                      {{ course.assigned_staff.get_full_name|default:course.assigned_staff.username }}
-                    {% else %}
-                      <span class="text-muted">Not Assigned</span>
-                    {% endif %}
-                  </td>
-                  <td>
-                    <a href="{% url 'edit_course' course.id %}" class="btn btn-sm btn-warning">
-                      <i class="bi bi-pencil me-1"></i>Edit
-                    </a>
-                  </td>
-                </tr>
-                {% empty %}
-                <tr>
-                  <td colspan="7" class="text-center py-4">No courses found.</td>
-                </tr>
-                {% endfor %}
-              </tbody>
+                  <tr>
+                    <th><input type="checkbox" id="select-all-courses"></th>
+                    <th><i class="bi bi-hash me-1"></i>#</th>
+                    <th><i class="bi bi-book me-1"></i>Name</th>
+                    <th><i class="bi bi-building me-1"></i>Department</th>
+                    <th><i class="bi bi-list-ol me-1"></i>Semester</th>
+                    <th><i class="bi bi-person-gear me-1"></i>Assigned Staff</th>
+                    <th><i class="bi bi-journals me-1"></i>Subjects</th>  <!-- New Column -->
+                    <th><i class="bi bi-gear me-1"></i>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for course in courses %}
+                  <tr>
+                    <td><input type="checkbox" class="course-checkbox" value="{{ course.id }}"></td>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ course.name }}</td>
+                    <td>{{ course.department.name }}</td>
+                    <td>{{ course.semester }}</td>
+                    <td>
+                      {% if course.assigned_staff %}
+                        {{ course.assigned_staff.get_full_name|default:course.assigned_staff.username }}
+                      {% else %}
+                        <span class="text-muted">Not Assigned</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <a href="{% url 'view_subjects_by_course' course.id %}" class="btn btn-sm btn-info">
+                        <i class="bi bi-eye"></i> View
+                      </a>
+                    </td>
+                    <td>
+                      <a href="{% url 'edit_course' course.id %}" class="btn btn-sm btn-warning">
+                        <i class="bi bi-pencil me-1"></i>Edit
+                      </a>
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="8" class="text-center py-4">No courses found.</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+
             </table>
           </div>
 

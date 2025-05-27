@@ -1,20 +1,16 @@
 from django import forms
-from .models import Department, Course
+from django.forms import modelformset_factory
+from .models import Department, Course, Subject
 from django.contrib.auth.models import User
-
 
 class DepartmentForm(forms.ModelForm):
     class Meta:
         model = Department
         fields = ['name']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control bg-secondary'}),
+            'name': forms.TextInput(attrs={'class': 'form-control bg-secondary text-light border-0'}),
         }
 
-
-from django import forms
-from .models import Course
-from django.contrib.auth.models import User
 
 class CourseForm(forms.ModelForm):
     class Meta:
@@ -30,7 +26,7 @@ class CourseForm(forms.ModelForm):
             }),
             'semester': forms.NumberInput(attrs={
                 'class': 'form-control bg-secondary text-light border-0',
-                'placeholder': 'Enter semester ',
+                'placeholder': 'Enter semester',
                 'min': 1,
                 'max': 8
             }),
@@ -41,8 +37,24 @@ class CourseForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Limit staff to only users in 'Staff' group
         self.fields['assigned_staff'].queryset = User.objects.filter(groups__name='Staff')
 
 
+class SubjectForm(forms.ModelForm):
+    class Meta:
+        model = Subject
+        fields = ['name']
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control bg-secondary text-light border-0',
+                'placeholder': 'Enter subject name'
+            }),
+        }
 
+# Subject formset for dynamic input fields
+SubjectFormSet = modelformset_factory(
+    Subject,
+    form=SubjectForm,
+    extra=1,
+    can_delete=True
+)

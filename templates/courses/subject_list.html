@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Subjects in {{ course.name }}{% endblock %}
+{% block content %}
+
+<div class="container mt-5 mb-5">
+  <div class="card bg-card text-light shadow-lg border-0">
+    <div class="card-body">
+      <h2 class="card-title table-heading mb-4">
+        📚 Subjects in <span class="text-info">{{ course.name }}</span>
+      </h2>
+
+      <a href="{% url 'edit_course' course.id %}" class="btn btn-sm btn-success mb-3">
+        ➕ Add/Remove Subjects
+      </a>
+
+      {% if subjects %}
+        <ul class="list-group list-group-flush">
+          {% for subject in subjects %}
+            <li class="list-group-item bg-dark text-light border-secondary">
+              {{ subject.name }}
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="alert alert-info">No subjects found for this course.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}
