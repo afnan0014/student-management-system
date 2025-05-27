@@ -3,10 +3,28 @@
 {% block title %}Edit Course{% endblock %}
 {% block content %}
 
+<style>
+  input[type="checkbox"][name$="-DELETE"] {
+    position: absolute;
+    left: -9999px;
+  }
+
+  .subject-form-row.deleted {
+    opacity: 0.6;
+    border-left: 4px solid red;
+    position: relative;
+  }
+
+  .subject-form-row .delete-label {
+    font-size: 0.75rem;
+    color: #f00;
+  }
+</style>
+
 <div class="mb-3">
-    <a href="javascript:history.back()" class="text-light" style="font-size: 1.5rem; text-decoration: none;" title="Go back">
-        <i class="bi bi-arrow-left"></i>
-    </a>
+  <a href="javascript:history.back()" class="text-light" style="font-size: 1.5rem; text-decoration: none;" title="Go back">
+    <i class="bi bi-arrow-left"></i>
+  </a>
 </div>
 
 <div class="container d-flex align-items-center justify-content-center" style="min-height:80vh">
@@ -19,36 +37,64 @@
 
         <form method="POST">
           {% csrf_token %}
+
+          {{ form.non_field_errors }}
           <div class="mb-3">
-            <label for="id_name" class="form-label"><i class="bi bi-book me-1"></i>Course Name</label>
+            <label class="form-label"><i class="bi bi-book me-1"></i>Course Name</label>
             <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
-              {{ form.name|add_class:"form-control bg-secondary text-light border-0"|attr:"placeholder:Enter course name" }}
+              {{ form.name|add_class:"form-control bg-secondary text-light border-0" }}
             </div>
           </div>
 
           <div class="mb-3">
-            <label for="id_department" class="form-label"><i class="bi bi-building me-1"></i>Department</label>
+            <label class="form-label"><i class="bi bi-building me-1"></i>Department</label>
             <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
               {{ form.department|add_class:"form-select bg-secondary text-light border-0" }}
             </div>
           </div>
 
           <div class="mb-3">
-            <label for="id_semester" class="form-label"><i class="bi bi-list-ol me-1"></i>Semester</label>
+            <label class="form-label"><i class="bi bi-list-ol me-1"></i>Semester</label>
             <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
-              {{ form.semester|add_class:"form-control bg-secondary text-light border-0"|attr:"placeholder:Enter semester number" }}
+              {{ form.semester|add_class:"form-control bg-secondary text-light border-0" }}
             </div>
           </div>
 
-          <div class="mb-3">
-            <label for="id_assigned_staff" class="form-label"><i class="bi bi-person-gear me-1"></i>Assigned Staff</label>
+          <div class="mb-4">
+            <label class="form-label"><i class="bi bi-person-gear me-1"></i>Assigned Staff</label>
             <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
               {{ form.assigned_staff|add_class:"form-select bg-secondary text-light border-0" }}
             </div>
           </div>
 
+          <hr class="border-info">
+          <h5 class="text-light mb-3"><i class="bi bi-journals me-1"></i>Subjects</h5>
+
+          <div id="subject-formset">
+            {% for form in subject_formset %}
+              <div class="mb-3 d-flex gap-2 align-items-center subject-form-row w-100">
+                {{ form.id }}
+                <div class="flex-grow-1" style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
+                  {{ form.name|add_class:"form-control bg-secondary text-light border-0" }}
+                </div>
+                <div class="d-none delete-field">
+                  {{ form.DELETE }}
+                </div>
+                {% if form.instance.pk %}
+                  <button type="button" class="btn btn-sm btn-danger trigger-delete" title="Toggle Delete">🗑️</button>
+                {% else %}
+                  <button type="button" class="btn btn-sm btn-danger remove-subject" title="Remove Unsaved">🗑️</button>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+
+          {{ subject_formset.management_form }}
+
+          <button type="button" id="add-subject" class="btn btn-sm btn-info mb-4">➕ Add Subject</button>
+
           <div class="d-grid">
-            <button type="submit" class="btn btn-sm btn-info py-2">
+            <button type="submit" class="btn btn-sm btn-success py-2">
               <i class="bi bi-check-circle me-1"></i>Save Changes
             </button>
           </div>
@@ -57,4 +103,82 @@
     </div>
   </div>
 </div>
+
+<!-- JavaScript -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    let formIdx = Number("{{ subject_formset.total_form_count }}");
+    const formsetDiv = document.getElementById('subject-formset');
+    const totalFormsInput = document.getElementsByName('form-TOTAL_FORMS')[0];
+
+    // Add new subject
+    document.getElementById('add-subject').addEventListener('click', function () {
+      const newFormHtml = '{{ subject_formset.empty_form.as_p|escapejs }}'.replace(/__prefix__/g, formIdx);
+      const tempWrapper = document.createElement('div');
+      tempWrapper.innerHTML = newFormHtml;
+
+      const nameInput = tempWrapper.querySelector('input[name$="-name"]');
+      const deleteInput = tempWrapper.querySelector('input[name$="-DELETE"]');
+
+      const row = document.createElement('div');
+      row.className = 'mb-3 d-flex gap-2 align-items-center subject-form-row w-100';
+
+      const inputWrapper = document.createElement('div');
+      inputWrapper.className = 'flex-grow-1';
+      inputWrapper.style.border = "1px solid #17a2b8";
+      inputWrapper.style.borderRadius = "0.5rem";
+      inputWrapper.appendChild(nameInput);
+
+      const deleteWrapper = document.createElement('div');
+      deleteWrapper.className = 'd-none';
+      deleteWrapper.appendChild(deleteInput);
+
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'btn btn-sm btn-danger remove-subject';
+      removeBtn.innerHTML = '🗑️';
+
+      row.appendChild(inputWrapper);
+      row.appendChild(deleteWrapper);
+      row.appendChild(removeBtn);
+
+      formsetDiv.appendChild(row);
+      formIdx++;
+      totalFormsInput.value = formIdx;
+    });
+
+    // Remove new subject field
+    document.addEventListener('click', function (e) {
+      if (e.target.classList.contains('remove-subject')) {
+        e.preventDefault();
+        const row = e.target.closest('.subject-form-row');
+        row.remove();
+        totalFormsInput.value = document.querySelectorAll('.subject-form-row').length;
+      }
+    });
+
+    // Toggle delete for existing subjects
+    document.addEventListener('click', function (e) {
+      if (e.target.classList.contains('trigger-delete')) {
+        e.preventDefault();
+        const row = e.target.closest('.subject-form-row');
+        const checkbox = row.querySelector('input[name$="-DELETE"]');
+        const input = row.querySelector('input[name$="-name"]');
+
+        if (checkbox) {
+          checkbox.checked = !checkbox.checked;
+
+          if (checkbox.checked) {
+            row.classList.add('deleted');
+            input.disabled = true;
+          } else {
+            row.classList.remove('deleted');
+            input.disabled = false;
+          }
+        }
+      }
+    });
+  });
+</script>
+
 {% endblock %}

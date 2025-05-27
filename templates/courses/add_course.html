@@ -2,11 +2,16 @@
 {% load widget_tweaks %}
 {% block title %}Add Course{% endblock %}
 {% block content %}
+<style>
+  input[type="checkbox"][name$="-DELETE"] {
+    display: none;
+  }
+</style>
 
 <div class="mb-3">
-    <a href="javascript:history.back()" class="text-light" style="font-size: 1.5rem; text-decoration: none;" title="Go back">
-        <i class="bi bi-arrow-left"></i>
-    </a>
+  <a href="javascript:history.back()" class="text-light" style="font-size: 1.5rem; text-decoration: none;" title="Go back">
+    <i class="bi bi-arrow-left"></i>
+  </a>
 </div>
 
 <div class="container d-flex align-items-center justify-content-center" style="min-height:80vh">
@@ -19,38 +24,68 @@
 
         <form method="POST">
           {% csrf_token %}
-          
+
+          <!-- Course Fields -->
           <div class="mb-3">
-            <label for="id_name" class="form-label"><i class="bi bi-book me-1"></i>Course Name</label>
+            <label class="form-label"><i class="bi bi-book me-1"></i>Course Name</label>
             <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
               {{ form.name|add_class:"form-control bg-secondary text-light border-0"|attr:"placeholder:Enter course name" }}
             </div>
           </div>
 
           <div class="mb-3">
-            <label for="id_department" class="form-label"><i class="bi bi-building me-1"></i>Department</label>
+            <label class="form-label"><i class="bi bi-building me-1"></i>Department</label>
             <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
               {{ form.department|add_class:"form-select bg-secondary text-light border-0" }}
             </div>
           </div>
 
           <div class="mb-3">
-            <label for="id_semester" class="form-label"><i class="bi bi-list-ol me-1"></i>Semester</label>
+            <label class="form-label"><i class="bi bi-list-ol me-1"></i>Semester</label>
             <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
               {{ form.semester|add_class:"form-control bg-secondary text-light border-0"|attr:"placeholder:Enter semester number" }}
             </div>
           </div>
 
           <div class="mb-4">
-            <label for="id_assigned_staff" class="form-label"><i class="bi bi-person-gear me-1"></i>Assign Staff</label>
+            <label class="form-label"><i class="bi bi-person-gear me-1"></i>Assign Staff</label>
             <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
               {{ form.assigned_staff|add_class:"form-select bg-secondary text-light border-0" }}
             </div>
           </div>
 
+          <!-- 📚 Subjects Section -->
+          <hr class="border-info">
+          <h5 class="text-light mb-3"><i class="bi bi-journals me-1"></i>Subjects</h5>
+
+          <div id="subject-formset">
+            {% for subject_form in subject_formset %}
+              <div class="mb-3 d-flex gap-2 align-items-center subject-form-row w-100">
+                <div class="flex-grow-1" style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
+                  {{ subject_form.name|add_class:"form-control bg-secondary text-light border-0" }}
+                </div>
+
+                {% if subject_form.instance.pk %}
+                  <div class="form-check">
+                    <label class="form-check-label text-danger">
+                      {{ subject_form.DELETE }} <span class="small">🗑️</span>
+                    </label>
+                  </div>
+                {% else %}
+                  <button type="button" class="btn btn-sm btn-danger remove-subject">🗑️</button>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+
+
+          {{ subject_formset.management_form }}
+          <button type="button" id="add-subject" class="btn btn-sm btn-info mb-4">➕ Add Subject</button>
+
+          <!-- Submit Button -->
           <div class="d-grid">
-            <button type="submit" class="btn btn-sm btn-info py-2">
-              <i class="bi bi-plus-circle me-1"></i>Add Course
+            <button type="submit" class="btn btn-sm btn-success py-2">
+              <i class="bi bi-plus-circle me-1"></i>Save Course
             </button>
           </div>
         </form>
@@ -58,4 +93,49 @@
     </div>
   </div>
 </div>
+
+<!-- JavaScript for Dynamic Subject Add/Delete -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    let formIdx = Number("{{ subject_formset.total_form_count }}");
+    const formsetDiv = document.getElementById('subject-formset');
+    const totalFormsInput = document.getElementsByName('form-TOTAL_FORMS')[0];
+
+    document.getElementById('add-subject').addEventListener('click', function () {
+      const newFormHtml = '{{ subject_formset.empty_form.as_p|escapejs }}'.replace(/__prefix__/g, formIdx);
+      
+      // Extract only the subject name input from the generated HTML
+      const tempWrapper = document.createElement('div');
+      tempWrapper.innerHTML = newFormHtml;
+      const nameField = tempWrapper.querySelector('input');
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'mb-3 d-flex gap-2 align-items-center subject-form-row w-100';
+
+      const inputWrapper = document.createElement('div');
+      inputWrapper.className = 'flex-grow-1';
+      inputWrapper.style.border = "1px solid #17a2b8";
+      inputWrapper.style.borderRadius = "0.5rem";
+      inputWrapper.appendChild(nameField);
+
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'btn btn-sm btn-danger remove-subject';
+      removeBtn.innerHTML = '🗑️';
+
+      wrapper.appendChild(inputWrapper);
+      wrapper.appendChild(removeBtn);
+      formsetDiv.appendChild(wrapper);
+
+      formIdx++;
+      totalFormsInput.value = formIdx;
+    });
+
+    document.addEventListener('click', function (e) {
+      if (e.target && e.target.classList.contains('remove-subject')) {
+        e.target.closest('.subject-form-row').remove();
+      }
+    });
+  });
+</script>
 {% endblock %}
