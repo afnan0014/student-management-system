@@ -6,6 +6,30 @@
   input[type="checkbox"][name$="-DELETE"] {
     display: none;
   }
+
+  /* Style for the subject form row to ensure alignment */
+  .subject-form-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Style for the remove button to ensure consistent size and alignment */
+  .remove-subject {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    width: 38px;
+    height: 38px;
+  }
+
+  /* Style for the add subject button */
+  #add-subject {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
 </style>
 
 <div class="mb-3">
@@ -60,7 +84,7 @@
 
           <div id="subject-formset">
             {% for subject_form in subject_formset %}
-              <div class="mb-3 d-flex gap-2 align-items-center subject-form-row w-100">
+              <div class="mb-3 subject-form-row w-100">
                 <div class="flex-grow-1" style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
                   {{ subject_form.name|add_class:"form-control bg-secondary text-light border-0" }}
                 </div>
@@ -68,19 +92,22 @@
                 {% if subject_form.instance.pk %}
                   <div class="form-check">
                     <label class="form-check-label text-danger">
-                      {{ subject_form.DELETE }} <span class="small">🗑️</span>
+                      {{ subject_form.DELETE }} <i class="bi bi-trash"></i>
                     </label>
                   </div>
                 {% else %}
-                  <button type="button" class="btn btn-sm btn-danger remove-subject">🗑️</button>
+                  <button type="button" class="btn btn-sm btn-danger remove-subject">
+                    <i class="bi bi-trash"></i>
+                  </button>
                 {% endif %}
               </div>
             {% endfor %}
           </div>
 
-
           {{ subject_formset.management_form }}
-          <button type="button" id="add-subject" class="btn btn-sm btn-info mb-4">➕ Add Subject</button>
+          <button type="button" id="add-subject" class="btn btn-sm btn-info mb-4">
+            <i class="bi bi-plus-circle"></i> Add Subject
+          </button>
 
           <!-- Submit Button -->
           <div class="d-grid">
@@ -110,7 +137,7 @@
       const nameField = tempWrapper.querySelector('input');
 
       const wrapper = document.createElement('div');
-      wrapper.className = 'mb-3 d-flex gap-2 align-items-center subject-form-row w-100';
+      wrapper.className = 'mb-3 subject-form-row w-100';
 
       const inputWrapper = document.createElement('div');
       inputWrapper.className = 'flex-grow-1';
@@ -121,7 +148,7 @@
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
       removeBtn.className = 'btn btn-sm btn-danger remove-subject';
-      removeBtn.innerHTML = '🗑️';
+      removeBtn.innerHTML = '<i class="bi bi-trash"></i>';
 
       wrapper.appendChild(inputWrapper);
       wrapper.appendChild(removeBtn);
@@ -132,7 +159,7 @@
     });
 
     document.addEventListener('click', function (e) {
-      if (e.target && e.target.classList.contains('remove-subject')) {
+      if (e.target.closest('.remove-subject')) {
         e.target.closest('.subject-form-row').remove();
       }
     });

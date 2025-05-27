@@ -3,29 +3,66 @@
 {% block title %}Edit Course{% endblock %}
 {% block content %}
 
+<div class="mb-3">
+    <a href="javascript:history.back()" class="back-arrow" style="font-size: 1.5rem; text-decoration: none;" title="Go back">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+</div>
+
 <style>
   input[type="checkbox"][name$="-DELETE"] {
     position: absolute;
     left: -9999px;
   }
 
+  .subject-form-row {
+    transition: all 0.3s ease;
+  }
+
   .subject-form-row.deleted {
     opacity: 0.6;
-    border-left: 4px solid red;
+    border-left: 4px solid #dc3545;
     position: relative;
+    background-color: rgba(220, 53, 69, 0.1);
+    border-radius: 0.5rem;
+    padding-left: 0.5rem;
   }
 
   .subject-form-row .delete-label {
     font-size: 0.75rem;
-    color: #f00;
+    color: #dc3545;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  /* Style for buttons to ensure proper alignment and size */
+  .btn-sm {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    width: 38px;
+    height: 38px;
+    border-radius: 0.5rem;
+  }
+
+  #add-subject {
+    width: auto;
+    padding: 0.5rem 1rem;
+    gap: 0.5rem;
+  }
+
+  .btn-success {
+    width: 100%;
+    padding: 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .btn:hover {
+    transform: scale(1.05);
   }
 </style>
-
-<div class="mb-3">
-    <a href="javascript:history.back()" class="back-arrow" style="font-size: 1.5rem; text-decoration: none;" title="Go back">
-        <i class="bi bi-arrow-left"></i>
-    </a>
-</div>
 
 <div class="container d-flex align-items-center justify-content-center" style="min-height:80vh">
   <div class="col-md-6 col-lg-5">
@@ -81,9 +118,13 @@
                   {{ form.DELETE }}
                 </div>
                 {% if form.instance.pk %}
-                  <button type="button" class="btn btn-sm btn-danger trigger-delete" title="Toggle Delete">🗑️</button>
+                  <button type="button" class="btn btn-sm btn-danger trigger-delete" title="Toggle Delete">
+                    <i class="bi bi-trash"></i>
+                  </button>
                 {% else %}
-                  <button type="button" class="btn btn-sm btn-danger remove-subject" title="Remove Unsaved">🗑️</button>
+                  <button type="button" class="btn btn-sm btn-danger remove-subject" title="Remove Unsaved">
+                    <i class="bi bi-trash"></i>
+                  </button>
                 {% endif %}
               </div>
             {% endfor %}
@@ -91,7 +132,9 @@
 
           {{ subject_formset.management_form }}
 
-          <button type="button" id="add-subject" class="btn btn-sm btn-info mb-4">➕ Add Subject</button>
+          <button type="button" id="add-subject" class="btn btn-sm btn-info mb-4">
+            <i class="bi bi-plus-circle me-1"></i>Add Subject
+          </button>
 
           <div class="d-grid">
             <button type="submit" class="btn btn-sm btn-success py-2">
@@ -136,7 +179,8 @@
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
       removeBtn.className = 'btn btn-sm btn-danger remove-subject';
-      removeBtn.innerHTML = '🗑️';
+      removeBtn.title = 'Remove Unsaved';
+      removeBtn.innerHTML = '<i class="bi bi-trash"></i>';
 
       row.appendChild(inputWrapper);
       row.appendChild(deleteWrapper);
@@ -149,9 +193,10 @@
 
     // Remove new subject field
     document.addEventListener('click', function (e) {
-      if (e.target.classList.contains('remove-subject')) {
+      const removeBtn = e.target.closest('.remove-subject');
+      if (removeBtn) {
         e.preventDefault();
-        const row = e.target.closest('.subject-form-row');
+        const row = removeBtn.closest('.subject-form-row');
         row.remove();
         totalFormsInput.value = document.querySelectorAll('.subject-form-row').length;
       }
@@ -159,9 +204,10 @@
 
     // Toggle delete for existing subjects
     document.addEventListener('click', function (e) {
-      if (e.target.classList.contains('trigger-delete')) {
+      const triggerBtn = e.target.closest('.trigger-delete');
+      if (triggerBtn) {
         e.preventDefault();
-        const row = e.target.closest('.subject-form-row');
+        const row = triggerBtn.closest('.subject-form-row');
         const checkbox = row.querySelector('input[name$="-DELETE"]');
         const input = row.querySelector('input[name$="-name"]');
 
