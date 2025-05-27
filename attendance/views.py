@@ -97,7 +97,6 @@ def student_attendance_view(request):
     })
 
 
-
 @staff_member_required
 def admin_view_attendance(request):
     selected_date = request.GET.get('date')
@@ -154,7 +153,7 @@ def export_attendance_csv(request):
             records = records.filter(course__assigned_staff=selected_staff.user)
         except StaffProfile.DoesNotExist:
             messages.error(request, "Selected staff member does not exist.")
-            return redirect('attendance_report')
+            return redirect('admin_view_attendance')  # Updated to correct URL name
 
     if selected_course_id:
         try:
@@ -162,7 +161,7 @@ def export_attendance_csv(request):
             records = records.filter(course=selected_course)
         except Course.DoesNotExist:
             messages.error(request, "Selected course does not exist.")
-            return redirect('attendance_report')
+            return redirect('admin_view_attendance')  # Updated to correct URL name
 
     if selected_date:
         try:
@@ -170,7 +169,7 @@ def export_attendance_csv(request):
             records = records.filter(date=selected_date_obj)
         except ValueError:
             messages.error(request, "Invalid date format.")
-            return redirect('attendance_report')
+            return redirect('admin_view_attendance')  # Updated to correct URL name
 
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="attendance.csv"'

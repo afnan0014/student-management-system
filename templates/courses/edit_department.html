@@ -4,28 +4,32 @@
 {% block content %}
 
 <div class="mb-3">
-    <a href="javascript:history.back()" class="text-light" style="font-size: 1.5rem; text-decoration: none;" title="Go back">
+    <a href="javascript:history.back()" class="back-arrow" style="font-size: 1.5rem; text-decoration: none;" title="Go back">
         <i class="bi bi-arrow-left"></i>
     </a>
 </div>
 
 <div class="container d-flex align-items-center justify-content-center" style="min-height:80vh">
   <div class="col-md-6 col-lg-5">
-    <div class="card bg-dark text-light shadow-lg border-0">
+    <div class="card bg yay-dark text-light shadow-lg border-0">
       <div class="card-body">
-        <h2 class="card-title mb-4 text-center">Edit Department</h2>
-
-
+        <h2 class="card-title mb-4 text-center">
+          <i class="bi bi-building me-2"></i>Edit Department
+        </h2>
 
         <form method="POST">
           {% csrf_token %}
           <div class="mb-3">
-            <label for="id_name" class="form-label">Department Name</label>
-            {{ form.name }}
+            <label for="id_name" class="form-label"><i class="bi bi-building me-1"></i>Department Name</label>
+            <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
+              {{ form.name|add_class:"form-control bg-secondary text-light border-0"|attr:"placeholder:Enter department name" }}
+            </div>
           </div>
 
           <div class="d-grid">
-            <button type="submit" class="btn btn-info py-2">💾 Save Changes</button>
+            <button type="submit" class="btn btn-sm btn-info py-2">
+              <i class="bi bi-check-circle me-1"></i>Save Changes
+            </button>
           </div>
         </form>
       </div>

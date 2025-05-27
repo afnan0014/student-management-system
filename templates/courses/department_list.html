@@ -3,7 +3,7 @@
 {% block content %}
 
 <div class="mb-3">
-    <a href="javascript:history.back()" class="text-light" style="font-size: 1.5rem; text-decoration: none;" title="Go back">
+    <a href="javascript:history.back()" class="back-arrow" style="font-size: 1.5rem; text-decoration: none;" title="Go back">
         <i class="bi bi-arrow-left"></i>
     </a>
 </div>
@@ -13,28 +13,33 @@
     <div class="col-12 col-lg-10">
       <div class="card bg-card text-light shadow-lg border-0">
         <div class="card-body">
-          <h2 class="card-title table-heading mb-4">Departments</h2>
-          <!-- Add this block just below the heading -->
-            {% if messages %}
-              {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                  {{ message }}
-                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-              {% endfor %}
-            {% endif %}
+          <h2 class="card-title table-heading mb-4">
+            <i class="bi bi-building me-2"></i>Departments
+          </h2>
+          <!-- Messages -->
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
 
           <div class="d-flex flex-wrap align-items-center mb-4 gap-2">
             <!-- Search Form -->
-            <form method="get" class="flex-grow-1 me-2" style="max-width: 800px;">
-              <div class="input-group search-container">
+            <form method="get" class="flex-grow-1 me-2" style="max-width: 900px;">
+              <div class="input-group search-container" style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
+                <span class="input-group-text bg-secondary border-0" style="border-radius: 0.5rem 0 0 0.5rem;">
+                  <i class="bi bi-search"></i>
+                </span>
                 <input 
                   type="text" 
                   name="q" 
                   value="{{ query }}" 
                   class="form-control bg-secondary text-light border-0 ps-2" 
-                  placeholder="🔍 Search"
-                  style="border-radius: 0.5rem;"
+                  placeholder="Search departments..."
+                  style="border-radius: 0 0.5rem 0.5rem 0;"
                 >
                 <button type="submit" class="btn btn-info" style="border-radius: 0.5rem;">
                   <i class="bi bi-search"></i>
@@ -43,11 +48,15 @@
             </form>
             <!-- Add and Delete Buttons -->
             <div class="d-flex flex-nowrap gap-2">
-              <a href="{% url 'add_department' %}" class="btn btn-success">➕ Add Department</a>
+              <a href="{% url 'add_department' %}" class="btn btn-sm btn-success">
+                <i class="bi bi-plus-circle me-1"></i>Add Department
+              </a>
               <form method="post" action="{% url 'delete_departments' %}" style="display: none;" id="delete-departments-form">
                 {% csrf_token %}
                 <input type="hidden" name="department_ids" id="department-ids">
-                <button type="submit" class="btn btn-danger">🗑️ Delete</button>
+                <button type="submit" class="btn btn-sm btn-danger">
+                  <i class="bi bi-trash me-1"></i>Delete
+                </button>
               </form>
             </div>
           </div>
@@ -57,9 +66,9 @@
               <thead>
                 <tr>
                   <th><input type="checkbox" id="select-all-departments"></th>
-                  <th>#</th>
-                  <th>Name</th>
-                  <th>Actions</th>
+                  <th><i class="bi bi-hash me-1"></i>#</th>
+                  <th><i class="bi bi-building me-1"></i>Name</th>
+                  <th><i class="bi bi-gear me-1"></i>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -69,7 +78,9 @@
                   <td>{{ forloop.counter }}</td>
                   <td>{{ department.name }}</td>
                   <td>
-                    <a href="{% url 'edit_department' department.id %}" class="btn btn-sm btn-warning">✏️ Edit</a>
+                    <a href="{% url 'edit_department' department.id %}" class="btn btn-sm btn-warning">
+                      <i class="bi bi-pencil me-1"></i>Edit
+                    </a>
                   </td>
                 </tr>
                 {% empty %}

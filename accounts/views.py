@@ -7,7 +7,7 @@ from django.db import models
 from django.contrib.auth.forms import AuthenticationForm
 from .decorators import allowed_users
 from .forms import CustomUserCreationForm, StudentProfileForm, StaffProfileForm, PasswordChangeForm
-from .models import StudentProfile, StaffProfile
+from .models import StudentProfile, StaffProfile, Course, Department
 
 
 
@@ -196,12 +196,51 @@ def bulk_delete_users(request):
 @login_required
 @user_passes_test(is_admin)
 def student_profile(request, user_id):
-    profile_user = get_object_or_404(User, id=user_id, groups__name='Student')
+    # Get the user and their student profile
+    profile_user = get_object_or_404(User, id=user_id)
     student_profile = get_object_or_404(StudentProfile, user=profile_user)
-    return render(request, 'accounts/student_profile.html', {
+
+    # Ensure only admins can access this page
+    if request.user.groups.all()[0].name != 'Admin':
+        messages.error(request, "You do not have permission to view this page.")
+        return redirect('home')  # Adjust redirect URL as needed
+
+    # Get all courses and departments for the dropdowns
+    all_courses = Course.objects.all()
+    all_departments = Department.objects.all()
+
+    if request.method == 'POST':
+        # Get form data
+        course_id = request.POST.get('course')
+        department_id = request.POST.get('department')
+        batch_number = request.POST.get('batch_number')
+
+        # Update the student profile
+        student_profile.batch_number = batch_number
+        if course_id:
+            student_profile.course = get_object_or_404(Course, id=course_id)
+        else:
+            student_profile.course = None
+        if department_id:
+            student_profile.department = get_object_or_404(Department, id=department_id)
+        else:
+            student_profile.department = None
+
+        # Save the changes
+        student_profile.save()
+
+        # Display success message
+        messages.success(request, "Student profile updated successfully.")
+        return redirect('student_profile', user_id=user_id)
+
+    # Context for the template
+    context = {
         'profile_user': profile_user,
         'student_profile': student_profile,
-    })
+        'all_courses': all_courses,
+        'all_departments': all_departments,
+    }
+    return render(request, 'accounts/student_profile.html', context)
 
 @login_required
 @user_passes_test(is_admin)
