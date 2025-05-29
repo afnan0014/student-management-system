@@ -9,11 +9,23 @@ from .decorators import allowed_users
 from .forms import CustomUserCreationForm, StudentProfileForm, StaffProfileForm, PasswordChangeForm
 from .models import StudentProfile, StaffProfile, Course, Department
 
-
-
-# Redirect to login
-def home_redirect(request):
-    return redirect('login')
+# Landing page view
+def landing_view(request):
+    if request.user.is_authenticated:
+        # Redirect based on user group
+        group_name = request.user.groups.first().name if request.user.groups.exists() else None
+        if group_name == 'Admin':
+            return redirect('admin_dashboard')
+        elif group_name == 'Staff':
+            return redirect('staff_dashboard')
+        elif group_name == 'Student':
+            return redirect('student_dashboard')
+        else:
+            # If user has no group, redirect to login
+            messages.warning(request, "User does not belong to any recognized group.")
+            return redirect('login')
+    # If not authenticated, render the landing page
+    return render(request, 'landing.html')
 
 # Login view
 def login_view(request):
@@ -27,7 +39,7 @@ def login_view(request):
         elif group_name == 'Student':
             return redirect('student_dashboard')
         else:
-            # If user has no group, redirect to login (or handle as needed)
+            # If user has no group, redirect to login
             messages.warning(request, "User does not belong to any recognized group.")
             return redirect('login')
     
@@ -79,7 +91,7 @@ def student_dashboard(request):
 # Logout
 def logout_view(request):
     logout(request)
-    return redirect('login')
+    return redirect('landing')
 
 # Add user
 @login_required
@@ -179,7 +191,6 @@ def change_password(request, user_id):
 
     return render(request, 'accounts/change_user_password.html', {'form': form})
 
-
 # Bulk delete users
 @login_required
 @user_passes_test(is_admin)
@@ -203,7 +214,7 @@ def student_profile(request, user_id):
     # Ensure only admins can access this page
     if request.user.groups.all()[0].name != 'Admin':
         messages.error(request, "You do not have permission to view this page.")
-        return redirect('home')  # Adjust redirect URL as needed
+        return redirect('landing')  # Updated redirect to landing page
 
     # Get all courses and departments for the dropdowns
     all_courses = Course.objects.all()

@@ -30,18 +30,19 @@
             <!-- Search Form -->
             <form method="get" class="flex-grow-1 me-2" style="max-width: 900px;">
               <div class="input-group search-container" style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
-                <span class="input-group-text bg-secondary border-0" style="border-radius: 0.5rem 0 0 0.5rem;">
-                  <i class="bi bi-search"></i>
-                </span>
                 <input 
                   type="text" 
                   name="q" 
                   value="{{ query }}" 
-                  class="form-control bg-secondary text-light border-0 ps-2" 
+                  class="form-control bg-secondary text-light border-0" 
                   placeholder="Search departments..."
-                  style="border-radius: 0 0.5rem 0.5rem 0;"
+                  style="border-radius: 0.5rem 0 0 0.5rem; width: calc(100% - 48px); flex: none;"
                 >
-                <button type="submit" class="btn btn-info" style="border-radius: 0.5rem;">
+                <button 
+                  type="submit" 
+                  class="btn btn-info" 
+                  style="border-radius: 0 0.5rem 0.5rem 0; width: 48px; flex: none;"
+                >
                   <i class="bi bi-search"></i>
                 </button>
               </div>
