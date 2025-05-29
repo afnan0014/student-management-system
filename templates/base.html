@@ -30,8 +30,6 @@
                         <i class="bi bi-speedometer2 me-2"></i>Dashboard
                     </a>
                 </li>
-
-                <!-- Users Section -->
                 <li class="nav-item">
                     <a href="#" class="nav-link sidebar-toggle" data-target="users-submenu">
                         <i class="bi bi-people me-2"></i>Users
@@ -46,8 +44,6 @@
                         </li>
                     </ul>
                 </li>
-
-                <!-- Academic Section -->
                 <li class="nav-item">
                     <a href="#" class="nav-link sidebar-toggle" data-target="academic-submenu">
                         <i class="bi bi-book me-2"></i>Academic
@@ -62,15 +58,11 @@
                         </li>
                     </ul>
                 </li>
-
-                <!-- Attendance Reports -->
                 <li class="nav-item">
                     <a href="{% url 'admin_view_attendance' %}" class="nav-link">
                         <i class="bi bi-journal-check me-2"></i>Attendance Reports
                     </a>
                 </li>
-
-                <!-- Other Reports -->
                 <li class="nav-item">
                     <a href="{% url 'report_dashboard' %}" class="nav-link">
                         <i class="bi bi-bar-chart me-2"></i>Other Reports
@@ -84,8 +76,6 @@
                         <i class="bi bi-clipboard-data me-2"></i>Staff Dashboard
                     </a>
                 </li>
-
-                <!-- Mark Attendance -->
                 <li class="nav-item">
                     <a href="{% url 'mark_attendance' %}" class="nav-link">
                         <i class="bi bi-pencil-square me-2"></i>Mark Attendance
@@ -99,11 +89,19 @@
                         <i class="bi bi-journal-text me-2"></i>Student Dashboard
                     </a>
                 </li>
-
-                <!-- My Attendance -->
                 <li class="nav-item">
                     <a href="{% url 'student_attendance_view' %}" class="nav-link">
                         <i class="bi bi-person-lines-fill me-2"></i>My Attendance
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'student_marks' %}" class="nav-link">
+                        <i class="bi bi-bar-chart-line me-2"></i>My Marks
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'exam_list' %}" class="nav-link">
+                        <i class="bi bi-journal-text me-2"></i>My Exams
                     </a>
                 </li>
             </ul>
@@ -114,7 +112,6 @@
 
 <!-- Page Wrapper -->
 <div class="page-wrapper">
-    <!-- Header -->
     <header class="header bg-dark">
         <div class="container d-flex justify-content-between align-items-center py-2">
             <div class="d-flex align-items-center">
@@ -138,21 +135,17 @@
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="content container-fluid px-4">
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
     <footer class="footer bg-dark text-center p-3">
         <p class="mb-0"><i class="bi bi-c-circle me-1"></i>2025 Students Management System</p>
     </footer>
 </div>
 
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Theme Toggle and Sidebar Script -->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const body = document.body;
@@ -162,7 +155,6 @@
         const pageWrapper = document.querySelector('.page-wrapper');
         const sidebarToggle = document.getElementById('sidebar-toggle');
 
-        // Theme Toggle
         const savedTheme = localStorage.getItem('theme') || 'dark-mode';
         body.classList.remove('dark-mode', 'light-mode');
         body.classList.add(savedTheme);
@@ -179,7 +171,6 @@
             localStorage.setItem('theme', newTheme);
         });
 
-        // Sidebar Toggle Functionality
         const toggles = document.querySelectorAll('.sidebar-toggle');
         toggles.forEach(toggle => {
             toggle.addEventListener('click', (e) => {
@@ -188,7 +179,6 @@
                 const submenu = document.getElementById(targetId);
                 const isOpen = submenu.classList.contains('open');
 
-                // Close all other submenus
                 document.querySelectorAll('.submenu').forEach(menu => {
                     if (menu !== submenu) {
                         menu.classList.remove('open');
@@ -199,7 +189,6 @@
                     }
                 });
 
-                // Toggle the current submenu
                 if (isOpen) {
                     submenu.classList.remove('open');
                     submenu.style.maxHeight = '0';
@@ -214,14 +203,12 @@
             });
         });
 
-        // Shift Entire Page When Sidebar Opens/Closes
         sidebar.addEventListener('show.bs.offcanvas', () => {
             pageWrapper.classList.add('shifted');
         });
 
         sidebar.addEventListener('hide.bs.offcanvas', () => {
             pageWrapper.classList.remove('shifted');
-            // Close all submenus when sidebar closes
             document.querySelectorAll('.submenu').forEach(menu => {
                 menu.classList.remove('open');
                 menu.style.maxHeight = '0';
@@ -231,7 +218,6 @@
             });
         });
 
-        // Ensure sidebar closes on mobile when clicking outside
         document.addEventListener('click', (e) => {
             const isClickInsideSidebar = sidebar.contains(e.target);
             const isClickOnToggle = sidebarToggle.contains(e.target);
@@ -245,7 +231,6 @@
     });
 </script>
 
-{% block scripts %}
-{% endblock %}
+{% block scripts %}{% endblock %}
 </body>
 </html>
