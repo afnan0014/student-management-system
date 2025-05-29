@@ -2,61 +2,73 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Exam, Mark, Subject
-from .forms import MarkFormSet
+from .forms import MarkForm
 from accounts.models import StudentProfile, StaffProfile
 import csv
 from django.http import HttpResponse
 from django.contrib.admin.views.decorators import staff_member_required
 from courses.models import Course, Subject
+from .forms import ExamForm
+from django.forms import modelformset_factory
 
 @login_required
-def mark_entry_view(request, exam_id):
+def staff_mark_entry_spreadsheet(request):
     staff_profile = getattr(request.user, 'staff_profile', None)
-
     if not staff_profile or not staff_profile.course:
         messages.error(request, "You are not assigned to a course.")
-        return redirect('course_list')
+        return redirect('staff_dashboard')
 
-    exam = get_object_or_404(Exam, id=exam_id, course=staff_profile.course)
-    students = StudentProfile.objects.filter(course=staff_profile.course)
+    exams = Exam.objects.filter(course=staff_profile.course)
     subjects = Subject.objects.filter(course=staff_profile.course)
+    students = StudentProfile.objects.filter(course=staff_profile.course)
 
-    if request.method == 'GET':
+    exam_id = request.GET.get('exam')
+    subject_id = request.GET.get('subject')
+
+    marks = Mark.objects.none()
+    selected_exam = None
+    selected_subject = None
+
+    if exam_id and subject_id:
+        selected_exam = get_object_or_404(Exam, id=exam_id)
+        selected_subject = get_object_or_404(Subject, id=subject_id)
+
+        # Ensure marks exist or create them
         for student in students:
-            for subject in subjects:
-                Mark.objects.get_or_create(
-                    student=student,
-                    exam=exam,
-                    subject=subject,
-                    defaults={'marks_obtained': 0}
-                )
-        formset = MarkFormSet(queryset=Mark.objects.filter(
-            exam=exam,
-            student__course=staff_profile.course
-        ))
-        return render(request, 'exams/mark_entry.html', {
-            'formset': formset,
-            'exam': exam
-        })
+            Mark.objects.get_or_create(
+                student=student,
+                exam=selected_exam,
+                subject=selected_subject,
+                defaults={'marks_obtained': 0}
+            )
 
-    else:  # POST
-        formset = MarkFormSet(
-            request.POST,
-            queryset=Mark.objects.filter(
-                exam=exam,
+            marks = Mark.objects.select_related('student__user').filter(
+                exam=selected_exam,
+                subject=selected_subject,
                 student__course=staff_profile.course
             )
-        )
+
+
+    MarkFormSet = modelformset_factory(Mark, form=MarkForm, extra=0)
+
+    if request.method == 'POST':
+        formset = MarkFormSet(request.POST, queryset=marks)
         if formset.is_valid():
             formset.save()
-            messages.success(request, "Marks saved successfully!")
-            return redirect('course_list')
+            messages.success(request, "Marks submitted successfully!")
+            return redirect('staff_mark_entry_spreadsheet')
         else:
-            messages.error(request, "Error saving marks.")
-            return render(request, 'exams/mark_entry.html', {
-                'formset': formset,
-                'exam': exam
-            })
+            messages.error(request, "Please correct the errors below.")
+    else:
+        formset = MarkFormSet(queryset=marks)
+
+    return render(request, 'exam/staff_mark_entry.html', {
+        'formset': formset,
+        'exams': exams,
+        'subjects': subjects,
+        'selected_exam': exam_id,
+        'selected_subject': subject_id,
+    })
 
 @login_required
 def report_card_view(request):
@@ -89,7 +101,7 @@ def report_card_view(request):
     # Assuming `student_result_grade` is stored directly in the Mark model
     grades = marks.values_list('student_result_grade', flat=True).distinct()
 
-    return render(request, 'exams/report_card.html', {
+    return render(request, 'exam/report_card.html', {
         'marks': marks,
         'exams': exams,
         'subjects': subjects,
@@ -137,7 +149,7 @@ def export_results_view(request):
         return response
 
     # Render HTML for filtering
-    return render(request, 'exams/export_results.html', {
+    return render(request, 'exam/export_results.html', {
         'marks': marks,
         'courses': Course.objects.all(),
         'staffs': StaffProfile.objects.select_related('user'),
@@ -150,3 +162,70 @@ def export_results_view(request):
             'exam': exam_id,
         }
     })
+
+def create_exam(request):
+    if request.method == 'POST':
+        form = ExamForm(request.POST)
+        if form.is_valid():
+            exam = form.save()
+
+            # Fetch related course
+            course = exam.course
+
+            # Auto-assign exam to all subjects in this course
+            subjects = Subject.objects.filter(course=course)
+            students = StudentProfile.objects.filter(course=course)
+            staff = StaffProfile.objects.filter(course=course)
+
+            messages.success(request, f"✅ Exam '{exam.name}' created and linked to {course.name}, its students, subjects and staff.")
+
+            return redirect('exam_list')  # change to your actual exam list view
+    else:
+        form = ExamForm()
+
+    return render(request, 'exam/create_exam.html', {'form': form})
+
+
+# exams/views.py
+
+from .models import Exam
+from accounts.models import StaffProfile
+from courses.models import Course
+from django.db.models import Q
+
+def exam_list(request):
+    exams = Exam.objects.all().select_related('course')
+
+    query = request.GET.get('q')
+    course_id = request.GET.get('course')
+    staff_id = request.GET.get('staff')
+
+    if query:
+        exams = exams.filter(name__icontains=query)
+    if course_id:
+        exams = exams.filter(course_id=course_id)
+    if staff_id:
+        exams = exams.filter(course__staff__user_id=staff_id)
+
+    courses = Course.objects.all()
+    staff = StaffProfile.objects.select_related('user')
+
+    return render(request, 'exam/exam_list.html', {
+        'exams': exams,
+        'courses': courses,
+        'staff': staff,
+    })
+
+# exams/views.py
+
+from django.contrib import messages
+from .models import Exam
+
+def delete_exams(request):
+    if request.method == 'POST':
+        ids = request.POST.get('exam_ids', '').split(',')
+        if ids:
+            Exam.objects.filter(id__in=ids).delete()
+            messages.success(request, "✅ Selected exams deleted successfully.")
+    return redirect('exam_list')
+

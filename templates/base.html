@@ -15,8 +15,8 @@
 </head>
 <body class="dark-mode">
 
-<!-- Sidebar (Offcanvas Menu) -->
 {% if user.is_authenticated %}
+<!-- Sidebar -->
 <div class="offcanvas offcanvas-start sidebar bg-dark" tabindex="-1" id="sidebar" aria-labelledby="sidebarLabel" data-bs-backdrop="false">
     <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="sidebarLabel"><i class="bi bi-list me-2"></i>Menu</h5>
@@ -24,93 +24,95 @@
     </div>
     <div class="offcanvas-body d-flex flex-column">
         {% if user.groups.all.0.name == 'Admin' %}
-            <ul class="nav flex-column sidebar-menu">
-                <li class="nav-item">
-                    <a href="{% url 'admin_dashboard' %}" class="nav-link">
-                        <i class="bi bi-speedometer2 me-2"></i>Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link sidebar-toggle" data-target="users-submenu">
-                        <i class="bi bi-people me-2"></i>Users
-                        <i class="bi bi-chevron-down toggle-icon ms-auto"></i>
-                    </a>
-                    <ul class="submenu" id="users-submenu">
-                        <li class="nav-item">
-                            <a href="{% url 'view_users_by_role' 'Student' %}" class="nav-link submenu-item">Students</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{% url 'view_users_by_role' 'Staff' %}" class="nav-link submenu-item">Staff</a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link sidebar-toggle" data-target="academic-submenu">
-                        <i class="bi bi-book me-2"></i>Academic
-                        <i class="bi bi-chevron-down toggle-icon ms-auto"></i>
-                    </a>
-                    <ul class="submenu" id="academic-submenu">
-                        <li class="nav-item">
-                            <a href="{% url 'department_list' %}" class="nav-link submenu-item">Departments</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{% url 'course_list' %}" class="nav-link submenu-item">Courses</a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'admin_view_attendance' %}" class="nav-link">
-                        <i class="bi bi-journal-check me-2"></i>Attendance Reports
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'report_dashboard' %}" class="nav-link">
-                        <i class="bi bi-bar-chart me-2"></i>Other Reports
-                    </a>
-                </li>
-            </ul>
+        <ul class="nav flex-column sidebar-menu">
+            <li class="nav-item">
+                <a href="{% url 'admin_dashboard' %}" class="nav-link">
+                    <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link sidebar-toggle" data-target="users-submenu">
+                    <i class="bi bi-people me-2"></i>Users
+                    <i class="bi bi-chevron-down toggle-icon ms-auto"></i>
+                </a>
+                <ul class="submenu" id="users-submenu">
+                    <li class="nav-item"><a href="{% url 'view_users_by_role' 'Student' %}" class="nav-link submenu-item">Students</a></li>
+                    <li class="nav-item"><a href="{% url 'view_users_by_role' 'Staff' %}" class="nav-link submenu-item">Staff</a></li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link sidebar-toggle" data-target="academic-submenu">
+                    <i class="bi bi-book me-2"></i>Academic
+                    <i class="bi bi-chevron-down toggle-icon ms-auto"></i>
+                </a>
+                <ul class="submenu" id="academic-submenu">
+                    <li class="nav-item"><a href="{% url 'department_list' %}" class="nav-link submenu-item">Departments</a></li>
+                    <li class="nav-item"><a href="{% url 'course_list' %}" class="nav-link submenu-item">Courses</a></li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link sidebar-toggle" data-target="exam-submenu">
+                    <i class="bi bi-file-earmark-text me-2"></i>Exams
+                    <i class="bi bi-chevron-down toggle-icon ms-auto"></i>
+                </a>
+                <ul class="submenu" id="exam-submenu">
+                    <li class="nav-item"><a href="{% url 'exam_list' %}" class="nav-link submenu-item">All Exams</a></li>
+                    <li class="nav-item"><a href="{% url 'export_results' %}" class="nav-link submenu-item">Export Results</a></li>
+
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'admin_view_attendance' %}" class="nav-link">
+                    <i class="bi bi-journal-check me-2"></i>Attendance Reports
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'report_dashboard' %}" class="nav-link">
+                    <i class="bi bi-bar-chart me-2"></i>Other Reports
+                </a>
+            </li>
+        </ul>
         {% elif user.groups.all.0.name == 'Staff' %}
-            <ul class="nav flex-column sidebar-menu">
-                <li class="nav-item">
-                    <a href="{% url 'staff_dashboard' %}" class="nav-link">
-                        <i class="bi bi-clipboard-data me-2"></i>Staff Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'mark_attendance' %}" class="nav-link">
-                        <i class="bi bi-pencil-square me-2"></i>Mark Attendance
-                    </a>
-                </li>
-            </ul>
+        <ul class="nav flex-column sidebar-menu">
+            <li class="nav-item">
+                <a href="{% url 'staff_dashboard' %}" class="nav-link">
+                    <i class="bi bi-clipboard-data me-2"></i>Staff Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'mark_attendance' %}" class="nav-link">
+                    <i class="bi bi-pencil-square me-2"></i>Mark Attendance
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'staff_mark_entry_spreadsheet' %}" class="nav-link">
+                    <i class="bi bi-journal-text me-2"></i>Mark Entry
+                </a>
+            </li>
+        </ul>
         {% elif user.groups.all.0.name == 'Student' %}
-            <ul class="nav flex-column sidebar-menu">
-                <li class="nav-item">
-                    <a href="{% url 'student_dashboard' %}" class="nav-link">
-                        <i class="bi bi-journal-text me-2"></i>Student Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'student_attendance_view' %}" class="nav-link">
-                        <i class="bi bi-person-lines-fill me-2"></i>My Attendance
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'student_marks' %}" class="nav-link">
-                        <i class="bi bi-bar-chart-line me-2"></i>My Marks
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'exam_list' %}" class="nav-link">
-                        <i class="bi bi-journal-text me-2"></i>My Exams
-                    </a>
-                </li>
-            </ul>
+        <ul class="nav flex-column sidebar-menu">
+            <li class="nav-item">
+                <a href="{% url 'student_dashboard' %}" class="nav-link">
+                    <i class="bi bi-journal-text me-2"></i>Student Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'student_attendance_view' %}" class="nav-link">
+                    <i class="bi bi-person-lines-fill me-2"></i>My Attendance
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'report_card' %}" class="nav-link">
+                    <i class="bi bi-bar-chart-line me-2"></i>My Marks
+                </a>
+            </li>
+        </ul>
         {% endif %}
     </div>
 </div>
 {% endif %}
 
-<!-- Page Wrapper -->
 <div class="page-wrapper">
     <header class="header bg-dark">
         <div class="container d-flex justify-content-between align-items-center py-2">
@@ -145,7 +147,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const body = document.body;
@@ -158,48 +159,33 @@
         const savedTheme = localStorage.getItem('theme') || 'dark-mode';
         body.classList.remove('dark-mode', 'light-mode');
         body.classList.add(savedTheme);
-        themeIcon.classList.remove('bi-moon-stars-fill', 'bi-sun-fill');
-        themeIcon.classList.add(savedTheme === 'dark-mode' ? 'bi-moon-stars-fill' : 'bi-sun-fill');
+        themeIcon.className = savedTheme === 'dark-mode' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
 
         themeToggle.addEventListener('click', () => {
             const isDark = body.classList.contains('dark-mode');
             const newTheme = isDark ? 'light-mode' : 'dark-mode';
             body.classList.remove('dark-mode', 'light-mode');
             body.classList.add(newTheme);
-            themeIcon.classList.remove('bi-moon-stars-fill', 'bi-sun-fill');
-            themeIcon.classList.add(newTheme === 'dark-mode' ? 'bi-moon-stars-fill' : 'bi-sun-fill');
+            themeIcon.className = newTheme === 'dark-mode' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
             localStorage.setItem('theme', newTheme);
         });
 
-        const toggles = document.querySelectorAll('.sidebar-toggle');
-        toggles.forEach(toggle => {
-            toggle.addEventListener('click', (e) => {
+        document.querySelectorAll('.sidebar-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function (e) {
                 e.preventDefault();
-                const targetId = toggle.getAttribute('data-target');
+                const targetId = this.getAttribute('data-target');
                 const submenu = document.getElementById(targetId);
                 const isOpen = submenu.classList.contains('open');
 
                 document.querySelectorAll('.submenu').forEach(menu => {
                     if (menu !== submenu) {
                         menu.classList.remove('open');
-                        menu.style.maxHeight = '0';
-                        const parentToggle = menu.parentElement.querySelector('.sidebar-toggle');
-                        parentToggle.classList.remove('open');
-                        parentToggle.querySelector('.toggle-icon').classList.remove('rotate');
+                        menu.style.maxHeight = null;
                     }
                 });
 
-                if (isOpen) {
-                    submenu.classList.remove('open');
-                    submenu.style.maxHeight = '0';
-                    toggle.classList.remove('open');
-                    toggle.querySelector('.toggle-icon').classList.remove('rotate');
-                } else {
-                    submenu.classList.add('open');
-                    submenu.style.maxHeight = submenu.scrollHeight + 'px';
-                    toggle.classList.add('open');
-                    toggle.querySelector('.toggle-icon').classList.add('rotate');
-                }
+                submenu.classList.toggle('open');
+                submenu.style.maxHeight = isOpen ? null : submenu.scrollHeight + 'px';
             });
         });
 
@@ -209,24 +195,6 @@
 
         sidebar.addEventListener('hide.bs.offcanvas', () => {
             pageWrapper.classList.remove('shifted');
-            document.querySelectorAll('.submenu').forEach(menu => {
-                menu.classList.remove('open');
-                menu.style.maxHeight = '0';
-                const parentToggle = menu.parentElement.querySelector('.sidebar-toggle');
-                parentToggle.classList.remove('open');
-                parentToggle.querySelector('.toggle-icon').classList.remove('rotate');
-            });
-        });
-
-        document.addEventListener('click', (e) => {
-            const isClickInsideSidebar = sidebar.contains(e.target);
-            const isClickOnToggle = sidebarToggle.contains(e.target);
-            if (!isClickInsideSidebar && !isClickOnToggle && window.innerWidth <= 768) {
-                const bsSidebar = bootstrap.Offcanvas.getInstance(sidebar);
-                if (bsSidebar) {
-                    bsSidebar.hide();
-                }
-            }
         });
     });
 </script>

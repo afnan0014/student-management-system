@@ -1,0 +1,13 @@
+<!-- templates/exams/create_exam.html -->
+
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h3>Create Exam</h3>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Create Exam</button>
+    </form>
+</div>
+{% endblock %}

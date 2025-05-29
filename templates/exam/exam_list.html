@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-3">📚 Exam Management</h2>
+
+  <form method="GET" class="row g-2 mb-3">
+    <div class="col-md-4">
+      <select name="course" class="form-select">
+        <option value="">-- Filter by Course --</option>
+        {% for c in courses %}
+        <option value="{{ c.id }}" {% if request.GET.course == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-4">
+      <select name="staff" class="form-select">
+        <option value="">-- Filter by Staff --</option>
+        {% for s in staff %}
+        <option value="{{ s.user.id }}" {% if request.GET.staff == s.user.id|stringformat:"s" %}selected{% endif %}>{{ s.user.username }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3">
+      <input type="text" name="q" placeholder="Search exam name..." value="{{ request.GET.q }}" class="form-control">
+    </div>
+    <div class="col-md-1">
+      <button class="btn btn-primary w-100">🔍</button>
+    </div>
+  </form>
+
+  <div class="d-flex justify-content-between mb-3">
+    <a href="{% url 'create_exam' %}" class="btn btn-success">➕ Add Exam</a>
+    <form method="POST" action="{% url 'delete_exams' %}" id="deleteForm">
+      {% csrf_token %}
+      <input type="hidden" name="exam_ids" id="exam_ids">
+      <button type="submit" class="btn btn-danger">🗑️ Delete Selected</button>
+    </form>
+  </div>
+
+  <table class="table table-bordered table-dark table-hover">
+    <thead>
+      <tr>
+        <th><input type="checkbox" id="selectAll"></th>
+        <th>Exam Name</th>
+        <th>Course</th>
+        <th>Semester</th>
+        <th>Date</th>
+        <th>Staff</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for exam in exams %}
+      <tr>
+        <td><input type="checkbox" name="exam_checkbox" value="{{ exam.id }}"></td>
+        <td>{{ exam.name }}</td>
+        <td>{{ exam.course.name }}</td>
+        <td>{{ exam.semester }}</td>
+        <td>{{ exam.date }}</td>
+        <td>
+          {% for s in exam.course.staff.all %}
+            {{ s.user.username }}{% if not forloop.last %}, {% endif %}
+          {% empty %} —
+          {% endfor %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6">No exams found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  document.getElementById('selectAll').addEventListener('change', function () {
+    document.querySelectorAll('input[name="exam_checkbox"]').forEach(cb => cb.checked = this.checked);
+  });
+
+  document.getElementById('deleteForm').addEventListener('submit', function (e) {
+    const selected = [...document.querySelectorAll('input[name="exam_checkbox"]:checked')].map(cb => cb.value);
+    if (selected.length === 0) {
+      e.preventDefault();
+      alert("Please select exams to delete.");
+    } else {
+      document.getElementById('exam_ids').value = selected.join(',');
+    }
+  });
+</script>
+{% endblock %}
