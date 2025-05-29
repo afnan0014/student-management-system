@@ -1,11 +1,13 @@
+/* Shared Styles and CSS Variables */
+
 /* Define CSS custom properties with default dark mode values */
 :root {
   --bg-dark: #0A0F1A;
   --bg-card: #343a40;
   --bg-alt: #212529;
-  --text-base: #ECEFF1; /* Text color for header and footer */
-  --text-sidebar: #D1D4D6; /* Text color for sidebar */
-  --text-content: #E0E3E5; /* Text color for main content */
+  --text-base: #ECEFF1;
+  --text-sidebar: #D1D4D6;
+  --text-content: #E0E3E5;
   --text-muted: #adb5bd;
   --accent: #10A37F;
   --border: #495057;
@@ -20,9 +22,9 @@ body.light-mode {
   --bg-dark: #F8F9FA;
   --bg-card: #E9ECEF;
   --bg-alt: #D3D6DA;
-  --text-base: #ECEFF1; /* Darker text for header/footer in light mode */
-  --text-sidebar: #343a40; /* Darker text for sidebar in light mode */
-  --text-content: #495057; /* Darker text for main content in light mode */
+  --text-base: #343a40; /* Fixed: Darker text for light mode */
+  --text-sidebar: #2e3133;
+  --text-content: #495057;
   --text-muted: #6c757d;
   --accent: #0D7A5F;
   --border: #606365;
@@ -34,24 +36,45 @@ body.light-mode {
 /* Apply text colors to specific sections */
 .header,
 .footer {
-  color: var(--text-base);
+  color: #ffffff !important; /* Fixed to white in both modes */
+  background-color: #000000 !important; /* Fixed to black in both modes */
 }
 
+/* Ensure all text within header and footer is white, including links */
+.header a,
+.footer a {
+  color: #ffffff !important; /* Fixed to white in both modes */
+}
+
+/* Style buttons in header and footer */
 .header .btn-outline-light,
 .footer .btn-outline-light {
-  color: var(--text-base);
-  border-color: var(--text-base);
+  color: #ffffff !important; /* Fixed to white in both modes */
+  border-color: #ffffff !important; /* Fixed to white border in both modes */
 }
 
 .header .btn-outline-light:hover,
 .footer .btn-outline-light:hover {
-  background-color: var(--btn-primary-hover);
-  color: var(--bg-dark);
+  background-color: #808080 !important; /* Grey background on hover */
+  color: #ffffff !important; /* Keep text white on hover */
 }
 
 .header .btn-outline-light i,
 .footer .btn-outline-light i {
-  color: var(--text-base);
+  color: #ffffff !important; /* Fixed to white in both modes */
+}
+
+/* Ensure primary button (e.g., Login) in header/footer has consistent styling */
+.header .btn-primary,
+.footer .btn-primary {
+  background-color: #106da3 !important; /* Keep accent color for primary button */
+  color: #ffffff !important; /* Fixed to white in both modes */
+}
+
+.header .btn-primary:hover,
+.footer .btn-primary:hover {
+  background-color: #808080 !important; /* Grey background on hover */
+  color: #ffffff !important; /* Keep text white on hover */
 }
 
 .sidebar,
@@ -78,7 +101,8 @@ body.light-mode {
   margin-bottom: 0.5rem;
 }
 
-.form-control, .form-select {
+.form-control,
+.form-select {
   background-color: var(--bg-card);
   color: var(--text-content);
   border: 1px solid var(--border);
@@ -160,16 +184,20 @@ body {
   margin-left: var(--sidebar-width);
 }
 
-/* Ensure main content grows to fill space */
+/* Ensure main content grows to fill space and remains scrollable */
 main {
   flex-grow: 1;
+  overflow-y: auto; /* Ensure main content is scrollable */
+  position: relative;
+  z-index: 1; /* Ensure main content is below header but above background */
 }
 
-/* Header, Sidebar, Card, Table, Buttons, Alerts, Headings, Date-time, Footer */
+/* Header */
 .header {
-  background-color: var(--bg-alt);
+  background-color: #000000 !important; /* Fixed to black in both modes */
   padding: 15px 0;
   border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add subtle shadow for depth */
 }
 
 /* Adjust spacing for the sidebar toggle button on the left */
@@ -177,7 +205,7 @@ main {
   margin-right: 1rem;
 }
 
-/* Updated Sidebar Styling */
+/* Sidebar Styling */
 .sidebar {
   width: var(--sidebar-width) !important;
   background-color: var(--bg-alt) !important;
@@ -185,7 +213,7 @@ main {
   position: fixed;
   top: 0;
   bottom: 0;
-  z-index: 1000;
+  z-index: 999; /* Below header but above main content */
 }
 
 .sidebar .offcanvas-header {
@@ -250,15 +278,31 @@ main {
 /* Content Styling */
 .content {
   padding: 2rem;
-  display: flex;
-  justify-content: center;
   background-color: var(--bg-dark);
 }
 
 /* Footer */
 .footer {
-  background-color: var(--bg-alt);
+  background-color: #000000 !important; /* Fixed to black in both modes */
   border-top: 1px solid var(--border);
+}
+
+/* Footer Links */
+.footer a {
+  text-decoration: none;
+  color: #ffffff !important; /* Fixed to white in both modes */
+  transition: color 0.3s ease;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+  color: #ffffff !important; /* Keep white on hover, but allow underline */
+}
+
+/* Footer HR */
+.footer hr {
+  border-color: var(--border);
+  opacity: 0.5;
 }
 
 /* Ensure sidebar behaves as offcanvas on mobile */
@@ -275,10 +319,17 @@ main {
   .page-wrapper.shifted {
     margin-left: 0 !important;
   }
+
+  /* On mobile, ensure main content remains scrollable when sidebar is open */
+  .page-wrapper.shifted main {
+    overflow-y: auto;
+  }
 }
 
-/* Card, Table, Buttons, Alerts, Headings, Date-time */
-.card, .card-large, .card-user-list {
+/* Card Styling */
+.card,
+.card-large,
+.card-user-list {
   background-color: var(--bg-card);
   color: var(--text-content);
   box-shadow: 0 8px 16px rgba(61, 60, 60, 0.4);
@@ -289,16 +340,32 @@ main {
   transition: transform 0.3s ease;
 }
 
-.card:hover, .card-large:hover, .card-user-list:hover {
+.card:hover,
+.card-large:hover,
+.card-user-list:hover {
   transform: translateY(-4px);
 }
 
-body.light-mode .card, 
-body.light-mode .card-large, 
+body.light-mode .card,
+body.light-mode .card-large,
 body.light-mode .card-user-list {
-  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
+/* Card hover effect for testimonials */
+.card:hover {
+  transform: translateY(-5px);
+}
+
+/* Testimonial images */
+.card img.rounded-circle {
+  border: 2px solid var(--accent);
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Table Styles */
 .table-container {
   max-width: 960px;
   width: 100%;
@@ -330,7 +397,8 @@ body.light-mode .table thead {
 }
 
 /* Enhance table cell padding and alignment */
-.table th, .table td {
+.table th,
+.table td {
   border-color: var(--border);
   padding: 0.75rem 1rem;
   vertical-align: middle;
@@ -363,7 +431,7 @@ body.light-mode .table-striped tbody tr:nth-of-type(odd) {
 
 /* Adjust action bar when sidebar is open */
 .page-wrapper.shifted .action-bar {
-  max-width: 660px; /* 960px - 300px (sidebar width) */
+  max-width: 660px;
 }
 
 /* Buttons container */
@@ -391,7 +459,7 @@ body.light-mode .table-striped tbody tr:nth-of-type(odd) {
 /* Buttons */
 .btn {
   border: none;
-  transition: background-color 0.2s ease, transform 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.3s ease;
   border-radius: 0.5rem;
   padding: 0 1rem;
   height: 48px;
@@ -495,7 +563,8 @@ body.light-mode .alert-warning {
 }
 
 /* Headings */
-.card-title, .table-heading {
+.card-title,
+.table-heading {
   color: var(--accent);
   font-weight: 600;
   font-size: 1.75rem;

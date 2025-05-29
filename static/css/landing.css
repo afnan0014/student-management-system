@@ -1,0 +1,317 @@
+/* Landing Page Specific Styles */
+
+/* Define custom text colors for each section */
+:root {
+  --hero-text-color: #ffffff; /* Hero Section text color */
+  --about-text-color: var(--text-content); /* About Section text color */
+  --about-muted-text-color: var(--text-muted);
+  --features-text-color: #000000; /* Features Section text color - Fixed to black */
+  --features-muted-text-color: #000000; /* Fixed to black */
+  --testimonials-text-color: var(--text-content); /* Testimonials Section text color */
+  --testimonials-muted-text-color: var(--text-muted);
+  --statistics-text-color: #ffffff; /* Statistics Section text color (default white due to bg-primary) */
+  --contact-text-color: var(--text-content); /* Contact Section text color */
+  --contact-muted-text-color: var(--text-muted);
+}
+
+/* Light mode overrides for text colors */
+body.light-mode {
+  --hero-text-color: #ffffff;
+  --about-text-color: var(--text-content);
+  --about-muted-text-color: var(--text-muted);
+  --features-text-color: #000000; /* Features Section text color - Fixed to black */
+  --features-muted-text-color: #000000; /* Fixed to black */
+  --testimonials-text-color: var(--text-content);
+  --testimonials-muted-text-color: var(--text-muted);
+  --statistics-text-color: #ffffff;
+  --contact-text-color: var(--text-content);
+  --contact-muted-text-color: var(--text-muted);
+}
+
+/* Hero Section */
+.landing-hero {
+  min-height: 70vh; /* Reduced from 80vh to decrease overall section height */
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/static/images/college-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--hero-text-color);
+  text-align: center;
+  padding-top: 2rem; /* Reduced padding since header is no longer sticky */
+}
+
+/* Adjust the container inside landing-hero to reduce height */
+.landing-hero .container {
+  padding-top: 1.5rem; /* Reduced vertical padding to decrease container height */
+  padding-bottom: 1.5rem; /* Reduced vertical padding to decrease container height */
+}
+
+/* Ensure containers stretch to full width with padding */
+.container {
+  width: 100%;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Landing Page Content Styling */
+.content.landing-content {
+  display: block;
+  padding: 0;
+}
+
+/* Ensure sections stack vertically with proper spacing */
+.content.landing-content section {
+  width: 100%;
+  display: block;
+  padding: 3rem 0;
+}
+
+/* Style the section content container */
+.content.landing-content .section-content {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; /* Stretch to full width */
+  width: 100%;
+}
+
+/* Style individual content items within sections */
+.content.landing-content .content-item {
+  width: 100%;
+  margin-bottom: 2rem;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+/* Hover effect for content items */
+.content.landing-content .content-item:hover {
+  transform: translateY(-5px);
+}
+
+/* Ensure cards take the full width of the content item */
+.content.landing-content .content-item .card {
+  width: 100%;
+}
+
+/* Row layout for Features, Testimonials, and Statistics sections */
+.content.landing-content .content-column,
+.content.landing-content .impact-column {
+  display: flex;
+  flex-direction: row; /* Change to row for side-by-side layout */
+  flex-wrap: wrap; /* Allow wrapping for responsiveness */
+  justify-content: center; /* Center items horizontally */
+  width: 100%;
+  gap: 1.5rem; /* Add spacing between items */
+}
+
+/* Style individual items in Features section */
+.content.landing-content .features-section .content-item {
+  background-color: rgba(0, 0, 0, 0.05); /* Subtle background for light mode */
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin-bottom: 0; /* Remove margin-bottom since gap is handled by parent */
+  width: 100%;
+  max-width: 300px; /* Adjust width for side-by-side layout */
+  text-align: center;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+body.dark-mode .features-section .content-item {
+  background-color: rgba(255, 255, 250, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.content.landing-content .features-section .content-item:hover {
+  transform: translateY(-5px);
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode .features-section .content-item:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Style individual items in Testimonials section */
+.content.landing-content .testimonials-section .content-item {
+  width: 100%;
+  max-width: 300px; /* Adjust width for side-by-side layout */
+  margin-bottom: 0; /* Remove margin-bottom since gap is handled by parent */
+}
+
+/* Style individual items in Statistics section */
+.content.landing-content .impact-item {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin-bottom: 0; /* Remove margin-bottom since gap is handled by parent */
+  width: 100%;
+  max-width: 200px; /* Slightly narrower for stats to fit side by side */
+  text-align: center;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+body.light-mode .content.landing-content .impact-item {
+  background-color: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.content.landing-content .impact-item:hover {
+  transform: translateY(-5px);
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+body.light-mode .content.landing-content .impact-item:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Ensure images are responsive */
+.content.landing-content section img {
+  width: 100%;
+  height: auto;
+  margin: 0 auto;
+  display: block;
+}
+
+/* Statistics Section */
+section.bg-primary {
+  background-color: var(--accent) !important;
+}
+
+/* Contact Section Links */
+section a.text-primary {
+  color: var(--accent) !important;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+section a.text-primary:hover {
+  text-decoration: underline;
+}
+
+/* Apply custom text colors to each section */
+.about-section {
+  color: var(--about-text-color);
+}
+
+.about-section .text-muted {
+  color: var(--about-muted-text-color) !important;
+}
+
+.features-section {
+  color: var(--features-text-color);
+}
+
+.features-section .text-primary {
+  color: var(--accent) !important;
+}
+
+.features-section .text-muted {
+  color: var(--features-muted-text-color) !important;
+}
+
+.testimonials-section {
+  color: var(--testimonials-text-color);
+}
+
+.testimonials-section .card-title {
+  color: var(--accent);
+}
+
+.testimonials-section .text-muted {
+  color: var(--testimonials-muted-text-color) !important;
+}
+
+.statistics-section {
+  color: var(--statistics-text-color);
+}
+
+.contact-section {
+  color: var(--contact-text-color);
+}
+
+.contact-section .text-muted {
+  color: var(--contact-muted-text-color) !important;
+}
+
+/* Footer Section */
+.footer {
+  color: #ffffff !important; /* Fixed to white in both modes */
+  background-color: #000000 !important; /* Fixed to black in both modes */
+}
+
+/* Ensure all text in footer, including muted text, is white in both modes */
+.footer .text-muted {
+  color: #ffffff !important; /* Fixed to white in both modes */
+}
+
+/* Remove the dark mode specific rule since it's no longer needed */
+body.dark-mode .footer .text-muted {
+  color: #ffffff !important; /* Already covered by .footer .text-muted */
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .landing-hero {
+    min-height: 50vh; /* Reduced from 60vh to decrease overall section height on smaller screens */
+    padding: 2rem;
+    padding-top: 2rem; /* Reduced padding on mobile */
+  }
+
+  .landing-hero .container {
+    padding-top: 1rem; /* Further reduce padding on smaller screens */
+    padding-bottom: 1rem;
+  }
+
+  .landing-hero h1 {
+    font-size: 2.5rem;
+  }
+
+  .landing-hero p.lead {
+    font-size: 1rem;
+  }
+
+  .content.landing-content section {
+    padding: 2rem 0;
+  }
+
+  .content.landing-content section h2 {
+    font-size: 1.75rem;
+  }
+
+  .content.landing-content .content-item,
+  .content.landing-content .impact-item {
+    max-width: 100%;
+  }
+
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Stack items in a column on smaller screens */
+  .content.landing-content .content-column,
+  .content.landing-content .impact-column {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .landing-hero h1 {
+    font-size: 2rem;
+  }
+
+  .landing-hero .btn-lg {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .content.landing-content .content-item,
+  .content.landing-content .impact-item {
+    margin-bottom: 1rem;
+  }
+}

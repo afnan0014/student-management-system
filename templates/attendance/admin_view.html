@@ -26,6 +26,27 @@
         {% endfor %}
       {% endif %}
 
+      <!-- Search Form -->
+      <form method="get" class="flex-grow-1 me-2 mb-3" style="max-width: 100%;">
+        <div class="input-group search-container" style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
+          <input 
+            type="text" 
+            name="q" 
+            value="{% if query %}{{ query }}{% endif %}" 
+            class="form-control bg-secondary text-light border-0" 
+            placeholder="Search students..."
+            style="border-radius: 0.5rem 0 0 0.5rem; width: calc(100% - 48px); flex: none;"
+          >
+          <button 
+            type="submit" 
+            class="btn btn-info" 
+            style="border-radius: 0 0.5rem 0.5rem 0; width: 48px; flex: none;"
+          >
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+      </form>
+
       <!-- Filter Form -->
       <form method="get">
         <div class="row g-2 align-items-end">
