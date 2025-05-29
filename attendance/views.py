@@ -5,6 +5,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from datetime import date, datetime
+from django.db.models import Q
 import csv
 
 from courses.models import Course
@@ -96,18 +97,26 @@ def student_attendance_view(request):
         'end_date': end_date,
     })
 
-
 @staff_member_required
 def admin_view_attendance(request):
     selected_date = request.GET.get('date')
     selected_staff_id = request.GET.get('staff')
     selected_course_id = request.GET.get('course')
+    query = request.GET.get('q')  # Get the search query for student name
 
+    # Base queryset with related fields
     records = Attendance.objects.select_related('student__user', 'course').order_by('-date')
 
-    staff_profiles = StaffProfile.objects.select_related('user').all()
-    courses = Course.objects.all()
+    # Filter by search query (student username, first_name, or last_name)
+    if query:
+        records = records.filter(
+            Q(student__user__username__icontains=query) |
+            Q(student__user__first_name__icontains=query) |
+            Q(student__user__last_name__icontains=query)
+        )
 
+    # Filter by staff
+    staff_profiles = StaffProfile.objects.select_related('user').all()
     if selected_staff_id:
         try:
             selected_staff = StaffProfile.objects.select_related('user').get(user__id=selected_staff_id)
@@ -115,6 +124,8 @@ def admin_view_attendance(request):
         except StaffProfile.DoesNotExist:
             messages.error(request, "Selected staff member does not exist.")
 
+    # Filter by course
+    courses = Course.objects.all()
     if selected_course_id:
         try:
             selected_course = Course.objects.get(id=selected_course_id)
@@ -122,6 +133,7 @@ def admin_view_attendance(request):
         except Course.DoesNotExist:
             messages.error(request, "Selected course does not exist.")
 
+    # Filter by date
     if selected_date:
         try:
             selected_date_obj = datetime.strptime(selected_date, "%Y-%m-%d").date()
@@ -135,7 +147,8 @@ def admin_view_attendance(request):
         'selected_staff_id': selected_staff_id,
         'selected_course_id': selected_course_id,
         'staff_profiles': staff_profiles,
-        'courses': courses
+        'courses': courses,
+        'query': query  # Pass the search query back to the template
     })
 
 

@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Welcome to College Student Management System{% endblock %}
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+{% endblock %}
+{% block content %}
+<!-- Hero Section -->
+<section class="landing-hero">
+  <div class="container text-center">
+    <h1 class="display-3 fw-bold mb-3">Welcome to <br> College Student Management System</h1>
+    <p class="lead mb-4">Empowering your academic journey with seamless access to attendance, courses, reports, and more—all in one place.</p>
+  </div>
+</section>
+
+<!-- About the College Section -->
+<section class="py-5 about-section">
+  <div class="container section-content">
+    <h2 class="mb-4 text-center">About Us</h2>
+    <div class="content-item">
+      <p class="text-muted">
+        Founded in 1985, College is a premier institution dedicated to fostering academic excellence and holistic development. With a rich history of over three decades, we pride ourselves on our commitment to providing quality education, state-of-the-art facilities, and a nurturing environment for our students.
+      </p>
+      <p class="text-muted">
+        Our mission is to empower students to achieve their full potential through innovative teaching methods, cutting-edge technology, and a supportive community. Join us to experience a transformative educational journey.
+      </p>
+    </div>
+    <div class="content-item text-center">
+      <img src="/static/images/college-campus.jpg" alt="College Campus" class="img-fluid rounded shadow" style="max-height: 400px; object-fit: cover;">
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-light features-section">
+  <div class="container section-content">
+    <h2 class="text-center mb-5">What Focus Our System?</h2>
+    <div class="content-column">
+      <div class="content-item text-center">
+        <i class="bi bi-clipboard-check display-4 text-primary mb-3"></i>
+        <h4>Track Attendance</h4>
+        <p class="text-muted">Easily monitor your attendance records and stay updated on your academic progress with real-time insights.</p>
+      </div>
+      <div class="content-item text-center">
+        <i class="bi bi-book display-4 text-primary mb-3"></i>
+        <h4>Manage Courses</h4>
+        <p class="text-muted">Access course details, schedules, and resources in a few clicks, ensuring you never miss a deadline.</p>
+      </div>
+      <div class="content-item text-center">
+        <i class="bi bi-file-earmark-text display-4 text-primary mb-3"></i>
+        <h4>Generate Reports</h4>
+        <p class="text-muted">Get detailed reports on your academic performance and activities to track your growth.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="py-5 testimonials-section">
+  <div class="container section-content">
+    <h2 class="text-center mb-5">What Our Users Say</h2>
+    <div class="content-column">
+      <div class="content-item">
+        <div class="card shadow-sm">
+          <div class="card-body text-center">
+            <img src="/static/images/student1.png" alt="Student" class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover;">
+            <p class="card-text">"The Student Management System has made my academic life so much easier. I can track my attendance and access course materials anytime!"</p>
+            <h6 class="card-title">Shamil</h6>
+            <small class="text-muted">Bsc Computer Science, 3rd Year</small>
+          </div>
+        </div>
+      </div>
+      <div class="content-item">
+        <div class="card shadow-sm">
+          <div class="card-body text-center">
+            <img src="/static/images/staff1.png" alt="Staff" class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover;">
+            <p class="card-text">"As a faculty member, I appreciate how this system streamlines attendance marking and report generation. It's a game-changer!"</p>
+            <h6 class="card-title">Deepak Dev</h6>
+            <small class="text-muted">Professor, Department of Commerce</small>
+          </div>
+        </div>
+      </div>
+      <div class="content-item">
+        <div class="card shadow-sm">
+          <div class="card-body text-center">
+            <img src="/static/images/admin1.webp" alt="Admin" class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover;">
+            <p class="card-text">"Managing users and academic data has never been easier. This system is efficient and user-friendly for administrators."</p>
+            <h6 class="card-title">Afnan</h6>
+            <small class="text-muted">System Administrator</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="py-5 bg-primary text-white statistics-section">
+  <div class="container section-content">
+    <h2 class="text-center mb-5">Our Impact</h2>
+    <div class="impact-column">
+      <div class="impact-item text-center">
+        <i class="bi bi-people-fill display-4 mb-3"></i>
+        <h3>10,000+</h3>
+        <p>Students Served</p>
+      </div>
+      <div class="impact-item text-center">
+        <i class="bi bi-person-gear display-4 mb-3"></i>
+        <h3>500+</h3>
+        <p>Faculty Members</p>
+      </div>
+      <div class="impact-item text-center">
+        <i class="bi bi-book-half display-4 mb-3"></i>
+        <h3>50+</h3>
+        <p>Courses Offered</p>
+      </div>
+      <div class="impact-item text-center">
+        <i class="bi bi-award display-4 mb-3"></i>
+        <h3>35+</h3>
+        <p>Years of Excellence</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Section -->
+<section class="py-5 contact-section">
+  <div class="container section-content">
+    <h2 class="text-center mb-5">Get in Touch</h2>
+    <div class="content-item">
+      <h4 class="text-center">Contact Information</h4>
+      <p class="text-center"><i class="bi bi-geo-alt me-2"></i>College, 123 University Road, City, State, ZIP Code</p>
+      <p class="text-center"><i class="bi bi-telephone me-2"></i>+91 12345 67890</p>
+      <p class="text-center"><i class="bi bi-envelope me-2"></i>info@college.edu.in</p>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block footer %}
+<footer class="footer py-4">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-4 mb-3 text-center">
+        <h5>College</h5>
+        <p class="text-muted">Empowering education since 1985. Join us to shape your future.</p>
+      </div>
+      <div class="col-md-4 mb-3 text-center">
+        <h5>Quick Links</h5>
+        <ul class="list-unstyled">
+          <li><a href="#">Home</a></li>
+          <li><a href="#">Admissions</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Support</a></li>
+        </ul>
+      </div>
+      <div class="col-md-4 mb-3 text-center">
+        <h5>Contact Us</h5>
+        <p class="text-muted"><i class="bi bi-geo-alt me-2"></i>123 University Road, City, State</p>
+        <p class="text-muted"><i class="bi bi-telephone me-2"></i>+91 12345 67890</p>
+        <p class="text-muted"><i class="bi bi-envelope me-2"></i>info@college.edu.in</p>
+      </div>
+    </div>
+    <hr>
+    <p class="text-center mb-0"><i class="bi bi-c-circle me-1"></i>2025 College Student Management System. All rights reserved.</p>
+  </div>
+</footer>
+{% endblock %}
