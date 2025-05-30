@@ -7,6 +7,8 @@
   --about-muted-text-color: var(--text-muted);
   --features-text-color: #000000; /* Features Section text color - Fixed to black */
   --features-muted-text-color: #000000; /* Fixed to black */
+  --programs-text-color: #000000; /* Programs Section text color - Black in light mode */
+  --programs-muted-text-color: #000000; /* Black in light mode */
   --testimonials-text-color: var(--text-content); /* Testimonials Section text color */
   --testimonials-muted-text-color: var(--text-muted);
   --statistics-text-color: #ffffff; /* Statistics Section text color (default white due to bg-primary) */
@@ -21,6 +23,24 @@ body.light-mode {
   --about-muted-text-color: var(--text-muted);
   --features-text-color: #000000; /* Features Section text color - Fixed to black */
   --features-muted-text-color: #000000; /* Fixed to black */
+  --programs-text-color: #000000; /* Programs Section text color - Black in light mode */
+  --programs-muted-text-color: #000000; /* Black in light mode */
+  --testimonials-text-color: var(--text-content);
+  --testimonials-muted-text-color: var(--text-muted);
+  --statistics-text-color: #ffffff;
+  --contact-text-color: var(--text-content);
+  --contact-muted-text-color: var(--text-muted);
+}
+
+/* Dark mode overrides for text colors */
+body.dark-mode {
+  --hero-text-color: #ffffff;
+  --about-text-color: var(--text-content);
+  --about-muted-text-color: var(--text-muted);
+  --features-text-color: #000000; /* Features Section text color - Fixed to black */
+  --features-muted-text-color: #000000; /* Fixed to black */
+  --programs-text-color: #ffffff; /* Programs Section text color - White in dark mode */
+  --programs-muted-text-color: #ffffff; /* White in dark mode */
   --testimonials-text-color: var(--text-content);
   --testimonials-muted-text-color: var(--text-muted);
   --statistics-text-color: #ffffff;
@@ -30,7 +50,7 @@ body.light-mode {
 
 /* Hero Section */
 .landing-hero {
-  min-height: 70vh; /* Reduced from 80vh to decrease overall section height */
+  min-height: 80vh;
   background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/static/images/college-bg.jpg');
   background-size: cover;
   background-position: center;
@@ -42,10 +62,10 @@ body.light-mode {
   padding-top: 2rem; /* Reduced padding since header is no longer sticky */
 }
 
-/* Adjust the container inside landing-hero to reduce height */
-.landing-hero .container {
-  padding-top: 1.5rem; /* Reduced vertical padding to decrease container height */
-  padding-bottom: 1.5rem; /* Reduced vertical padding to decrease container height */
+/* Style the Welcome container */
+.landing-hero .welcome-container {
+  padding-top: 1rem; /* Reduced from 1.5rem to decrease height */
+  padding-bottom: 1rem; /* Reduced from 1.5rem to decrease height */
 }
 
 /* Ensure containers stretch to full width with padding */
@@ -86,7 +106,7 @@ body.light-mode {
   transition: transform 0.3s ease;
 }
 
-/* Hover effect for content items */
+/* Hover effect for content items (base) */
 .content.landing-content .content-item:hover {
   transform: translateY(-5px);
 }
@@ -96,22 +116,27 @@ body.light-mode {
   width: 100%;
 }
 
-/* Row layout for Features, Testimonials, and Statistics sections */
+/* Row layout for Features, Programs, Testimonials, and Statistics sections */
 .content.landing-content .content-column,
 .content.landing-content .impact-column {
   display: flex;
-  flex-direction: row; /* Change to row for side-by-side layout */
+  flex-direction: row; /* Side-by-side layout */
   flex-wrap: wrap; /* Allow wrapping for responsiveness */
   justify-content: center; /* Center items horizontally */
   width: 100%;
-  gap: 1.5rem; /* Add spacing between items */
+  gap: 1.5rem; /* Default gap */
+}
+
+/* Adjust gap specifically for Programs section */
+.content.landing-content .programs-section .content-column {
+  gap: 2rem; /* Increased spacing between items */
 }
 
 /* Style individual items in Features section */
 .content.landing-content .features-section .content-item {
   background-color: rgba(0, 0, 0, 0.05); /* Subtle background for light mode */
   border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 0.75rem;
+  border-radius: 0.75rem; /* Curved edges (12px) */
   padding: 1.5rem;
   margin-bottom: 0; /* Remove margin-bottom since gap is handled by parent */
   width: 100%;
@@ -134,6 +159,53 @@ body.dark-mode .features-section .content-item:hover {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
+/* Style individual items in Programs section */
+.content.landing-content .programs-section .content-item {
+  background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); /* Blue-to-light-blue gradient in light mode */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  border-radius: 1.25rem; /* More pronounced curved edges */
+  padding: 2rem; /* Increased padding */
+  margin-bottom: 0; /* Remove margin-bottom since gap is handled by parent */
+  width: 100%;
+  max-width: 350px; /* Increased width for side-by-side layout */
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+body.dark-mode .programs-section .content-item {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Darker blue-to-purple gradient in dark mode */
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1); /* Subtle shadow in dark mode */
+}
+
+/* Enhanced hover effect for Programs section */
+.content.landing-content .programs-section .content-item:hover {
+  transform: translateY(-5px) scale(1.05); /* Scale up on hover */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
+}
+
+body.dark-mode .programs-section .content-item:hover {
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+}
+
+/* Style the program titles */
+.content.landing-content .programs-section .program-title {
+  font-weight: 700; /* Bolder font */
+  margin-bottom: 1rem;
+}
+
+/* Style the program icons with a gradient */
+.content.landing-content .programs-section .program-icon {
+  background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); /* Match container gradient */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+body.dark-mode .programs-section .program-icon {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Match dark mode gradient */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 /* Style individual items in Testimonials section */
 .content.landing-content .testimonials-section .content-item {
   width: 100%;
@@ -145,7 +217,7 @@ body.dark-mode .features-section .content-item:hover {
 .content.landing-content .impact-item {
   background-color: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 0.75rem;
+  border-radius: 0.75rem; /* Curved edges (12px) */
   padding: 1.5rem;
   margin-bottom: 0; /* Remove margin-bottom since gap is handled by parent */
   width: 100%;
@@ -213,6 +285,18 @@ section a.text-primary:hover {
   color: var(--features-muted-text-color) !important;
 }
 
+.programs-section {
+  color: var(--programs-text-color);
+}
+
+.programs-section .text-primary {
+  color: var(--accent) !important;
+}
+
+.programs-section .text-muted {
+  color: var(--programs-muted-text-color) !important;
+}
+
 .testimonials-section {
   color: var(--testimonials-text-color);
 }
@@ -256,14 +340,14 @@ body.dark-mode .footer .text-muted {
 /* Responsive adjustments for smaller screens */
 @media (max-width: 768px) {
   .landing-hero {
-    min-height: 50vh; /* Reduced from 60vh to decrease overall section height on smaller screens */
+    min-height: 60vh;
     padding: 2rem;
     padding-top: 2rem; /* Reduced padding on mobile */
   }
 
-  .landing-hero .container {
-    padding-top: 1rem; /* Further reduce padding on smaller screens */
-    padding-bottom: 1rem;
+  .landing-hero .welcome-container {
+    padding-top: 0.75rem; /* Further reduced for mobile */
+    padding-bottom: 0.75rem; /* Further reduced for mobile */
   }
 
   .landing-hero h1 {

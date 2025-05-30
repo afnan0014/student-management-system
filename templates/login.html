@@ -1,57 +1,86 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block title %}Login{% endblock %}
+
 {% block content %}
+<style>
+  /* Full-screen background for the login page */
+  .login-page {
+    min-height: 100vh;
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/static/images/login-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    padding-top: 2rem; /* Space for the back arrow */
+  }
 
-<div class="mb-3">
-    <a href="javascript:history.back()" class="back-arrow" style="font-size: 1.5rem; text-decoration: none;" title="Go back">
-        <i class="bi bi-arrow-left"></i>
+  /* Ensure the card remains readable */
+  .card.bg-dark {
+    background-color: rgba(0, 0, 0, 0.85); /* Slightly more opaque for better contrast */
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 576px) {
+    .login-page {
+      padding: 1rem;
+    }
+  }
+</style>
+
+<div class="login-page">
+  <div class="mb-3 container">
+    <a href="javascript:history.back()" class="back-arrow" style="font-size: 1.5rem; text-decoration: none; color: #ffffff;" title="Go back">
+      <i class="bi bi-arrow-left"></i>
     </a>
-</div>
+  </div>
 
-<div class="container d-flex align-items-center justify-content-center" style="min-height:80vh">
-  <div class="col-md-6 col-lg-5">
-    <div class="card bg-dark text-light shadow-lg border-0">
-      <div class="card-body">
-        <h2 class="card-title mb-4 text-center">
-          <i class="bi bi-box-arrow-in-right me-2"></i>Login
-        </h2>
+  <div class="container d-flex align-items-center justify-content-center" style="flex: 1;">
+    <div class="col-md-6 col-lg-5">
+      <div class="card bg-dark text-light shadow-lg border-0">
+        <div class="card-body">
+          <h2 class="card-title mb-4 text-center">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Login
+          </h2>
 
-        <form method="POST" novalidate>
-          {% csrf_token %}
-          <div class="mb-3">
-            <label for="username" class="form-label"><i class="bi bi-person me-1"></i>Username</label>
-            <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
-              <input 
-                type="text" 
-                name="username" 
-                id="username" 
-                class="form-control bg-secondary text-light border-0" 
-                placeholder="Enter username" 
-                required
-              >
+          <form method="POST" novalidate>
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="username" class="form-label"><i class="bi bi-person me-1"></i>Username</label>
+              <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
+                <input 
+                  type="text" 
+                  name="username" 
+                  id="username" 
+                  class="form-control bg-secondary text-light border-0" 
+                  placeholder="Enter username" 
+                  required
+                >
+              </div>
             </div>
-          </div>
 
-          <div class="mb-3">
-            <label for="password" class="form-label"><i class="bi bi-lock me-1"></i>Password</label>
-            <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
-              <input 
-                type="password" 
-                name="password" 
-                id="password" 
-                class="form-control bg-secondary text-light border-0" 
-                placeholder="Enter password" 
-                required
-              >
+            <div class="mb-3">
+              <label for="password" class="form-label"><i class="bi bi-lock me-1"></i>Password</label>
+              <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
+                <input 
+                  type="password" 
+                  name="password" 
+                  id="password" 
+                  class="form-control bg-secondary text-light border-0" 
+                  placeholder="Enter password" 
+                  required
+                >
+              </div>
             </div>
-          </div>
 
-          <div class="d-grid">
-            <button type="submit" class="btn btn-sm btn-info py-2">
-              <i class="bi bi-box-arrow-in-right me-1"></i>Login
-            </button>
-          </div>
-        </form>
+            <div class="d-grid">
+              <button type="submit" class="btn btn-sm btn-info py-2">
+                <i class="bi bi-box-arrow-in-right me-1"></i>Login
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
