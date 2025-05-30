@@ -118,28 +118,53 @@
     </div>
   </div>
 </div>
-
 {% endblock %}
 
 {% block scripts %}
-{% if role == "Staff" %}
 <script>
 document.getElementById('add-user-form').addEventListener('submit', function(event) {
-    const department = document.querySelector('select[name="department"]');
-    const course = document.querySelector('select[name="course"]');
-    
-    if (!department.value) {
-        event.preventDefault();
-        alert('Please select a department.');
-        return;
+    const role = "{{ role }}";
+
+    if (role === "Student") {
+        const course = document.querySelector('select[name="course"]');
+        const department = document.querySelector('select[name="department"]');
+        const batch = document.querySelector('input[name="batch_number"]');
+
+        if (!department.value) {
+            event.preventDefault();
+            alert("Please select a department.");
+            return;
+        }
+
+        if (!course.value) {
+            event.preventDefault();
+            alert("Please select a course.");
+            return;
+        }
+
+        if (!batch.value || isNaN(batch.value) || batch.value < 2000 || batch.value > 2030) {
+            event.preventDefault();
+            alert("Please enter a valid batch year between 2000 and 2030.");
+            return;
+        }
     }
-    
-    if (!course.value) {
-        event.preventDefault();
-        alert('Please select a course.');
-        return;
+
+    if (role === "Staff") {
+        const course = document.querySelector('select[name="course"]');
+        const department = document.querySelector('select[name="department"]');
+
+        if (!department.value) {
+            event.preventDefault();
+            alert("Please select a department.");
+            return;
+        }
+
+        if (!course.value) {
+            event.preventDefault();
+            alert("Please select a course.");
+            return;
+        }
     }
 });
 </script>
-{% endif %}
 {% endblock %}
