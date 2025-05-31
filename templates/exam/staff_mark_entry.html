@@ -31,6 +31,7 @@
   {% if formset %}
     <form method="POST">
       {% csrf_token %}
+      {{ formset.management_form }}
       <table class="table table-bordered table-dark table-hover align-middle">
         <thead>
           <tr>
@@ -52,7 +53,10 @@
             </td>
             <td>{{ form.instance.exam.name }}</td>
             <td>{{ form.instance.subject.name }}</td>
-            <td>{{ form.marks_obtained }}</td>
+            <td>
+              {{ form.id }}  {# Hidden input needed for correct model update #}
+              {{ form.marks_obtained }}
+            </td>
           </tr>
           {% endfor %}
         </tbody>

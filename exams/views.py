@@ -33,7 +33,6 @@ def staff_mark_entry_spreadsheet(request):
         selected_exam = get_object_or_404(Exam, id=exam_id)
         selected_subject = get_object_or_404(Subject, id=subject_id)
 
-        # Ensure marks exist or create them
         for student in students:
             Mark.objects.get_or_create(
                 student=student,
@@ -42,12 +41,11 @@ def staff_mark_entry_spreadsheet(request):
                 defaults={'marks_obtained': 0}
             )
 
-            marks = Mark.objects.select_related('student__user').filter(
-                exam=selected_exam,
-                subject=selected_subject,
-                student__course=staff_profile.course
-            )
-
+        marks = Mark.objects.select_related('student__user').filter(
+            exam=selected_exam,
+            subject=selected_subject,
+            student__course=staff_profile.course
+        )
 
     MarkFormSet = modelformset_factory(Mark, form=MarkForm, extra=0)
 
@@ -70,6 +68,14 @@ def staff_mark_entry_spreadsheet(request):
         'selected_subject': subject_id,
     })
 
+
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Mark, Exam
+from accounts.models import StudentProfile
+
 @login_required
 def report_card_view(request):
     user = request.user
@@ -77,43 +83,97 @@ def report_card_view(request):
         student_profile = user.student_profile
     except StudentProfile.DoesNotExist:
         messages.error(request, "You are not a student.")
-        return redirect('home')  # Or a dedicated "not allowed" page
+        return redirect('home')
 
-    # Base queryset
-    marks = Mark.objects.filter(student=student_profile).select_related('exam', 'subject')
-
-    # Filtering
+    # Filters
     exam_filter = request.GET.get('exam')
     subject_filter = request.GET.get('subject')
-    grade_filter = request.GET.get('grade')
+    status_filter = request.GET.get('status')  # 'pass' or 'fail'
+
+    # Base queryset
+    marks_qs = Mark.objects.filter(student=student_profile).select_related('exam', 'subject')
 
     if exam_filter:
-        marks = marks.filter(exam__id=exam_filter)
+        marks_qs = marks_qs.filter(exam__id=exam_filter)
     if subject_filter:
-        marks = marks.filter(subject__id=subject_filter)
-    if grade_filter:
-        marks = marks.filter(student_result_grade=grade_filter)
+        marks_qs = marks_qs.filter(subject__id=subject_filter)
 
-    # Unique dropdown options for filtering
+    # Grade calculation
+    def get_grade(m):
+        if m >= 90: return 'A+'
+        elif m >= 80: return 'A'
+        elif m >= 70: return 'B+'
+        elif m >= 60: return 'B'
+        elif m >= 50: return 'C'
+        return 'F'
+
+    # Apply status filter after grading
+    marks = []
+    total_passed = total_failed = 0
+
+    for mark in marks_qs:
+        grade = get_grade(mark.marks_obtained)
+        status = "Passed" if mark.marks_obtained >= 50 else "Failed"
+
+        if status_filter == 'pass' and status != "Passed":
+            continue
+        if status_filter == 'fail' and status != "Failed":
+            continue
+
+        mark.grade = grade
+        mark.status = status
+        marks.append(mark)
+
+        if status == "Passed":
+            total_passed += 1
+        else:
+            total_failed += 1
+
+    # Group by exam
+    grouped = {}
+    for mark in marks:
+        exam = mark.exam
+        exam_key = (exam.id, exam.name, exam.date)
+        if exam_key not in grouped:
+            grouped[exam_key] = {
+                'name': exam.name,
+                'date': exam.date,
+                'marks': [],
+                'total_max': 0,
+                'total_obtained': 0,
+                'pass_count': 0,
+                'fail_count': 0
+            }
+
+        grouped[exam_key]['marks'].append(mark)
+        grouped[exam_key]['total_max'] += 100
+        grouped[exam_key]['total_obtained'] += mark.marks_obtained
+        if mark.status == 'Passed':
+            grouped[exam_key]['pass_count'] += 1
+        else:
+            grouped[exam_key]['fail_count'] += 1
+
+    grouped_results = list(grouped.values())
+
+    # Filter options
     exams = Exam.objects.filter(mark__student=student_profile).distinct()
-    subjects = marks.values_list('subject__id', 'subject__name').distinct()
-    
-    # Assuming `student_result_grade` is stored directly in the Mark model
-    grades = marks.values_list('student_result_grade', flat=True).distinct()
+    subjects = marks_qs.values_list('subject__id', 'subject__name').distinct()
 
     return render(request, 'exam/report_card.html', {
-        'marks': marks,
+        'grouped_results': grouped_results,
         'exams': exams,
         'subjects': subjects,
-        'grades': grades,
         'selected_exam': exam_filter,
         'selected_subject': subject_filter,
-        'selected_grade': grade_filter,
+        'selected_status': status_filter,
+        'total_passed': total_passed,
+        'total_failed': total_failed,
     })
+
 
 @staff_member_required
 def export_results_view(request):
-    # Filter inputs
+    # Filters
     course_id = request.GET.get('course')
     staff_id = request.GET.get('staff')
     subject_id = request.GET.get('subject')
@@ -131,24 +191,40 @@ def export_results_view(request):
     if exam_id:
         marks = marks.filter(exam_id=exam_id)
 
-    # Export to CSV
+    # Grading logic
+    def calculate_grade(mark):
+        if mark >= 90: return 'A+'
+        elif mark >= 80: return 'A'
+        elif mark >= 70: return 'B+'
+        elif mark >= 60: return 'B'
+        elif mark >= 50: return 'C'
+        else: return 'F'
+
+    # Export CSV
     if request.GET.get('export') == 'csv':
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="exam_results.csv"'
         writer = csv.writer(response)
-        writer.writerow(['Student', 'Course', 'Exam', 'Subject', 'Marks'])
+        writer.writerow(['Student', 'Course', 'Exam', 'Subject', 'Max Marks', 'Obtained Marks', 'Grade', 'Status'])
 
         for mark in marks:
+            obtained = mark.marks_obtained
+            grade = calculate_grade(obtained)
+            status = 'Passed' if obtained >= 50 else 'Failed'
+
             writer.writerow([
                 mark.student.user.get_full_name(),
                 mark.student.course.name if mark.student.course else 'N/A',
                 mark.exam.name,
                 mark.subject.name,
-                mark.marks_obtained,
+                100,
+                obtained,
+                grade,
+                status,
             ])
         return response
 
-    # Render HTML for filtering
+    # Render template
     return render(request, 'exam/export_results.html', {
         'marks': marks,
         'courses': Course.objects.all(),
@@ -160,8 +236,10 @@ def export_results_view(request):
             'staff': staff_id,
             'subject': subject_id,
             'exam': exam_id,
-        }
+        },
+        'calculate_grade': calculate_grade
     })
+
 
 def create_exam(request):
     if request.method == 'POST':
