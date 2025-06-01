@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Mark Entry{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-3"><i class="bi bi-pencil-square me-2"></i>Mark Entry</h2>
+
+  <!-- Filter Form -->
+  <form method="GET" class="row g-2 mb-4">
+    <div class="col-md-5">
+      <select name="exam" class="form-select" required>
+        <option value="">-- Select Exam --</option>
+        {% for exam in exams %}
+          <option value="{{ exam.id }}" {% if selected_exam == exam.id|stringformat:"s" %}selected{% endif %}>{{ exam.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-5">
+      <select name="subject" class="form-select" required>
+        <option value="">-- Select Subject --</option>
+        {% for subj in subjects %}
+          <option value="{{ subj.id }}" {% if selected_subject == subj.id|stringformat:"s" %}selected{% endif %}>{{ subj.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary w-100">🔍 Filter</button>
+    </div>
+  </form>
+
+  <!-- Mark Entry Table -->
+  {% if formset %}
+    <form method="POST">
+      {% csrf_token %}
+      {{ formset.management_form }}
+      <table class="table table-bordered table-dark table-hover align-middle">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Exam</th>
+            <th>Subject</th>
+            <th>Marks Obtained</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for form in formset %}
+          <tr>
+            <td>
+              {% if form.instance.student and form.instance.student.user %}
+                {{ form.instance.student.user.get_full_name|default:form.instance.student.user.username }}
+              {% else %}
+                Unknown Student
+              {% endif %}
+            </td>
+            <td>{{ form.instance.exam.name }}</td>
+            <td>{{ form.instance.subject.name }}</td>
+            <td>
+              {{ form.id }}  {# Hidden input needed for correct model update #}
+              {{ form.marks_obtained }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div class="d-grid">
+        <button type="submit" class="btn btn-success py-2">✅ Submit Marks</button>
+      </div>
+    </form>
+  {% else %}
+    <div class="alert alert-info">Please filter to load students for marking.</div>
+  {% endif %}
+</div>
+{% endblock %}

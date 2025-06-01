@@ -36,14 +36,14 @@ body.light-mode {
 /* Apply text colors to specific sections */
 .header,
 .footer {
-  color: #ffffff !important; /* Fixed to white in both modes */
+  color: #faf6f6f5 !important; /* Fixed to white in both modes */
   background-color: #000000 !important; /* Fixed to black in both modes */
 }
 
 /* Ensure all text within header and footer is white, including links */
 .header a,
 .footer a {
-  color: #ffffff !important; /* Fixed to white in both modes */
+  color: #777474 !important; /* Fixed to white in both modes */
 }
 
 /* Style buttons in header and footer */

@@ -1,36 +1,13 @@
 {% extends 'base.html' %}
-{% load static %}
 
 {% block title %}Student Dashboard{% endblock %}
 
 {% block content %}
-<div class="container my-4">
-  <div class="row">
-    <div class="col-12">
-      <div class="card shadow-sm p-4">
-        <h2 class="card-title mb-3">Welcome, {{ user.username }}!</h2>
-        <p class="card-text">
-          You are logged in as a <span class="badge bg-info">Student</span>.
-        </p>
-        <hr>
-        <!-- Quick-action buttons -->
-        <div class="d-flex flex-wrap gap-2">
-          <a href="{% url 'student_marks' %}" class="btn btn-outline-primary">
-            <i class="bi bi-bar-chart-line"></i> View My Marks
-          </a>
-          <a href="{% url 'student_profile' user.id %}" class="btn btn-outline-secondary">
-            <i class="bi bi-person-circle"></i> My Profile
-          </a>
-          <a href="{% url 'logout' %}" class="btn btn-outline-danger">
-            <i class="bi bi-box-arrow-right"></i> Logout
-          </a>
-          <!-- New Exam Button -->
-          <a href="{% url 'exam_list' %}" class="btn btn-outline-warning">
-            <i class="bi bi-journal-text"></i> View Exams
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="card shadow-sm p-4">
+    <h2 class="card-title mb-4">Welcome to the Student Dashboard</h2>
+    <p class="card-text">
+        Hello, <strong>{{ user.username }}</strong>!<br>
+        You are logged in as a <span class="badge bg-info">Student</span>.
+    </p>
 </div>
-{% endblock %}
+{% endblock %}
