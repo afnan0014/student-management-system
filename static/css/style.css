@@ -608,3 +608,12 @@ body.light-mode .table th,
 body.light-mode .table td {
   border-color: var(--border);
 }
+
+.reset-btn {
+  background-color: #6b7280; /* Tailwind gray-500 for a distinct, professional look */
+  border-color: #6b7280;
+}
+.reset-btn:hover {
+  background-color: #4b5563; /* Darker shade on hover */
+  border-color: #4b5563;
+}
