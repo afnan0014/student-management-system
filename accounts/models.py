@@ -7,6 +7,7 @@ class StudentProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
     course = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True, related_name='students')
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, related_name='students')
+    semester = models.IntegerField(default=1)  # Set a default semester value  # This must exist!
     batch_number = models.IntegerField(
         help_text="Enter the batch year (e.g., 2023).",
         validators=[

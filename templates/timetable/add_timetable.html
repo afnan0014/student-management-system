@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-dark
+         text-white">
+            <h3 class="mb-0">Add Timetable Entry</h3>
+        </div>
+        <div class="card-body">
+            <form method="POST" class="needs-validation" novalidate>
+                {% csrf_token %}
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="course" class="form-label">Course:</label>
+                        {{ form.course|add_class:"form-select" }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="semester" class="form-label">Semester:</label>
+                        {{ form.semester|add_class:"form-control" }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="day" class="form-label">Day:</label>
+                        {{ form.day|add_class:"form-select" }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="period_number" class="form-label">Period Number:</label>
+                        {{ form.period_number|add_class:"form-control" }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="subject" class="form-label">Subject:</label>
+                        {{ form.subject|add_class:"form-select" }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="staff" class="form-label">Staff:</label>
+                        {{ form.staff|add_class:"form-select" }}
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success px-4">+ Add Entry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

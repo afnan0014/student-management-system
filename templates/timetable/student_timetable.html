@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">Student Timetable</h2>
+
+    <!-- Day Filter -->
+    <form method="GET">
+        <label for="day">Filter by Day:</label>
+        <select name="day" id="day" class="form-select">
+            <option value="">-- Select Day --</option>
+            {% for choice in day_choices %}
+                <option value="{{ choice.0 }}" {% if choice.0 == selected_day %} selected {% endif %}>
+                    {{ choice.1 }}
+                </option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary mt-2">Filter</button>
+    </form>
+
+    {% if holiday %}
+        <div class="alert alert-info mt-3">Today is a holiday: <strong>{{ holiday.title }}</strong></div>
+    {% elif timetable %}
+        <table class="table table-dark table-bordered mt-3">
+            <thead>
+                <tr>
+                    <th>Day</th>
+                    <th>Period</th>
+                    <th>Subject</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in timetable %}
+                    <tr>
+                        <td>{{ entry.day }}</td>
+                        <td>{{ entry.period_number }}</td>
+                        <td>{{ entry.subject.name }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-warning mt-3">No entries available.</div>
+    {% endif %}
+</div>
+{% endblock %}
