@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">Staff Timetable</h2>
+
+    <!-- Filter Section -->
+    <form method="GET" class="d-flex gap-3">
+        <div>
+            <label for="day">Filter by Day:</label>
+            <select name="day" id="day" class="form-select">
+                <option value="">-- Select Day --</option>
+                {% for choice in day_choices %}
+                    <option value="{{ choice.0 }}" {% if choice.0 == selected_day %} selected {% endif %}>
+                        {{ choice.1 }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div>
+            <label for="course">Filter by Course:</label>
+            <select name="course" id="course" class="form-select">
+                <option value="">-- Select Course --</option>
+                {% for course in course_choices %}
+                    <option value="{{ course.name }}" {% if course.name == selected_course %} selected {% endif %}>
+                        {{ course.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary align-self-end">Filter</button>
+    </form>
+
+    {% if holiday %}
+        <div class="alert alert-info mt-3">Today is a holiday: <strong>{{ holiday.title }}</strong></div>
+    {% elif timetable %}
+        <table class="table table-dark table-bordered mt-3">
+            <thead>
+                <tr>
+                    <th>Day</th>
+                    <th>Period</th>
+                    <th>Subject</th>
+                    <th>Course</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in timetable %}
+                    <tr>
+                        <td>{{ entry.day }}</td>
+                        <td>{{ entry.period_number }}</td>
+                        <td>{{ entry.subject.name }}</td>
+                        <td>{{ entry.course.name }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-warning mt-3">No entries available.</div>
+    {% endif %}
+</div>
+{% endblock %}

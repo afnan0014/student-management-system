@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import TimetableEntry, Holiday
 
-# Register your models here.
+admin.site.register(TimetableEntry)
+admin.site.register(Holiday)

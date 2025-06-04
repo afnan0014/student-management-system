@@ -11,7 +11,9 @@ urlpatterns = [
     path('attendance/', include('attendance.urls')),
     path('courses/', include('courses.urls')),
     path('reports/', include('reports.urls')), 
-    path('exams/', include('exams.urls')), # Reports URL included properly
+    path('exams/', include('exams.urls')), 
+    path('timetable/', include('timetable.urls')),
+
 ]
 
 if settings.DEBUG:
