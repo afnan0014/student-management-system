@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">📘 Timetable Management</h2>
+
+  <!-- Filters -->
+  <form method="get" class="row g-2 mb-3">
+    <div class="col-md-3">
+      <select name="course" class="form-select">
+        <option value="">All Courses</option>
+        {% for c in courses %}
+        <option value="{{ c.id }}" {% if selected.course == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3">
+        <select name="staff" class="form-select">
+        <option value="">-- Filter by Staff --</option>
+        {% for staff in staffs %}
+            <option value="{{ staff.id }}" {% if request.GET.staff == staff.id|stringformat:"s" %}selected{% endif %}>
+            {{ staff.user.get_full_name|default:staff.user.username }}
+            </option>
+        {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3">
+      <select name="day" class="form-select">
+        <option value="">All Days</option>
+        {% for d in days %}
+        <option value="{{ d }}" {% if selected.day == d %}selected{% endif %}>{{ d }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3 d-grid">
+      <button class="btn btn-primary">🔍 Filter</button>
+    </div>
+  </form>
+
+  <!-- Actions -->
+  <div class="d-flex justify-content-between mb-3">
+    <a href="{% url 'add_timetable_entry' %}" class="btn btn-success">➕ Add Timetable</a>
+  </div>
+
+  <!-- Table -->
+  <form method="POST" action="{% url 'delete_timetable_entries' %}" id="deleteForm">
+    {% csrf_token %}
+    <input type="hidden" name="entry_ids" id="entry_ids">
+    <table class="table table-bordered table-dark table-hover text-center">
+      <thead>
+        <tr>
+          <th><input type="checkbox" id="selectAll"></th>
+          <th>Day</th>
+          <th>Course</th>
+          <th>Semester</th>
+          <th>Subject</th>
+          <th>Period</th>
+          <th>Staff</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in entries %}
+        <tr>
+          <td><input type="checkbox" name="entry_checkbox" value="{{ e.id }}"></td>
+          <td>{{ e.day }}</td>
+          <td>{{ e.course.name }}</td>
+          <td>{{ e.semester }}</td>
+          <td>{{ e.subject.name }}</td>
+          <td>{{ e.period_number }}</td>
+          <td>
+            {% if e.staff and e.staff.user %}
+                {{ e.staff.user.get_full_name|default:e.staff.user.username }}
+            {% else %}
+                Not Assigned
+            {% endif %}
+         </td>
+          <td>
+            <a href="{% url 'edit_timetable_entry' e.id %}" class="btn btn-sm btn-info">Edit</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="9">No entries found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div id="deleteActions" class="text-end mt-3" style="display: none;">
+      <button class="btn btn-danger" type="submit">🗑️ Delete Selected</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  const selectAll = document.getElementById('selectAll');
+  const checkboxes = document.querySelectorAll('input[name="entry_checkbox"]');
+  const deleteForm = document.getElementById('deleteForm');
+  const deleteBtn = document.getElementById('deleteActions');
+
+  selectAll.addEventListener('change', () => {
+    checkboxes.forEach(cb => cb.checked = selectAll.checked);
+    toggleDeleteBtn();
+  });
+
+  checkboxes.forEach(cb => cb.addEventListener('change', toggleDeleteBtn));
+
+  function toggleDeleteBtn() {
+    const selected = [...checkboxes].some(cb => cb.checked);
+    deleteBtn.style.display = selected ? 'block' : 'none';
+    if (selected) {
+      const ids = [...checkboxes].filter(cb => cb.checked).map(cb => cb.value);
+      document.getElementById('entry_ids').value = ids.join(',');
+    }
+  }
+</script>
+{% endblock %}

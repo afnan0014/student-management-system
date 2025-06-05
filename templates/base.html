@@ -74,7 +74,7 @@
             <li class="nav-item"><a href="{% url 'report_dashboard' %}" class="nav-link"><i class="bi bi-bar-chart me-2"></i>Other Reports</a></li>
             <!-- Timetable Button for Admin -->
             <li class="nav-item">
-                <a href="{% url 'add_timetable_entry' %}" class="nav-link"><i class="bi bi-calendar2-plus me-2"></i>Create Timetable</a>
+                <a href="{% url 'timetable_list' %}" class="nav-link"><i class="bi bi-calendar2-plus me-2"></i>Timetable</a>
             </li>
         </ul>
         {% elif user.groups.all.0.name == 'Staff' %}

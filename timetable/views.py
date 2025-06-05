@@ -4,7 +4,11 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from .models import TimetableEntry, Holiday, Course
-from .forms import TimetableForm, HolidayForm
+from .forms import TimetableForm
+from collections import defaultdict
+from courses.models import Subject      
+from accounts.models import StaffProfile
+
 
 # ------------------------------
 # Admin: Add Timetable Entry
@@ -15,12 +19,19 @@ def add_timetable_entry(request):
         form = TimetableForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, "Timetable entry added successfully.")
-            return redirect('add_timetable_entry')
+            if 'add_another' in request.POST:
+                messages.success(request, "✅ Entry added. You can add another one.")
+                return redirect('add_timetable_entry')
+            elif 'save_only' in request.POST:
+                messages.success(request, "✅ Timetable entry added successfully.")
+                return redirect('timetable_list')
+        else:
+            messages.error(request, "❌ Please correct the errors below.")
     else:
         form = TimetableForm()
 
     return render(request, 'timetable/add_timetable.html', {'form': form})
+
 
 # ------------------------------
 # Staff: View Timetable with Day & Course Filters
@@ -52,7 +63,6 @@ def staff_timetable_view(request):
         'course_choices': course_choices,
         'selected_course': selected_course
     })
-
 @login_required
 def student_timetable_view(request):
     student = request.user.student_profile
@@ -77,3 +87,56 @@ def student_timetable_view(request):
         'day_choices': day_choices,
         'selected_day': selected_day
     })
+
+@staff_member_required
+def timetable_list_view(request):
+    from .models import TimetableEntry, Holiday
+    from accounts.models import StaffProfile
+
+    # filters
+    course = request.GET.get('course')
+    staff = request.GET.get('staff')
+    day = request.GET.get('day')
+
+    entries = TimetableEntry.objects.select_related('course', 'subject', 'staff__user').all()
+    if course:
+        entries = entries.filter(course_id=course)
+    if staff:
+        entries = entries.filter(staff_id=staff)
+    if day:
+        entries = entries.filter(day=day)
+
+    context = {
+        'entries': entries.order_by('day', 'period_number'),
+        'courses': Course.objects.all(),
+        'staffs': StaffProfile.objects.select_related('user'),
+        'days': [day for day, _ in TimetableEntry.DAY_CHOICES],
+        'selected': {'course': course, 'staff': staff, 'day': day},
+    }
+    return render(request, 'timetable/timetable_list.html', context)
+
+@staff_member_required
+def edit_timetable_entry(request, pk):
+    entry = get_object_or_404(TimetableEntry, pk=pk)
+    form = TimetableForm(request.POST or None, instance=entry)
+    if form.is_valid():
+        form.save()
+        messages.success(request, "Updated successfully!")
+        return redirect('timetable_list')
+    return render(request, 'timetable/add_timetable.html', {'form': form})
+
+
+@staff_member_required
+def delete_timetable_entries(request):
+    if request.method == 'POST':
+        ids = request.POST.get('entry_ids', '').split(',')
+        TimetableEntry.objects.filter(id__in=ids).delete()
+        messages.success(request, "Selected entries deleted.")
+    return redirect('timetable_list')
+
+
+
+
+
+
+
