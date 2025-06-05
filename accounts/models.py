@@ -29,7 +29,8 @@ class StaffProfile(models.Model):
     course = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True, related_name='staff')
 
     def __str__(self):
-        return f"Profile of {self.user.username}"
+        full_name = self.user.get_full_name()
+        return full_name if full_name else self.user.username
 
     class Meta:
         verbose_name = "Staff Profile"
