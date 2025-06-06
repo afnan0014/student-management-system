@@ -147,3 +147,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 LOGIN_URL = '/login/'
+
+TIME_ZONE = 'Asia/Kolkata'
+USE_TZ = True

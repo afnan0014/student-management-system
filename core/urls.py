@@ -13,7 +13,7 @@ urlpatterns = [
     path('reports/', include('reports.urls')), 
     path('exams/', include('exams.urls')), 
     path('timetable/', include('timetable.urls')),
-
+    path('assignments/', include('assignments.urls')),
 ]
 
 if settings.DEBUG:

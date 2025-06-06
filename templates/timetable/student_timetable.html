@@ -1,46 +1,87 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2 class="mb-3">Student Timetable</h2>
 
-    <!-- Day Filter -->
-    <form method="GET">
-        <label for="day">Filter by Day:</label>
-        <select name="day" id="day" class="form-select">
-            <option value="">-- Select Day --</option>
-            {% for choice in day_choices %}
-                <option value="{{ choice.0 }}" {% if choice.0 == selected_day %} selected {% endif %}>
-                    {{ choice.1 }}
+<div class="mb-3">
+  <a href="javascript:history.back()" class="back-arrow" style="font-size: 1.5rem; text-decoration: none;" title="Go back">
+    <i class="bi bi-arrow-left"></i>
+  </a>
+</div>
+
+<div class="container mt-5">
+  <h2 class="card-title mb-4 text-center">
+    <i class="bi bi-mortarboard me-2"></i>Student Timetable
+  </h2>
+
+  <!-- Filter Section -->
+  <div class="card mb-4 shadow-lg border-0">
+    <div class="card-body p-4">
+      <h5 class="mb-3"><i class="bi bi-funnel me-1"></i>Filter Timetable</h5>
+      <form method="GET" class="d-flex flex-wrap gap-3 align-items-end">
+        <div class="d-flex flex-column" style="flex: 1; min-width: 200px;">
+          <label for="day" class="form-label"><i class="bi bi-calendar-day me-1"></i>Filter by Day:</label>
+          <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
+            <select name="day" id="day" class="form-control border-0">
+              <option value="" {% if not selected_day %}selected{% endif %}>-- Select Day --</option>
+              {% for choice in day_choices %}
+                <option value="{{ choice.0 }}" {% if choice.0 == selected_day %}selected{% endif %}>
+                  {{ choice.1 }}
                 </option>
-            {% endfor %}
-        </select>
-        <button type="submit" class="btn btn-primary mt-2">Filter</button>
-    </form>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
 
-    {% if holiday %}
-        <div class="alert alert-info mt-3">Today is a holiday: <strong>{{ holiday.title }}</strong></div>
-    {% elif timetable %}
-        <table class="table table-dark table-bordered mt-3">
-            <thead>
-                <tr>
-                    <th>Day</th>
-                    <th>Period</th>
-                    <th>Subject</th>
-                </tr>
+        <div class="d-flex gap-2 align-self-end">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-funnel me-1"></i>Filter
+          </button>
+          <a href="{% url 'student_timetable' %}" class="btn btn-secondary">
+            <i class="bi bi-x-circle me-1"></i>Reset
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Timetable Display -->
+  {% if holiday %}
+    <div class="alert alert-warning">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>Today is a holiday: <strong>{{ holiday.title }}</strong>
+    </div>
+  {% elif timetable %}
+    <div class="card shadow-lg border-0">
+      <div class="card-body p-4">
+        <h5 class="mb-3"><i class="bi bi-table me-1"></i>Timetable</h5>
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped align-middle">
+            <thead class="table-dark">
+              <tr>
+                <th><i class="bi bi-calendar-day me-1"></i>Day</th>
+                <th><i class="bi bi-clock me-1"></i>Period</th>
+                <th><i class="bi bi-book me-1"></i>Subject</th>
+              </tr>
             </thead>
             <tbody>
-                {% for entry in timetable %}
-                    <tr>
-                        <td>{{ entry.day }}</td>
-                        <td>{{ entry.period_number }}</td>
-                        <td>{{ entry.subject.name }}</td>
-                    </tr>
-                {% endfor %}
+              {% for entry in timetable %}
+                <tr>
+                  <td>{{ entry.day }}</td>
+                  <td>{{ entry.period_number }}</td>
+                  <td>{{ entry.subject.name }}</td>
+                </tr>
+              {% endfor %}
             </tbody>
-        </table>
-    {% else %}
-        <div class="alert alert-warning mt-3">No entries available.</div>
-    {% endif %}
+          </table>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="alert alert-warning">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>No entries available for your selection.
+    </div>
+  {% endif %}
 </div>
-{% endblock %}
+
+<!-- Include Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+{% endblock %}
