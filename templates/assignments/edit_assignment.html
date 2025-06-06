@@ -1,0 +1,325 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Assignment{% endblock %}
+
+{% block content %}
+
+<div class="mb-3">
+  <a href="javascript:history.back()" class="back-arrow" style="font-size: 1.5rem; text-decoration: none;" title="Go back">
+    <i class="bi bi-arrow-left"></i>
+  </a>
+</div>
+
+<!-- Include Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<style>
+    .assignment-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 30px 20px;
+    }
+    .assignment-header {
+        background: linear-gradient(90deg, #6c757d, #adb5bd); /* Neutral gray gradient to match create_assignment.html */
+        color: #ffffff; /* White text for contrast */
+        padding: 20px;
+        border-radius: 10px 10px 0 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .assignment-body {
+        background: #fff;
+        padding: 30px;
+        border-radius: 0 0 10px 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 5px;
+    }
+    .info-item strong {
+        color: #343a40; /* Dark gray for labels */
+    }
+    .info-item span {
+        color: #495057; /* Slightly lighter gray for values */
+    }
+    .content-section {
+        margin-top: 20px;
+        padding: 20px;
+        background: #f1f3f5;
+        border-radius: 8px;
+    }
+    .content-section h5 {
+        color: #6c757d; /* Gray to match the theme */
+    }
+    .content-section label {
+        color: #343a40; /* Dark gray for form labels */
+    }
+    .content-section p {
+        color: #495057; /* Gray for text content */
+    }
+    .student-selector-container {
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        padding: 10px;
+        background: #fff;
+    }
+    .student-selector-container label {
+        display: flex;
+        align-items: center;
+        padding: 8px;
+        margin-bottom: 5px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .student-selector-container label:hover {
+        background-color: #e9ecef;
+    }
+    .student-selector-container input[type="checkbox"] {
+        margin-right: 10px;
+    }
+    .student-selector-container span {
+        color: #495057; /* Gray for student names */
+    }
+</style>
+
+<div class="assignment-container">
+    <!-- Assignment Header -->
+    <div class="assignment-header">
+        <h3 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Edit Assignment</h3>
+    </div>
+
+    <!-- Assignment Body -->
+    <div class="assignment-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Assignment Details -->
+            <div class="content-section">
+                <h5>Assignment Details</h5>
+                <div class="mb-3">
+                    <label for="title" class="form-label">Assignment Title</label>
+                    <input type="text" class="form-control" id="title" name="title" value="{{ assignment.title }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="3" required>{{ assignment.description }}</textarea>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="course" class="form-label">Course</label>
+                        <select class="form-control" id="course" name="course" required onchange="updateCourseDetails()">
+                            <option value="">Select Course</option>
+                            {% for course in courses %}
+                                <option value="{{ course.id }}" {% if course.id == assignment.course.id %}selected{% endif %}>
+                                    {{ course.name }} (Semester {{ course.semester }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="subject" class="form-label">Subject</label>
+                        <select class="form-control" id="subject" name="subject" required>
+                            <option value="{{ assignment.subject.id }}">{{ assignment.subject.name }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <strong>Semester:</strong> <span id="semester-display">{{ assignment.semester }}</span>
+                </div>
+            </div>
+
+            <!-- Student Selection -->
+            <div class="content-section">
+                <h5>Assigned Students</h5>
+                <div class="mb-3">
+                    <label class="form-label">Select Students</label>
+                    <div class="student-selector-container">
+                        {% for student in students %}
+                            <label>
+                                <input type="checkbox" name="students" value="{{ student.id }}"
+                                    {% if student in assignment.students.all %}checked{% endif %}>
+                                <span>{{ student.get_full_name|default:student.username }} (Batch: {{ student.student_profile.batch_number }})</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Details -->
+            <div class="content-section">
+                <h5>Additional Details</h5>
+                <div class="mb-3">
+                    <label for="deadline" class="form-label">Deadline</label>
+                    <input type="datetime-local" class="form-control" id="deadline" name="deadline" value="{{ assignment.deadline|date:'Y-m-d\\TH:i' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="text_content" class="form-label">Text Content (Optional)</label>
+                    <textarea class="form-control" id="text_content" name="text_content" rows="3">{{ assignment.text_content }}</textarea>
+                </div>
+                <!-- Links Section -->
+                <div class="mb-3">
+                    <label class="form-label">Links (Optional)</label>
+                    <div id="links-container">
+                        {% for link in assignment.links.all %}
+                            <div class="input-group mb-2 link-input-group">
+                                <input type="url" class="form-control" name="link_content" value="{{ link.url }}" placeholder="Enter link...">
+                                <button type="button" class="btn btn-outline-danger remove-link-btn" onclick="removeLink(this)">Remove</button>
+                            </div>
+                        {% empty %}
+                            <div class="input-group mb-2 link-input-group">
+                                <input type="url" class="form-control" name="link_content" placeholder="Enter link...">
+                                <button type="button" class="btn btn-outline-danger remove-link-btn" onclick="removeLink(this)">Remove</button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <button type="button" class="btn btn-outline-primary mt-2" onclick="addLink()">Add Another Link</button>
+                </div>
+                <!-- Files Section -->
+                <div class="mb-3">
+                    <label class="form-label">Files (Optional)</label>
+                    <div id="files-container">
+                        {% for file in assignment.files.all %}
+                            <div class="input-group mb-2 file-input-group">
+                                <input type="text" class="form-control" value="{{ file.file.name }}" disabled>
+                                <button type="button" class="btn btn-outline-danger remove-file-btn" onclick="removeFile(this)">Remove</button>
+                            </div>
+                        {% endfor %}
+                        <div class="input-group mb-2 file-input-group">
+                            <input type="file" class="form-control" name="file_content">
+                            <button type="button" class="btn btn-outline-danger remove-file-btn" onclick="removeFile(this)">Remove</button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-outline-primary mt-2" onclick="addFile()">Add Another File</button>
+                </div>
+                <!-- Images Section -->
+                <div class="mb-3">
+                    <label class="form-label">Images (Optional)</label>
+                    <div id="images-container">
+                        {% for image in assignment.images.all %}
+                            <div class="input-group mb-2 image-input-group">
+                                <input type="text" class="form-control" value="{{ image.image.name }}" disabled>
+                                <button type="button" class="btn btn-outline-danger remove-image-btn" onclick="removeImage(this)">Remove</button>
+                            </div>
+                        {% endfor %}
+                        <div class="input-group mb-2 image-input-group">
+                            <input type="file" class="form-control" name="image_content" accept="image/*">
+                            <button type="button" class="btn btn-outline-danger remove-image-btn" onclick="removeImage(this)">Remove</button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-outline-primary mt-2" onclick="addImage()">Add Another Image</button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Update Assignment</button>
+        </form>
+    </div>
+</div>
+
+<script>
+let currentSemester = null;
+
+function updateCourseDetails() {
+    const courseId = document.getElementById('course').value;
+    const subjectSelect = document.getElementById('subject');
+    const semesterDisplay = document.getElementById('semester-display');
+
+    if (!courseId) {
+        subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+        semesterDisplay.textContent = 'Select a course to see the semester.';
+        return;
+    }
+
+    fetch(`/assignments/get-subjects/?course_id=${courseId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.subjects.length === 0) {
+                subjectSelect.innerHTML = '<option value="">No subjects found.</option>';
+            } else {
+                let options = '<option value="">Select Subject</option>';
+                data.subjects.forEach(subject => {
+                    options += `<option value="${subject.id}">${subject.name}</option>`;
+                });
+                subjectSelect.innerHTML = options;
+            }
+
+            currentSemester = data.semester;
+            semesterDisplay.textContent = data.semester;
+        })
+        .catch(error => {
+            console.error('Error fetching subjects:', error);
+            subjectSelect.innerHTML = '<option value="">Error loading subjects.</option>';
+            semesterDisplay.textContent = 'Error loading semester.';
+        });
+}
+
+function addLink() {
+    const container = document.getElementById('links-container');
+    const newInputGroup = document.createElement('div');
+    newInputGroup.className = 'input-group mb-2 link-input-group';
+    newInputGroup.innerHTML = `
+        <input type="url" class="form-control" name="link_content" placeholder="Enter link...">
+        <button type="button" class="btn btn-outline-danger remove-link-btn" onclick="removeLink(this)">Remove</button>
+    `;
+    container.appendChild(newInputGroup);
+}
+
+function removeLink(btn) {
+    const inputGroup = btn.closest('.link-input-group');
+    if (document.querySelectorAll('.link-input-group').length > 1) {
+        inputGroup.remove();
+    }
+}
+
+function addFile() {
+    const container = document.getElementById('files-container');
+    const newInputGroup = document.createElement('div');
+    newInputGroup.className = 'input-group mb-2 file-input-group';
+    newInputGroup.innerHTML = `
+        <input type="file" class="form-control" name="file_content">
+        <button type="button" class="btn btn-outline-danger remove-file-btn" onclick="removeFile(this)">Remove</button>
+    `;
+    container.appendChild(newInputGroup);
+}
+
+function removeFile(btn) {
+    const inputGroup = btn.closest('.file-input-group');
+    if (document.querySelectorAll('.file-input-group').length > 1) {
+        inputGroup.remove();
+    }
+}
+
+function addImage() {
+    const container = document.getElementById('images-container');
+    const newInputGroup = document.createElement('div');
+    newInputGroup.className = 'input-group mb-2 image-input-group';
+    newInputGroup.innerHTML = `
+        <input type="file" class="form-control" name="image_content" accept="image/*">
+        <button type="button" class="btn btn-outline-danger remove-image-btn" onclick="removeImage(this)">Remove</button>
+    `;
+    container.appendChild(newInputGroup);
+}
+
+function removeImage(btn) {
+    const inputGroup = btn.closest('.image-input-group');
+    if (document.querySelectorAll('.image-input-group').length > 1) {
+        inputGroup.remove();
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    updateCourseDetails();
+});
+</script>
+{% endblock %}
