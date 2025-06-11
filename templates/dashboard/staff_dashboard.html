@@ -1,11 +1,133 @@
 {% extends 'base.html' %}
 {% block title %}Staff Dashboard{% endblock %}
+
 {% block content %}
-<div class="card shadow-sm p-4">
-    <h2 class="card-title mb-4">Welcome to the Staff Dashboard</h2>
-    <p class="card-text">
-        Hello, <strong>{{ user.username }}</strong>!<br>
-        You are logged in as a <span class="badge bg-success">Staff</span>.
-    </p>
+<div class="container mt-4">
+    <div class="card shadow-sm p-4 mb-4">
+
+        <!-- Welcome Card (Centered) -->
+        <div class="card shadow-sm p-4 mb-4 text-center">
+            <h2 class="card-title mb-4 text-success">Welcome to the Staff Dashboard</h2>
+            <p class="card-text">
+                Hello, <strong>{{ user.username }}</strong>!<br>
+                You are logged in as a <span class="badge bg-success">Staff</span>.
+            </p>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body text-center">
+                        <h5>Courses Handled</h5>
+                        <h2>{{ courses_handled }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body text-center">
+                        <h5>Total Students</h5>
+                        <h2>{{ total_students }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body text-center">
+                        <h5>Attendance Taken</h5>
+                        <h2>{{ attendance_taken }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body text-center">
+                        <h5>Upcoming Exams</h5>
+                        <h2>{{ upcoming_exams }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Chart -->
+        <div class="card shadow-sm p-4">
+            <h5 class="card-title text-center mb-4">Attendance Submission Over Time</h5>
+            <div style="width: 100%; height: 500px;">
+                <canvas id="attendanceChart"></canvas>
+            </div>
+            {% if not attendance_chart_labels or not attendance_chart_values %}
+                <p class="text-center text-muted mt-3">No attendance data available.</p>
+            {% endif %}
+        </div>
+
+    </div>
 </div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const ctx = document.getElementById('attendanceChart').getContext('2d');
+
+        const labels = {{ attendance_chart_labels|safe }};
+        const data = {{ attendance_chart_values|safe }};
+
+        if (labels.length && data.length) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Attendance Sessions Taken',
+                        data: data,
+                        borderColor: '#47ad92',
+                        backgroundColor: 'rgba(34, 182, 140, 0.34)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#47ad92',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date',
+                                font: { size: 14 }
+                            },
+                            ticks: {
+                                font: { size: 12 }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Sessions',
+                                font: { size: 14 }
+                            },
+                            ticks: {
+                                stepSize: 1,
+                                font: { size: 12 }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true
+                        },
+                        tooltip: {
+                            enabled: true
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}
