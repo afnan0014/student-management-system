@@ -20,7 +20,8 @@ def staff_mark_entry_spreadsheet(request):
         messages.error(request, "You are not assigned to a course.")
         return redirect('staff_dashboard')
 
-    exams = Exam.objects.filter(course=staff_profile.course)
+    exams = Exam.objects
+    filter(course=staff_profile.course)
     subjects = Subject.objects.filter(course=staff_profile.course)
     students = StudentProfile.objects.filter(course=staff_profile.course)
 
