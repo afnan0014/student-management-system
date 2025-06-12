@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% load message_filters %}
+
+{% block title %}Messages{% endblock %}
+
+{% block content %}
+
+<div class="mb-3">
+    {% if request.user.is_superuser %}
+        <a href="{% url 'admin_dashboard' %}" class="back-arrow" style="font-size: 1.5rem; text-decoration: none;" title="Go back">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+    {% elif request.user.groups.all.0.name == 'Staff' %}
+        <a href="{% url 'staff_dashboard' %}" class="back-arrow" style="font-size: 1.5rem; text-decoration: none;" title="Go back">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+    {% elif request.user.groups.all.0.name == 'Student' %}
+        <a href="{% url 'student_dashboard' %}" class="back-arrow" style="font-size: 1.5rem; text-decoration: none;" title="Go back">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+    {% endif %}
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<style>
+    .messaging-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 30px 20px;
+    }
+    .messaging-header {
+        background: linear-gradient(90deg, #007bff, #00c4ff);
+        color: #ffffff;
+        padding: 20px;
+        border-radius: 10px 10px 0 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .messaging-body {
+        background: #fff;
+        padding: 30px;
+        border-radius: 0 0 10px 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .message-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 5px;
+    }
+    .message-item strong {
+        color: #343a40;
+    }
+    .message-item span {
+        color: #495057;
+    }
+    .message-item.unread {
+        background: #e9f7ff;
+        font-weight: bold;
+    }
+    .nav-tabs .nav-link.active {
+        background-color: #007bff;
+        color: #fff;
+    }
+    .view-btn-received:visited {
+        color: #28a745 !important;
+    }
+    .view-btn-sent:visited {
+        color: #dc3545 !important;
+    }
+    .compose-btn {
+        background-color: #28a745 !important;
+        border-color: #28a745 !important;
+    }
+</style>
+
+<div class="messaging-container">
+    <div class="messaging-header">
+        <h3 class="mb-0"><i class="bi bi-envelope me-2"></i>Messages</h3>
+    </div>
+
+    <div class="messaging-body">
+        <ul class="nav nav-tabs mb-3">
+            <li class="nav-item">
+                <a class="nav-link {% if view == 'sent' %}active{% endif %}" href="?view=sent">Sent</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if view == 'received' %}active{% endif %}" href="?view=received">Received</a>
+            </li>
+        </ul>
+
+        {% if request.user.is_superuser %}
+            <div class="mb-3">
+                <a href="{% url 'messaging:admin_messages' 'all' %}" class="btn btn-outline-primary me-2">All Messages</a>
+                <a href="{% url 'messaging:admin_messages' 'staff_only' %}" class="btn btn-outline-primary me-2">Staff Only</a>
+                <a href="{% url 'messaging:admin_messages' 'students_only' %}" class="btn btn-outline-primary">Students Only</a>
+            </div>
+        {% endif %}
+
+        <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    {% if request.user.groups.all.0.name == 'Staff' or request.user.groups.all.0.name == 'Student' %}
+                        <form method="get" class="d-flex">
+                            <input type="hidden" name="view" value="{{ view }}">
+                            <select name="filter" class="form-select me-2" style="width: 250px;">
+                                <option value="">All Messages</option>
+                                {% if request.user.groups.all.0.name == 'Staff' %}
+                                    <option value="admin" {% if filter_type == 'admin' %}selected{% endif %}>From Admin</option>
+                                    <option value="students" {% if filter_type == 'students' %}selected{% endif %}>From Students</option>
+                                {% elif request.user.groups.all.0.name == 'Student' %}
+                                    <option value="admin" {% if filter_type == 'admin' %}selected{% endif %}>From Admin</option>
+                                    <option value="staff" {% if filter_type == 'staff' %}selected{% endif %}>From Staff</option>
+                                {% endif %}
+                            </select>
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                        </form>
+                    {% endif %}
+                </div>
+                <div>
+                    <a href="{% url 'messaging:send_message' %}?view={{ view }}" class="btn btn-primary compose-btn">
+                        <i class="bi bi-plus-circle me-1"></i> Compose Message
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {% if view == 'sent' %}
+            {% if sent_messages %}
+                {% for msg in sent_messages %}
+                    <div class="message-item">
+                        <div>
+                            <strong>Type:</strong> <span>{{ msg.message_type|title }}</span><br>
+                            <strong>Message:</strong> <span>{{ msg.content|truncatechars:50 }}</span><br>
+                            <strong>Sent At:</strong> <span>{{ msg.timestamp }}</span>
+                            {% if msg.total_recipients > 0 %}
+                                <br><strong>Read by:</strong> <span>{{ msg.read_count }}/{{ msg.total_recipients }}</span>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <a href="{% url 'messaging:message_detail' msg.id %}?view={{ view }}" class="btn btn-outline-primary btn-sm view-btn-sent">
+                                <i class="bi bi-eye me-1"></i> View
+                            </a>
+                            <a href="{% url 'messaging:edit_message' msg.id %}?view={{ view }}" class="btn btn-outline-warning btn-sm">
+                                <i class="bi bi-pencil me-1"></i> Edit
+                            </a>
+                            <a href="{% url 'messaging:delete_message' msg.id %}?view={{ view }}" class="btn btn-outline-danger btn-sm">
+                                <i class="bi bi-trash me-1"></i> Delete
+                            </a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="alert alert-info">No sent messages found.</div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-info">No sent messages found.</div>
+            {% endif %}
+        {% else %}
+            {% if received_messages %}
+                {% for msg in received_messages %}
+                    <div class="message-item {% if not msg.is_read %}unread{% endif %}">
+                        <div>
+                            <strong>From:</strong> <span>{{ msg.message.sender.get_full_name|default:msg.message.sender.username }}</span><br>
+                            <strong>Message:</strong> <span>{{ msg.message.content|truncatechars:50 }}</span><br>
+                            <strong>Sent At:</strong> <span>{{ msg.message.timestamp }}</span>
+                        </div>
+                        <div>
+                            <a href="{% url 'messaging:message_detail' msg.message.id %}?view={{ view }}" class="btn btn-outline-primary btn-sm view-btn-received">
+                                <i class="bi bi-eye me-1"></i> View
+                            </a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="alert alert-info">No messages found.</div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-info">No messages found.</div>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
