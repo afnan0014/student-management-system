@@ -50,8 +50,7 @@
             <ul class="list-group list-group-flush">
                 {% for entry in todays_classes %}
                     <li class="list-group-item text-center">
-                        Period {{ entry.period_number }}: {{ entry.subject.name }}
-                        {% if entry.staff %} ({{ entry.staff.user.get_full_name }}) {% endif %}
+                        Period {{ entry.period_number }}: {{ entry.subject.name }}{% if entry.staff %}  {{ entry.staff.user.get_full_name }}{% endif %}
                     </li>
                 {% empty %}
                     <li class="list-group-item text-center">No classes scheduled today.</li>
