@@ -1,3 +1,4 @@
+# timetable/views.py
 from datetime import date
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
@@ -6,19 +7,22 @@ from django.contrib.admin.views.decorators import staff_member_required
 from .models import TimetableEntry, Holiday, Course
 from .forms import TimetableForm
 from collections import defaultdict
-from courses.models import Subject      
+from courses.models import Subject
 from accounts.models import StaffProfile
+from notifications.utils import notify_users  # Import the notification utility
 
-
-# ------------------------------
-# Admin: Add Timetable Entry
-# ------------------------------
 @staff_member_required
 def add_timetable_entry(request):
     if request.method == 'POST':
         form = TimetableForm(request.POST)
         if form.is_valid():
-            form.save()
+            timetable_entry = form.save(commit=False)
+            timetable_entry.created_by = request.user
+            timetable_entry.save()
+
+            # Send notification to staff and students
+            notify_users('timetable_added', request.user, course=timetable_entry.course, timetable=timetable_entry)
+
             if 'add_another' in request.POST:
                 messages.success(request, "✅ Entry added. You can add another one.")
                 return redirect('add_timetable_entry')
@@ -32,15 +36,11 @@ def add_timetable_entry(request):
 
     return render(request, 'timetable/add_timetable.html', {'form': form})
 
-
-# ------------------------------
-# Staff: View Timetable with Day & Course Filters
-# ------------------------------
 @login_required
 def staff_timetable_view(request):
     staff = request.user.staff_profile
-    selected_day = request.GET.get('day', date.today().strftime('%A'))  # Default to today
-    selected_course = request.GET.get('course', '')  # Default to empty (all courses)
+    selected_day = request.GET.get('day', date.today().strftime('%A'))
+    selected_course = request.GET.get('course', '')
     holiday = Holiday.objects.filter(date=date.today()).first()
 
     day_choices = [
@@ -63,10 +63,11 @@ def staff_timetable_view(request):
         'course_choices': course_choices,
         'selected_course': selected_course
     })
+
 @login_required
 def student_timetable_view(request):
     student = request.user.student_profile
-    selected_day = request.GET.get('day', date.today().strftime('%A'))  # Default to today
+    selected_day = request.GET.get('day', date.today().strftime('%A'))
     holiday = Holiday.objects.filter(date=date.today()).first()
 
     day_choices = [
@@ -93,7 +94,6 @@ def timetable_list_view(request):
     from .models import TimetableEntry, Holiday
     from accounts.models import StaffProfile
 
-    # filters
     course = request.GET.get('course')
     staff = request.GET.get('staff')
     day = request.GET.get('day')
@@ -125,7 +125,6 @@ def edit_timetable_entry(request, pk):
         return redirect('timetable_list')
     return render(request, 'timetable/add_timetable.html', {'form': form})
 
-
 @staff_member_required
 def delete_timetable_entries(request):
     if request.method == 'POST':
@@ -133,10 +132,3 @@ def delete_timetable_entries(request):
         TimetableEntry.objects.filter(id__in=ids).delete()
         messages.success(request, "Selected entries deleted.")
     return redirect('timetable_list')
-
-
-
-
-
-
-

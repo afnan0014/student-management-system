@@ -15,6 +15,7 @@ urlpatterns = [
     path('timetable/', include('timetable.urls')),
     path('assignments/', include('assignments.urls')),
     path('messaging/', include('messaging.urls')),
+    path('notifications/', include('notifications.urls')),
 ]
 
 if settings.DEBUG:

@@ -1,3 +1,4 @@
+# messaging/views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -11,6 +12,7 @@ from django.contrib.auth.models import User
 from courses.models import Course
 from accounts.models import StaffProfile, StudentProfile
 from datetime import timedelta
+from notifications.utils import notify_users  # Import the notification utility
 
 @login_required
 def inbox(request):
@@ -179,6 +181,9 @@ def send_message(request):
                 if recipient != request.user:
                     MessageRecipient.objects.create(message=message, recipient=recipient)
 
+            # Send notification to recipients
+            notify_users('message_sent', request.user, course=message.course, message=message, recipients=recipients)
+
             messages.success(request, "Message sent successfully!")
             view_type = request.GET.get('view', 'sent')
             if request.user.is_superuser:
@@ -217,10 +222,9 @@ def message_detail(request, message_id):
     replies = Message.objects.filter(parent_message=message).order_by('timestamp')
     recipients = MessageRecipient.objects.filter(message=message)
 
-    # Handle reply submission
     if request.method == 'POST':
         content = request.POST.get('content')
-        parent_reply_id = request.POST.get('parent_reply_id')  # For replies to replies
+        parent_reply_id = request.POST.get('parent_reply_id')
         if content:
             new_reply = Message(
                 sender=request.user,
@@ -231,13 +235,15 @@ def message_detail(request, message_id):
             )
             new_reply.save()
 
-            # Add recipients (same as the original message)
             for recipient in recipients:
                 if recipient.recipient != request.user:
                     MessageRecipient.objects.create(
                         message=new_reply,
                         recipient=recipient.recipient
                     )
+
+            # Send notification for the reply
+            notify_users('message_sent', request.user, course=message.course, message=new_reply, recipients=[r.recipient for r in recipients])
 
             messages.success(request, "Reply sent successfully!")
             return redirect('messaging:message_detail', message_id=message_id)
