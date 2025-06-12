@@ -1,0 +1,70 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="row">
+    <!-- Bar Chart -->
+    <div class="col-md-6">
+        <div class="card shadow-sm p-3 mb-4">
+            <div class="card-body d-flex justify-content-center align-items-center" style="height: 400px;">
+                <canvas id="barChart" width="300" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pie Chart -->
+    <div class="col-md-6">
+        <div class="card shadow-sm p-3 mb-4">
+            <div class="card-body d-flex justify-content-center align-items-center" style="height: 400px;">
+                <canvas id="pieChart" width="300" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const barCtx = document.getElementById('barChart').getContext('2d');
+const pieCtx = document.getElementById('pieChart').getContext('2d');
+
+new Chart(barCtx, {
+    type: 'bar',
+    data: {
+        labels: [{% for item in bar_data %}"{{ item.course__name }}"{% if not forloop.last %}, {% endif %}{% endfor %}],
+        datasets: [{
+            label: 'Attendance by Course',
+            data: [{% for item in bar_data %}{{ item.count }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+            backgroundColor: '#47ad92'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    stepSize: 1
+                }
+            }
+        }
+    }
+});
+
+new Chart(pieCtx, {
+    type: 'pie',
+    data: {
+        labels: [{% for item in pie_data %}"{{ item.department__name }}"{% if not forloop.last %}, {% endif %}{% endfor %}],
+        datasets: [{
+            data: [{% for item in pie_data %}{{ item.count }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+            backgroundColor: ['#47ad92', '#87a6a6', '#dc3545']
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top'
+            }
+        }
+    }
+});
+</script>
