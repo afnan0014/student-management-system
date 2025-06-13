@@ -1,15 +1,17 @@
+# exams/views.py
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Exam, Mark, Subject
-from .forms import MarkForm
+from .models import Exam, Mark, Subject, Result
+from .forms import MarkForm, ExamForm
 from accounts.models import StudentProfile, StaffProfile
 import csv
 from django.http import HttpResponse
 from django.contrib.admin.views.decorators import staff_member_required
 from courses.models import Course, Subject
-from .forms import ExamForm
 from django.forms import modelformset_factory
+from django.db.models import Q
+from notifications.utils import notify_users  # Import the notification utility
 
 @login_required
 def staff_mark_entry_spreadsheet(request):
@@ -52,7 +54,10 @@ def staff_mark_entry_spreadsheet(request):
     if request.method == 'POST':
         formset = MarkFormSet(request.POST, queryset=marks)
         if formset.is_valid():
-            formset.save()
+            instances = formset.save()
+            for mark in instances:
+                # Send notification to student
+                notify_users('marks_added', request.user, course=staff_profile.course, mark=mark)
             messages.success(request, "Marks submitted successfully!")
             return redirect('staff_mark_entry_spreadsheet')
         else:
@@ -68,14 +73,6 @@ def staff_mark_entry_spreadsheet(request):
         'selected_subject': subject_id,
     })
 
-
-
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import Mark, Exam
-from accounts.models import StudentProfile
-
 @login_required
 def report_card_view(request):
     user = request.user
@@ -85,12 +82,10 @@ def report_card_view(request):
         messages.error(request, "You are not a student.")
         return redirect('home')
 
-    # Filters
     exam_filter = request.GET.get('exam')
     subject_filter = request.GET.get('subject')
-    status_filter = request.GET.get('status')  # 'pass' or 'fail'
+    status_filter = request.GET.get('status')
 
-    # Base queryset
     marks_qs = Mark.objects.filter(student=student_profile).select_related('exam', 'subject')
 
     if exam_filter:
@@ -98,7 +93,6 @@ def report_card_view(request):
     if subject_filter:
         marks_qs = marks_qs.filter(subject__id=subject_filter)
 
-    # Grade calculation
     def get_grade(m):
         if m >= 90: return 'A+'
         elif m >= 80: return 'A'
@@ -107,7 +101,6 @@ def report_card_view(request):
         elif m >= 50: return 'C'
         return 'F'
 
-    # Apply status filter after grading
     marks = []
     total_passed = total_failed = 0
 
@@ -129,7 +122,6 @@ def report_card_view(request):
         else:
             total_failed += 1
 
-    # Group by exam
     grouped = {}
     for mark in marks:
         exam = mark.exam
@@ -155,7 +147,6 @@ def report_card_view(request):
 
     grouped_results = list(grouped.values())
 
-    # Filter options
     exams = Exam.objects.filter(mark__student=student_profile).distinct()
     subjects = marks_qs.values_list('subject__id', 'subject__name').distinct()
 
@@ -170,16 +161,13 @@ def report_card_view(request):
         'total_failed': total_failed,
     })
 
-
 @staff_member_required
 def export_results_view(request):
-    # Filters
     course_id = request.GET.get('course')
     staff_id = request.GET.get('staff')
     subject_id = request.GET.get('subject')
     exam_id = request.GET.get('exam')
 
-    # Query base
     marks = Mark.objects.select_related('student__user', 'exam', 'subject', 'student__course')
 
     if course_id:
@@ -191,7 +179,6 @@ def export_results_view(request):
     if exam_id:
         marks = marks.filter(exam_id=exam_id)
 
-    # Grading logic
     def calculate_grade(mark):
         if mark >= 90: return 'A+'
         elif mark >= 80: return 'A'
@@ -200,7 +187,6 @@ def export_results_view(request):
         elif mark >= 50: return 'C'
         else: return 'F'
 
-    # Export CSV
     if request.GET.get('export') == 'csv':
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="exam_results.csv"'
@@ -224,7 +210,6 @@ def export_results_view(request):
             ])
         return response
 
-    # Render template
     return render(request, 'exam/export_results.html', {
         'marks': marks,
         'courses': Course.objects.all(),
@@ -240,36 +225,28 @@ def export_results_view(request):
         'calculate_grade': calculate_grade
     })
 
-
 def create_exam(request):
     if request.method == 'POST':
         form = ExamForm(request.POST)
         if form.is_valid():
-            exam = form.save()
+            exam = form.save(commit=False)
+            exam.created_by = request.user
+            exam.save()
 
-            # Fetch related course
             course = exam.course
-
-            # Auto-assign exam to all subjects in this course
             subjects = Subject.objects.filter(course=course)
             students = StudentProfile.objects.filter(course=course)
             staff = StaffProfile.objects.filter(course=course)
 
-            messages.success(request, f"✅ Exam '{exam.name}' created and linked to {course.name}, its students, subjects and staff.")
+            # Send notification to staff and students
+            notify_users('exam_added', request.user, course=course, exam=exam)
 
-            return redirect('exam_list')  # change to your actual exam list view
+            messages.success(request, f"✅ Exam '{exam.name}' created and linked to {course.name}, its students, subjects and staff.")
+            return redirect('exam_list')
     else:
         form = ExamForm()
 
     return render(request, 'exam/create_exam.html', {'form': form})
-
-
-# exams/views.py
-
-from .models import Exam
-from accounts.models import StaffProfile
-from courses.models import Course
-from django.db.models import Q
 
 def exam_list(request):
     exams = Exam.objects.all().select_related('course')
@@ -294,11 +271,6 @@ def exam_list(request):
         'staff': staff,
     })
 
-# exams/views.py
-
-from django.contrib import messages
-from .models import Exam
-
 def delete_exams(request):
     if request.method == 'POST':
         ids = request.POST.get('exam_ids', '').split(',')
@@ -306,4 +278,3 @@ def delete_exams(request):
             Exam.objects.filter(id__in=ids).delete()
             messages.success(request, "✅ Selected exams deleted successfully.")
     return redirect('exam_list')
-
