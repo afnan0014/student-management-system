@@ -14,12 +14,9 @@ urlpatterns = [
     path('exams/', include('exams.urls')), 
     path('timetable/', include('timetable.urls')),
     path('assignments/', include('assignments.urls')),
-
     path('dashboard/', include('dashboard.urls')),
-
-
     path('messaging/', include('messaging.urls')),
-
+    path('notifications/', include('notifications.urls')),
 ]
 
 if settings.DEBUG:

@@ -7,16 +7,25 @@ from django.contrib.auth.models import User
 from datetime import date, datetime
 from django.db.models import Q
 import csv
-
 from courses.models import Course
 from accounts.models import StudentProfile, StaffProfile
 from .models import Attendance
-
+from notifications.utils import notify_users
 
 @login_required
 def mark_attendance(request):
-    staff = request.user
-    courses = Course.objects.filter(assigned_staff=staff)
+    if not request.user.groups.filter(name='Staff').exists():
+        messages.error(request, "You do not have permission to mark attendance.")
+        return redirect('staff_dashboard')  # Updated redirect to 'staff_dashboard' for consistency
+
+    # Use StaffProfile to get the staff member
+    try:
+        staff = StaffProfile.objects.get(user=request.user)
+    except StaffProfile.DoesNotExist:
+        messages.error(request, "Staff profile not found.")
+        return redirect('staff_dashboard')
+
+    courses = Course.objects.filter(assigned_staff=staff.user)
     students = []
     selected_course = None
 
@@ -31,18 +40,32 @@ def mark_attendance(request):
 
     if course_id:
         try:
-            selected_course = Course.objects.get(id=course_id, assigned_staff=staff)
+            selected_course = Course.objects.get(id=course_id, assigned_staff=staff.user)
             students = StudentProfile.objects.filter(course=selected_course)
+
+            if not students:
+                messages.warning(request, "No students found for this course.")
+                return redirect('mark_attendance')
 
             if request.method == "POST" and any(key.startswith("status_") for key in request.POST):
                 for student in students:
                     status = request.POST.get(f'status_{student.id}')
                     if status in dict(Attendance.STATUS_CHOICES):
-                        Attendance.objects.update_or_create(
+                        attendance, created = Attendance.objects.update_or_create(
                             student=student,
                             course=selected_course,
                             date=selected_date_obj,
-                            defaults={'status': status}
+                            defaults={
+                                'status': status,
+                                'uploaded_by': request.user
+                            }
+                        )
+                        # Send notification to student
+                        notify_users(
+                            action='attendance_marked',
+                            user=request.user,
+                            course=selected_course,
+                            attendance=attendance
                         )
                 messages.success(request, "Attendance marked successfully.")
                 return redirect(f'{request.path}?course={course_id}&date={selected_date}')
@@ -58,19 +81,22 @@ def mark_attendance(request):
         'selected_date': selected_date,
     })
 
-
 @login_required
 def student_attendance_view(request):
+    if not request.user.groups.filter(name='Student').exists():
+        messages.error(request, "You do not have permission to view this page.")
+        return redirect('student_dashboard')  # Updated redirect to 'student_dashboard'
+
     try:
         student = StudentProfile.objects.get(user=request.user)
     except StudentProfile.DoesNotExist:
         messages.error(request, "Student profile not found.")
-        return redirect('home')
+        return redirect('student_dashboard')
 
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
 
-    records = Attendance.objects.filter(student=student).order_by('-date')
+    records = Attendance.objects.filter(student=student).select_related('course').order_by('-date')
 
     if start_date:
         try:
@@ -102,12 +128,10 @@ def admin_view_attendance(request):
     selected_date = request.GET.get('date')
     selected_staff_id = request.GET.get('staff')
     selected_course_id = request.GET.get('course')
-    query = request.GET.get('q')  # Get the search query for student name
+    query = request.GET.get('q')
 
-    # Base queryset with related fields
-    records = Attendance.objects.select_related('student__user', 'course').order_by('-date')
+    records = Attendance.objects.select_related('student__user', 'course', 'course__assigned_staff').order_by('-date')
 
-    # Filter by search query (student username, first_name, or last_name)
     if query:
         records = records.filter(
             Q(student__user__username__icontains=query) |
@@ -115,7 +139,6 @@ def admin_view_attendance(request):
             Q(student__user__last_name__icontains=query)
         )
 
-    # Filter by staff
     staff_profiles = StaffProfile.objects.select_related('user').all()
     if selected_staff_id:
         try:
@@ -124,7 +147,6 @@ def admin_view_attendance(request):
         except StaffProfile.DoesNotExist:
             messages.error(request, "Selected staff member does not exist.")
 
-    # Filter by course
     courses = Course.objects.all()
     if selected_course_id:
         try:
@@ -133,13 +155,15 @@ def admin_view_attendance(request):
         except Course.DoesNotExist:
             messages.error(request, "Selected course does not exist.")
 
-    # Filter by date
     if selected_date:
         try:
             selected_date_obj = datetime.strptime(selected_date, "%Y-%m-%d").date()
             records = records.filter(date=selected_date_obj)
         except ValueError:
             messages.error(request, "Invalid date format.")
+
+    if not records.exists() and (query or selected_date or selected_staff_id or selected_course_id):
+        messages.info(request, "No attendance records match the selected filters.")
 
     return render(request, 'attendance/admin_view.html', {
         'records': records,
@@ -148,9 +172,8 @@ def admin_view_attendance(request):
         'selected_course_id': selected_course_id,
         'staff_profiles': staff_profiles,
         'courses': courses,
-        'query': query  # Pass the search query back to the template
+        'query': query
     })
-
 
 @staff_member_required
 def export_attendance_csv(request):
@@ -158,7 +181,7 @@ def export_attendance_csv(request):
     selected_staff_id = request.GET.get('staff')
     selected_course_id = request.GET.get('course')
 
-    records = Attendance.objects.select_related('student__user', 'course')
+    records = Attendance.objects.select_related('student__user', 'course', 'course__assigned_staff')
 
     if selected_staff_id:
         try:
@@ -166,7 +189,7 @@ def export_attendance_csv(request):
             records = records.filter(course__assigned_staff=selected_staff.user)
         except StaffProfile.DoesNotExist:
             messages.error(request, "Selected staff member does not exist.")
-            return redirect('admin_view_attendance')  # Updated to correct URL name
+            return redirect('admin_view_attendance')
 
     if selected_course_id:
         try:
@@ -174,7 +197,7 @@ def export_attendance_csv(request):
             records = records.filter(course=selected_course)
         except Course.DoesNotExist:
             messages.error(request, "Selected course does not exist.")
-            return redirect('admin_view_attendance')  # Updated to correct URL name
+            return redirect('admin_view_attendance')
 
     if selected_date:
         try:
@@ -182,19 +205,25 @@ def export_attendance_csv(request):
             records = records.filter(date=selected_date_obj)
         except ValueError:
             messages.error(request, "Invalid date format.")
-            return redirect('admin_view_attendance')  # Updated to correct URL name
+            return redirect('admin_view_attendance')
+
+    if not records.exists():
+        messages.error(request, "No attendance records found to export.")
+        return redirect('admin_view_attendance')
 
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="attendance.csv"'
     writer = csv.writer(response)
-    writer.writerow(['Date', 'Student Username', 'Course Name', 'Status'])
+    writer.writerow(['Date', 'Student Username', 'Course Name', 'Status', 'Marked By'])
 
     for record in records:
+        marked_by = record.uploaded_by.username if record.uploaded_by else 'Unknown'
         writer.writerow([
             record.date,
             record.student.user.username,
             record.course.name,
-            record.status
+            record.status,
+            marked_by
         ])
 
     return response

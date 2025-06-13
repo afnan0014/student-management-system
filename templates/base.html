@@ -124,9 +124,26 @@
                         <i class="bi bi-list"></i>
                     </button>
                 {% endif %}
-                <h1 class="h4 mb-0"><i class="bi bi-mortarboard me-2"></i>College Student Management System</h1>
+                <h1 class="h4 mb-0 text-white"><i class="bi bi-mortarboard me-2"></i>College Student Management System</h1>
             </div>
             <div class="d-flex align-items-center gap-2">
+                {% if user.is_authenticated %}
+                    <!-- Notification Bell Icon -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light position-relative" type="button" id="notificationBell" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-bell-fill"></i>
+                            <span id="notificationCount" class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">0</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" id="notificationDropdown" aria-labelledby="notificationBell" style="max-height: 400px; overflow-y: auto; width: 350px;">
+                            <li class="dropdown-header d-flex justify-content-between align-items-center">
+                                <span>Notifications</span>
+                                <small id="notificationTotal" class="text-muted">0 total</small>
+                            </li>
+                            <li id="noNotifications" class="dropdown-item text-center d-none">No notifications</li>
+                            <!-- Notifications will be populated via JavaScript -->
+                        </ul>
+                    </div>
+                {% endif %}
                 <button id="theme-toggle" class="btn btn-sm btn-outline-light"><i class="bi bi-moon-stars-fill"></i></button>
                 {% if user.is_authenticated %}
                     <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-light d-flex align-items-center">
@@ -141,6 +158,18 @@
         </div>
     </header>
 
+    <!-- Messages -->
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     <!-- Main Content -->
     <main class="content container-fluid px-4 {% if not user.is_authenticated %}landing-content{% endif %}">
         {% block content %}{% endblock %}
@@ -152,13 +181,31 @@
         <p class="mb-0"><i class="bi bi-c-circle me-1"></i>2025 College Student Management System</p>
     </footer>
     {% endblock %}
-
 </div>
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Theme & Sidebar Script -->
+<!-- CSRF Token Script -->
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+</script>
+
+<!-- Theme, Sidebar & Notification Script -->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const body = document.body;
@@ -222,6 +269,116 @@
                 }
             });
         }
+
+        // Fetch and display all notifications
+        function fetchNotifications() {
+            {% if user.is_authenticated %}
+            fetch('{% url "notifications:get_unread_notifications" %}')
+                .then(response => response.json())
+                .then(data => {
+                    const notificationCount = document.getElementById('notificationCount');
+                    const notificationDropdown = document.getElementById('notificationDropdown');
+                    const noNotifications = document.getElementById('noNotifications');
+                    const notificationTotal = document.getElementById('notificationTotal');
+
+                    // Update unread notification count
+                    notificationCount.textContent = data.count;
+                    notificationCount.style.display = data.count > 0 ? 'inline-block' : 'none';
+
+                    // Fetch all notifications (only unread due to backend filter)
+                    fetch('/notifications/all/', {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(allData => {
+                            // Update total notification count
+                            notificationTotal.textContent = `${allData.notifications.length} total`;
+
+                            // Clear existing notifications (except header and no notifications message)
+                            const existingItems = notificationDropdown.querySelectorAll('.dropdown-item:not(#noNotifications), .dropdown-divider');
+                            existingItems.forEach(item => item.remove());
+
+                            if (allData.notifications.length === 0) {
+                                noNotifications.classList.remove('d-none');
+                            } else {
+                                noNotifications.classList.add('d-none');
+                                allData.notifications.forEach(notification => {
+                                    const notificationItem = document.createElement('li');
+                                    notificationItem.className = `dropdown-item ${notification.is_read ? '' : 'bg-warning-subtle'} d-flex justify-content-between align-items-center`;
+                                    const contentDiv = document.createElement('div');
+                                    contentDiv.className = 'flex-grow-1 me-2';
+
+                                    const link = document.createElement('a');
+                                    link.href = `/notifications/read/${notification.id}/`;
+                                    link.className = 'text-decoration-none d-block';
+                                    link.textContent = notification.message;
+                                    contentDiv.appendChild(link);
+
+                                    const time = document.createElement('small');
+                                    time.className = 'text-muted d-block';
+                                    time.textContent = new Date(notification.created_at).toLocaleString();
+                                    contentDiv.appendChild(time);
+
+                                    notificationItem.appendChild(contentDiv);
+
+                                    // Read/Unread toggle button
+                                    const toggleButton = document.createElement('button');
+                                    toggleButton.className = 'btn btn-sm btn-link p-0';
+                                    toggleButton.innerHTML = notification.is_read ? 
+                                        '<i class="bi bi-eye-slash text-muted" title="Mark as Unread"></i>' : 
+                                        '<i class="bi bi-eye text-success" title="Mark as Read"></i>';
+                                    toggleButton.onclick = (e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        fetch(`/notifications/toggle-read/${notification.id}/`, {
+                                            method: 'POST',
+                                            headers: {
+                                                'X-Requested-With': 'XMLHttpRequest',
+                                                'X-CSRFToken': csrftoken
+                                            }
+                                        })
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                if (data.success) {
+                                                    // Clear read notifications after toggling
+                                                    fetch('/notifications/clear-read/', {
+                                                        method: 'POST',
+                                                        headers: {
+                                                            'X-Requested-With': 'XMLHttpRequest',
+                                                            'X-CSRFToken': csrftoken
+                                                        }
+                                                    })
+                                                        .then(response => response.json())
+                                                        .then(clearData => {
+                                                            if (clearData.success) {
+                                                                fetchNotifications();
+                                                            }
+                                                        })
+                                                        .catch(error => console.error('Error clearing read notifications:', error));
+                                                }
+                                            })
+                                            .catch(error => console.error('Error toggling read status:', error));
+                                    };
+                                    notificationItem.appendChild(toggleButton);
+
+                                    notificationDropdown.appendChild(notificationItem);
+                                    notificationDropdown.appendChild(document.createElement('li')).className = 'dropdown-divider';
+                                });
+                            }
+                        })
+                        .catch(error => console.error('Error fetching all notifications:', error));
+                })
+                .catch(error => console.error('Error fetching unread notifications:', error));
+            {% endif %}
+        }
+
+        // Fetch notifications on page load
+        fetchNotifications();
+
+        // Refresh notifications every 30 seconds
+        setInterval(fetchNotifications, 30000);
     });
 </script>
 
