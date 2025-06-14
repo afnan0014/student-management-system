@@ -2,127 +2,148 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}Students Management System{% endblock %}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
-    <link href="{% static 'css/style.css' %}" rel="stylesheet" />
-    <style>
-        html { scroll-behavior: smooth; }
-        body.landing-page .sidebar { display: none; }
-        body.landing-page .page-wrapper { margin-left: 0 !important; }
-        body.landing-page #sidebar-toggle { display: none; }
-    </style>
-    {% block extra_head %}{% endblock %}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Students Management System{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="{% static 'css/style.css' %}" rel="stylesheet" />
+  <style>
+    html { scroll-behavior: smooth; }
+    body.landing-page .sidebar { display: none; }
+    body.landing-page .page-wrapper { margin-left: 0 !important; }
+    body.landing-page #sidebar-toggle { display: none; }
+  </style>
+  {% block extra_head %}{% endblock %}
 </head>
 <body class="{% if not user.is_authenticated %}landing-page{% endif %} dark-mode">
 
 {% if user.is_authenticated %}
-<!-- Left Sidebar -->
+<!-- Sidebar -->
 <div class="offcanvas offcanvas-start sidebar bg-dark" tabindex="-1" id="sidebar" data-bs-backdrop="false">
-    <div class="offcanvas-header">
-        <h5 class="offcanvas-title"><i class="bi bi-list me-2"></i>Menu</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-    </div>
-    <div class="offcanvas-body">
-        {% if user.groups.all.0.name == 'Admin' %}
-            <!-- Admin Menu -->
-        {% elif user.groups.all.0.name == 'Staff' %}
-            <!-- Staff Menu -->
-        {% elif user.groups.all.0.name == 'Student' %}
-            <ul class="nav flex-column sidebar-menu">
-                <li class="nav-item"><a href="{% url 'student_dashboard' %}" class="nav-link"><i class="bi bi-journal-text me-2"></i>Student Dashboard</a></li>
-                <li class="nav-item"><a href="{% url 'student_attendance_view' %}" class="nav-link"><i class="bi bi-person-lines-fill me-2"></i>My Attendance</a></li>
-                <li class="nav-item"><a href="{% url 'report_card' %}" class="nav-link"><i class="bi bi-bar-chart-line me-2"></i>My Marks</a></li>
-                <li class="nav-item"><a href="{% url 'assignment_list' %}" class="nav-link"><i class="bi bi-list-task me-2"></i>My Assigned Work</a></li>
-                <li class="nav-item"><a href="{% url 'student_timetable' %}" class="nav-link"><i class="bi bi-calendar3 me-2"></i>My Timetable</a></li>
-            </ul>
-        {% endif %}
-    </div>
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title"><i class="bi bi-list me-2"></i>Menu</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    {% if user.groups.all.0.name == 'Admin' %}
+      <!-- Admin Menu (add links as needed) -->
+    {% elif user.groups.all.0.name == 'Staff' %}
+      <!-- Staff Menu (add links as needed) -->
+    {% elif user.groups.all.0.name == 'Student' %}
+      <ul class="nav flex-column sidebar-menu">
+        <li class="nav-item"><a href="{% url 'student_dashboard' %}" class="nav-link"><i class="bi bi-journal-text me-2"></i>Student Dashboard</a></li>
+        <li class="nav-item"><a href="{% url 'student_attendance_view' %}" class="nav-link"><i class="bi bi-person-lines-fill me-2"></i>My Attendance</a></li>
+        <li class="nav-item"><a href="{% url 'report_card' %}" class="nav-link"><i class="bi bi-bar-chart-line me-2"></i>My Marks</a></li>
+        <li class="nav-item"><a href="{% url 'assignment_list' %}" class="nav-link"><i class="bi bi-list-task me-2"></i>My Assigned Work</a></li>
+        <li class="nav-item"><a href="{% url 'student_timetable' %}" class="nav-link"><i class="bi bi-calendar3 me-2"></i>My Timetable</a></li>
+      </ul>
+    {% endif %}
+  </div>
 </div>
 {% endif %}
 
 <!-- Right Sidebar: Profile Panel -->
 <div class="offcanvas offcanvas-end bg-light" tabindex="-1" id="profileSidebar" aria-labelledby="profileSidebarLabel">
-    <div class="offcanvas-header">
-        <h5 class="offcanvas-title"><i class="bi bi-person-circle me-2"></i>My Profile</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
-    </div>
-    <div class="offcanvas-body">
-        <ul class="list-group">
-            <li class="list-group-item"><strong>Username:</strong> {{ user.username }}</li>
-            <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
-            <li class="list-group-item"><strong>Full Name:</strong> {{ user.get_full_name }}</li>
-            <li class="list-group-item"><strong>Role:</strong> {{ user.groups.all.0.name }}</li>
-        </ul>
-        <hr>
-        <a href="{% url 'profile' %}" class="btn btn-outline-primary w-100 mb-2"><i class="bi bi-person"></i> View Profile</a>
-        <a href="{% url 'logout' %}" class="btn btn-outline-danger w-100"><i class="bi bi-box-arrow-right"></i> Logout</a>
-    </div>
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title"><i class="bi bi-person-circle me-2"></i>My Profile</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    <ul class="list-group">
+      <li class="list-group-item"><strong>Username:</strong> {{ user.username }}</li>
+      <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
+      <li class="list-group-item"><strong>Full Name:</strong> {{ user.get_full_name }}</li>
+      <li class="list-group-item"><strong>Role:</strong> {{ user.groups.all.0.name }}</li>
+    </ul>
+    <hr>
+    <a href="{% url 'profile' %}" class="btn btn-outline-primary w-100 mb-2"><i class="bi bi-person"></i> View Profile</a>
+    <a href="{% url 'logout' %}" class="btn btn-outline-danger w-100"><i class="bi bi-box-arrow-right"></i> Logout</a>
+  </div>
 </div>
 
 <!-- Page Wrapper -->
 <div class="page-wrapper">
-    <header class="header bg-dark">
-        <div class="container d-flex justify-content-between align-items-center py-2">
-            <div class="d-flex align-items-center">
-                {% if user.is_authenticated %}
-                    <button class="btn btn-outline-light me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar">
-                        <i class="bi bi-list"></i>
-                    </button>
-                {% endif %}
-                <h1 class="h4 mb-0"><i class="bi bi-mortarboard me-2"></i>College Student Management System</h1>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-                <button id="theme-toggle" class="btn btn-sm btn-outline-light"><i class="bi bi-moon-stars-fill"></i></button>
-                {% if user.is_authenticated %}
-                    <button class="btn btn-sm btn-outline-light d-flex align-items-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#profileSidebar">
-                        <i class="bi bi-person-circle me-1"></i>{{ user.username }}
-                    </button>
-                {% else %}
-                    <a href="{% url 'login' %}" class="btn btn-sm btn-primary d-flex align-items-center">
-                        <i class="bi bi-box-arrow-in-right me-1"></i>Login
-                    </a>
-                {% endif %}
-            </div>
+  <header class="header bg-dark">
+    <div class="container d-flex justify-content-between align-items-center py-2">
+      <div class="d-flex align-items-center">
+        {% if user.is_authenticated %}
+          <button class="btn btn-outline-light me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar">
+            <i class="bi bi-list"></i>
+          </button>
+        {% endif %}
+        <h1 class="h4 mb-0 text-white"><i class="bi bi-mortarboard me-2"></i>College Student Management System</h1>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        {% if user.is_authenticated %}
+          <button class="btn btn-outline-light position-relative" type="button" id="notificationBell" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-bell-fill"></i>
+            <span id="notificationCount" class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">0</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" id="notificationDropdown" style="max-height: 400px; overflow-y: auto; width: 350px;">
+            <li class="dropdown-header d-flex justify-content-between align-items-center">
+              <span>Notifications</span>
+              <small id="notificationTotal" class="text-muted">0 total</small>
+            </li>
+            <li id="noNotifications" class="dropdown-item text-center d-none">No notifications</li>
+          </ul>
+        {% endif %}
+        <button id="theme-toggle" class="btn btn-sm btn-outline-light"><i class="bi bi-moon-stars-fill"></i></button>
+        {% if user.is_authenticated %}
+          <button class="btn btn-sm btn-outline-light d-flex align-items-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#profileSidebar">
+            <i class="bi bi-person-circle me-1"></i>{{ user.username }}
+          </button>
+        {% else %}
+          <a href="{% url 'login' %}" class="btn btn-sm btn-primary d-flex align-items-center">
+            <i class="bi bi-box-arrow-in-right me-1"></i>Login
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  {% if messages %}
+    <div class="container mt-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-    </header>
+      {% endfor %}
+    </div>
+  {% endif %}
 
-    <!-- Main Content -->
-    <main class="content container-fluid px-4 {% if not user.is_authenticated %}landing-content{% endif %}">
-        {% block content %}{% endblock %}
-    </main>
+  <main class="content container-fluid px-4 {% if not user.is_authenticated %}landing-content{% endif %}">
+    {% block content %}{% endblock %}
+  </main>
 
-    <!-- Footer -->
-    {% block footer %}
-    <footer class="footer text-center p-3">
-        <p class="mb-0"><i class="bi bi-c-circle me-1"></i>2025 College Student Management System</p>
-    </footer>
-    {% endblock %}
+  {% block footer %}
+  <footer class="footer text-center p-3">
+    <p class="mb-0"><i class="bi bi-c-circle me-1"></i>2025 College Student Management System</p>
+  </footer>
+  {% endblock %}
 </div>
 
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const body = document.body;
-        const themeToggle = document.getElementById('theme-toggle');
-        const themeIcon = themeToggle.querySelector('i');
+  document.addEventListener('DOMContentLoaded', () => {
+    const body = document.body;
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = themeToggle.querySelector('i');
+    const savedTheme = localStorage.getItem('theme') || 'dark-mode';
+    body.classList.remove('dark-mode', 'light-mode');
+    body.classList.add(savedTheme);
+    themeIcon.className = savedTheme === 'dark-mode' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
 
-        const savedTheme = localStorage.getItem('theme') || 'dark-mode';
-        body.classList.remove('dark-mode', 'light-mode');
-        body.classList.add(savedTheme);
-        themeIcon.className = savedTheme === 'dark-mode' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
-
-        themeToggle.addEventListener('click', () => {
-            const newTheme = body.classList.contains('dark-mode') ? 'light-mode' : 'dark-mode';
-            body.classList.remove('dark-mode', 'light-mode');
-            body.classList.add(newTheme);
-            themeIcon.className = newTheme === 'dark-mode' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
-            localStorage.setItem('theme', newTheme);
-        });
+    themeToggle.addEventListener('click', () => {
+      const newTheme = body.classList.contains('dark-mode') ? 'light-mode' : 'dark-mode';
+      body.classList.remove('dark-mode', 'light-mode');
+      body.classList.add(newTheme);
+      themeIcon.className = newTheme === 'dark-mode' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
+      localStorage.setItem('theme', newTheme);
     });
+  });
 </script>
 </body>
 </html>

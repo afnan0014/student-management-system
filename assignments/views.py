@@ -2,12 +2,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
-from .models import Assignment, Submission, AssignmentFile, AssignmentImage, AssignmentLink, SubmissionFile, SubmissionImage
-from courses.models import Course, Subject
-from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.db.models import Q
+from django.contrib.auth.models import User
 import logging
+
+from .models import Assignment, Submission, AssignmentFile, AssignmentImage, AssignmentLink, SubmissionFile, SubmissionImage
+from courses.models import Course, Subject
+from notifications.utils import notify_users
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +23,9 @@ def assignment_list(request):
         search_query = request.GET.get('search', '')
         if search_query:
             assignments = assignments.filter(
-                Q(title__icontains=search_query) | Q(course__name__icontains=search_query))
+                Q(title__icontains=search_query) |
+                Q(course__name__icontains=search_query)
+            )
 
         for assignment in assignments:
             assignment.has_pending = Submission.objects.filter(assignment=assignment, status='pending').exists()
@@ -66,6 +70,7 @@ def assignment_list(request):
         messages.error(request, "You are not authorized to access assignments.")
         return redirect('login')
 
+
 @login_required
 def create_assignment(request):
     if not (request.user.is_staff or request.user.groups.filter(name='Staff').exists()):
@@ -86,9 +91,7 @@ def create_assignment(request):
         deadline = request.POST.get('deadline')
         text_content = request.POST.get('text_content', '')
 
-        link_contents = request.POST.getlist('link_content')
-        links = [AssignmentLink.objects.create(url=link) for link in link_contents if link]
-
+        links = [AssignmentLink.objects.create(url=link) for link in request.POST.getlist('link_content') if link]
         files = [AssignmentFile.objects.create(file=file) for file in request.FILES.getlist('file_content')]
         images = [AssignmentImage.objects.create(image=image) for image in request.FILES.getlist('image_content')]
 
@@ -108,9 +111,9 @@ def create_assignment(request):
             text_content=text_content or None,
         )
 
-        assignment.links.set(links)
-        assignment.files.set(files)
-        assignment.images.set(images)
+        if links: assignment.links.set(links)
+        if files: assignment.files.set(files)
+        if images: assignment.images.set(images)
 
         if assignment_type == 'individual':
             students = User.objects.filter(groups__name='Student', student_profile__course=course, student_profile__semester=semester)
@@ -126,10 +129,12 @@ def create_assignment(request):
                 messages.error(request, "Please select at least one student for group work.")
                 return render(request, 'assignments/create_assignment.html', {'courses': courses})
 
+        notify_users('assignment_added', request.user, course=course, assignment=assignment)
         messages.success(request, "Assignment created successfully!")
         return redirect('assignment_list')
 
     return render(request, 'assignments/create_assignment.html', {'courses': courses})
+
 
 @login_required
 def edit_assignment(request, assignment_id):
@@ -140,10 +145,8 @@ def edit_assignment(request, assignment_id):
     if request.method == 'POST':
         assignment.title = request.POST.get('title')
         assignment.description = request.POST.get('description')
-        course_id = request.POST.get('course')
-        subject_id = request.POST.get('subject')
-        course = get_object_or_404(Course, id=course_id, assigned_staff=request.user)
-        subject = get_object_or_404(Subject, id=subject_id, course=course)
+        course = get_object_or_404(Course, id=request.POST.get('course'), assigned_staff=request.user)
+        subject = get_object_or_404(Subject, id=request.POST.get('subject'), course=course)
         assignment.course = course
         assignment.subject = subject
         assignment.semester = course.semester
@@ -151,15 +154,12 @@ def edit_assignment(request, assignment_id):
         assignment.text_content = request.POST.get('text_content', '') or None
 
         links = [AssignmentLink.objects.create(url=link) for link in request.POST.getlist('link_content') if link]
-        assignment.links.set(links)
-
         files = [AssignmentFile.objects.create(file=file) for file in request.FILES.getlist('file_content')]
-        if files:
-            assignment.files.set(files)
-
         images = [AssignmentImage.objects.create(image=image) for image in request.FILES.getlist('image_content')]
-        if images:
-            assignment.images.set(images)
+
+        if links: assignment.links.set(links)
+        if files: assignment.files.set(files)
+        if images: assignment.images.set(images)
 
         assignment.students.clear()
         for student_id in request.POST.getlist('students'):
@@ -176,12 +176,14 @@ def edit_assignment(request, assignment_id):
         'students': students,
     })
 
+
 @login_required
 def delete_assignment(request, assignment_id):
     assignment = get_object_or_404(Assignment, id=assignment_id, assigned_by=request.user)
     assignment.delete()
     messages.success(request, "Assignment deleted successfully!")
     return redirect('assignment_list')
+
 
 @login_required
 def view_assignment(request, assignment_id):
@@ -196,6 +198,7 @@ def view_assignment(request, assignment_id):
         'submission': submission,
     })
 
+
 @login_required
 def submit_assignment(request, assignment_id):
     assignment = get_object_or_404(Assignment, id=assignment_id)
@@ -209,6 +212,7 @@ def submit_assignment(request, assignment_id):
         images = [SubmissionImage.objects.create(image=image) for image in request.FILES.getlist('image_submission')]
 
         current_time = timezone.now()
+
         if assignment.assignment_type == 'group':
             submission, created = Submission.objects.get_or_create(
                 assignment=assignment,
@@ -224,13 +228,13 @@ def submit_assignment(request, assignment_id):
                 submission.submitted_at = current_time
                 submission.save()
 
-            submission.files.set(files)
-            submission.images.set(images)
+            if files: submission.files.set(files)
+            if images: submission.images.set(images)
 
-            total_submissions = Submission.objects.filter(assignment=assignment).count()
-            if total_submissions == assignment.students.count():
+            if Submission.objects.filter(assignment=assignment).count() == assignment.students.count():
                 status = 'on_time' if current_time <= assignment.deadline else 'late'
                 Submission.objects.filter(assignment=assignment).update(status=status)
+
         else:
             submission, created = Submission.objects.get_or_create(
                 assignment=assignment,
@@ -247,18 +251,21 @@ def submit_assignment(request, assignment_id):
                 submission.status = 'on_time' if current_time <= assignment.deadline else 'late'
                 submission.save()
 
-            submission.files.set(files)
-            submission.images.set(images)
+            if files: submission.files.set(files)
+            if images: submission.images.set(images)
 
+        notify_users('assignment_submitted', request.user, course=assignment.course, submission=submission)
         messages.success(request, "Assignment submitted successfully!")
         return redirect('assignment_list')
 
     return render(request, 'assignments/submit_assignment.html', {'assignment': assignment})
 
+
 @login_required
 def view_submissions(request, assignment_id):
     assignment = get_object_or_404(Assignment, id=assignment_id, assigned_by=request.user)
     submissions = Submission.objects.filter(assignment=assignment)
+
     assigned_students = assignment.students.all()
     submitted_students = User.objects.filter(submissions__assignment=assignment)
     non_submitted_students = assigned_students.exclude(id__in=submitted_students)
@@ -270,6 +277,7 @@ def view_submissions(request, assignment_id):
         'non_submitted_students': non_submitted_students,
     })
 
+
 def get_students_by_course(request):
     course_id = request.GET.get('course_id')
     if not course_id:
@@ -279,7 +287,6 @@ def get_students_by_course(request):
         course = get_object_or_404(Course, id=course_id, assigned_staff=request.user)
         semester = course.semester
         students = User.objects.filter(
-            is_staff=False,
             groups__name='Student',
             student_profile__course__id=course_id,
             student_profile__semester=semester
@@ -298,6 +305,7 @@ def get_students_by_course(request):
     except Exception as e:
         logger.error(f"Error fetching students: {str(e)}")
         return JsonResponse({'students': []}, status=500)
+
 
 def get_subjects_by_course(request):
     course_id = request.GET.get('course_id')
