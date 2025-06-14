@@ -2,385 +2,148 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="College Student Management System - Streamline your academic journey.">
-    <title>{% block title %}Students Management System{% endblock %}</title>
-
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
-    <!-- External Custom CSS -->
-    <link href="{% static 'css/style.css' %}" rel="stylesheet" />
-    <!-- Inline Styles for Landing Page -->
-    <style>
-        body.landing-page .sidebar {
-            display: none;
-        }
-        body.landing-page .page-wrapper {
-            margin-left: 0 !important;
-        }
-        body.landing-page #sidebar-toggle {
-            display: none;
-        }
-        html {
-            scroll-behavior: smooth;
-        }
-    </style>
-    {% block extra_head %}{% endblock %}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Students Management System{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="{% static 'css/style.css' %}" rel="stylesheet" />
+  <style>
+    html { scroll-behavior: smooth; }
+    body.landing-page .sidebar { display: none; }
+    body.landing-page .page-wrapper { margin-left: 0 !important; }
+    body.landing-page #sidebar-toggle { display: none; }
+  </style>
+  {% block extra_head %}{% endblock %}
 </head>
 <body class="{% if not user.is_authenticated %}landing-page{% endif %} dark-mode">
 
 {% if user.is_authenticated %}
 <!-- Sidebar -->
-<div class="offcanvas offcanvas-start sidebar bg-dark" tabindex="-1" id="sidebar" aria-labelledby="sidebarLabel" data-bs-backdrop="false">
-    <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="sidebarLabel"><i class="bi bi-list me-2"></i>Menu</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body d-flex flex-column">
-        {% if user.groups.all.0.name == 'Admin' %}
-        <ul class="nav flex-column sidebar-menu">
-            <li class="nav-item"><a href="{% url 'admin_dashboard' %}" class="nav-link"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
-            <li class="nav-item">
-                <a href="#" class="nav-link sidebar-toggle" data-target="users-submenu">
-                    <i class="bi bi-people me-2"></i>Users <i class="bi bi-chevron-down toggle-icon ms-auto"></i>
-                </a>
-                <ul class="submenu" id="users-submenu">
-                    <li><a href="{% url 'view_users_by_role' 'Student' %}" class="nav-link submenu-item">Students</a></li>
-                    <li><a href="{% url 'view_users_by_role' 'Staff' %}" class="nav-link submenu-item">Staff</a></li>
-                </ul>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link sidebar-toggle" data-target="academic-submenu">
-                    <i class="bi bi-book me-2"></i>Academic <i class="bi bi-chevron-down toggle-icon ms-auto"></i>
-                </a>
-                <ul class="submenu" id="academic-submenu">
-                    <li><a href="{% url 'department_list' %}" class="nav-link submenu-item">Departments</a></li>
-                    <li><a href="{% url 'course_list' %}" class="nav-link submenu-item">Courses</a></li>
-                </ul>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link sidebar-toggle" data-target="exam-submenu">
-                    <i class="bi bi-file-earmark-text me-2"></i>Exams <i class="bi bi-chevron-down toggle-icon ms-auto"></i>
-                </a>
-                <ul class="submenu" id="exam-submenu">
-                    <li><a href="{% url 'exam_list' %}" class="nav-link submenu-item">All Exams</a></li>
-                    <li><a href="{% url 'export_results' %}" class="nav-link submenu-item">Export Results</a></li>
-                </ul>
-            </li>
-            <li class="nav-item"><a href="{% url 'admin_view_attendance' %}" class="nav-link"><i class="bi bi-journal-check me-2"></i>Attendance Reports</a></li>
-            <li class="nav-item"><a href="{% url 'report_dashboard' %}" class="nav-link"><i class="bi bi-bar-chart me-2"></i>Other Reports</a></li>
-            <li class="nav-item">
-                <a href="{% url 'timetable_list' %}" class="nav-link"><i class="bi bi-calendar2-plus me-2"></i>Timetable</a>
-            </li>
-            <li class="nav-item">
-                <a href="{% url 'messaging:inbox' %}" class="nav-link"><i class="bi bi-envelope me-2"></i>Messaging</a>
-            </li>
-        </ul>
-        {% elif user.groups.all.0.name == 'Staff' %}
-        <ul class="nav flex-column sidebar-menu">
-            <li class="nav-item"><a href="{% url 'staff_dashboard' %}" class="nav-link"><i class="bi bi-clipboard-data me-2"></i>Staff Dashboard</a></li>
-            <li class="nav-item"><a href="{% url 'mark_attendance' %}" class="nav-link"><i class="bi bi-pencil-square me-2"></i>Mark Attendance</a></li>
-            <li class="nav-item"><a href="{% url 'staff_mark_entry_spreadsheet' %}" class="nav-link"><i class="bi bi-journal-text me-2"></i>Mark Entry</a></li>
-            <li class="nav-item">
-                <a href="{% url 'assignment_list' %}" class="nav-link"><i class="bi bi-list-task me-2"></i>Manage Assignments</a>
-            </li>
-            <li class="nav-item">
-                <a href="{% url 'staff_timetable' %}" class="nav-link"><i class="bi bi-calendar3 me-2"></i>My Timetable</a>
-            </li>
-            <li class="nav-item">
-                <a href="{% url 'messaging:inbox' %}" class="nav-link"><i class="bi bi-envelope me-2"></i>Messaging</a>
-            </li>
-        </ul>
-        {% elif user.groups.all.0.name == 'Student' %}
-        <ul class="nav flex-column sidebar-menu">
-            <li class="nav-item"><a href="{% url 'student_dashboard' %}" class="nav-link"><i class="bi bi-journal-text me-2"></i>Student Dashboard</a></li>
-            <li class="nav-item"><a href="{% url 'student_attendance_view' %}" class="nav-link"><i class="bi bi-person-lines-fill me-2"></i>My Attendance</a></li>
-            <li class="nav-item"><a href="{% url 'report_card' %}" class="nav-link"><i class="bi bi-bar-chart-line me-2"></i>My Marks</a></li>
-            <li class="nav-item">
-                <a href="{% url 'assignment_list' %}" class="nav-link"><i class="bi bi-list-task me-2"></i>My Assigned Work</a>
-            </li>
-            <li class="nav-item">
-                <a href="{% url 'student_timetable' %}" class="nav-link"><i class="bi bi-calendar3 me-2"></i>My Timetable</a>
-            </li>
-            <li class="nav-item">
-                <a href="{% url 'messaging:inbox' %}" class="nav-link"><i class="bi bi-envelope me-2"></i>Messaging</a>
-            </li>
-        </ul>
-        {% endif %}
-    </div>
+<div class="offcanvas offcanvas-start sidebar bg-dark" tabindex="-1" id="sidebar" data-bs-backdrop="false">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title"><i class="bi bi-list me-2"></i>Menu</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    {% if user.groups.all.0.name == 'Admin' %}
+      <!-- Admin Menu (add links as needed) -->
+    {% elif user.groups.all.0.name == 'Staff' %}
+      <!-- Staff Menu (add links as needed) -->
+    {% elif user.groups.all.0.name == 'Student' %}
+      <ul class="nav flex-column sidebar-menu">
+        <li class="nav-item"><a href="{% url 'student_dashboard' %}" class="nav-link"><i class="bi bi-journal-text me-2"></i>Student Dashboard</a></li>
+        <li class="nav-item"><a href="{% url 'student_attendance_view' %}" class="nav-link"><i class="bi bi-person-lines-fill me-2"></i>My Attendance</a></li>
+        <li class="nav-item"><a href="{% url 'report_card' %}" class="nav-link"><i class="bi bi-bar-chart-line me-2"></i>My Marks</a></li>
+        <li class="nav-item"><a href="{% url 'assignment_list' %}" class="nav-link"><i class="bi bi-list-task me-2"></i>My Assigned Work</a></li>
+        <li class="nav-item"><a href="{% url 'student_timetable' %}" class="nav-link"><i class="bi bi-calendar3 me-2"></i>My Timetable</a></li>
+      </ul>
+    {% endif %}
+  </div>
 </div>
 {% endif %}
 
-<div class="page-wrapper">
-    <!-- Header -->
-    <header class="header bg-dark">
-        <div class="container d-flex justify-content-between align-items-center py-2">
-            <div class="d-flex align-items-center">
-                {% if user.is_authenticated %}
-                    <button class="btn btn-outline-light me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar" id="sidebar-toggle">
-                        <i class="bi bi-list"></i>
-                    </button>
-                {% endif %}
-                <h1 class="h4 mb-0 text-white"><i class="bi bi-mortarboard me-2"></i>College Student Management System</h1>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-                {% if user.is_authenticated %}
-                    <!-- Notification Bell Icon -->
-                    <div class="dropdown">
-                        <button class="btn btn-outline-light position-relative" type="button" id="notificationBell" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-bell-fill"></i>
-                            <span id="notificationCount" class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">0</span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end" id="notificationDropdown" aria-labelledby="notificationBell" style="max-height: 400px; overflow-y: auto; width: 350px;">
-                            <li class="dropdown-header d-flex justify-content-between align-items-center">
-                                <span>Notifications</span>
-                                <small id="notificationTotal" class="text-muted">0 total</small>
-                            </li>
-                            <li id="noNotifications" class="dropdown-item text-center d-none">No notifications</li>
-                            <!-- Notifications will be populated via JavaScript -->
-                        </ul>
-                    </div>
-                {% endif %}
-                <button id="theme-toggle" class="btn btn-sm btn-outline-light"><i class="bi bi-moon-stars-fill"></i></button>
-                {% if user.is_authenticated %}
-                    <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-light d-flex align-items-center">
-                        <i class="bi bi-box-arrow-right me-1"></i>Logout ({{ user.username }})
-                    </a>
-                {% else %}
-                    <a href="{% url 'login' %}" class="btn btn-sm btn-primary d-flex align-items-center">
-                        <i class="bi bi-box-arrow-in-right me-1"></i>Login
-                    </a>
-                {% endif %}
-            </div>
-        </div>
-    </header>
-
-    <!-- Messages -->
-    {% if messages %}
-        <div class="container mt-3">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-
-    <!-- Main Content -->
-    <main class="content container-fluid px-4 {% if not user.is_authenticated %}landing-content{% endif %}">
-        {% block content %}{% endblock %}
-    </main>
-
-    <!-- Footer -->
-    {% block footer %}
-    <footer class="footer text-center p-3">
-        <p class="mb-0"><i class="bi bi-c-circle me-1"></i>2025 College Student Management System</p>
-    </footer>
-    {% endblock %}
+<!-- Right Sidebar: Profile Panel -->
+<div class="offcanvas offcanvas-end bg-light" tabindex="-1" id="profileSidebar" aria-labelledby="profileSidebarLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title"><i class="bi bi-person-circle me-2"></i>My Profile</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    <ul class="list-group">
+      <li class="list-group-item"><strong>Username:</strong> {{ user.username }}</li>
+      <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
+      <li class="list-group-item"><strong>Full Name:</strong> {{ user.get_full_name }}</li>
+      <li class="list-group-item"><strong>Role:</strong> {{ user.groups.all.0.name }}</li>
+    </ul>
+    <hr>
+    <a href="{% url 'profile' %}" class="btn btn-outline-primary w-100 mb-2"><i class="bi bi-person"></i> View Profile</a>
+    <a href="{% url 'logout' %}" class="btn btn-outline-danger w-100"><i class="bi bi-box-arrow-right"></i> Logout</a>
+  </div>
 </div>
 
-<!-- Bootstrap JS -->
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+  <header class="header bg-dark">
+    <div class="container d-flex justify-content-between align-items-center py-2">
+      <div class="d-flex align-items-center">
+        {% if user.is_authenticated %}
+          <button class="btn btn-outline-light me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar">
+            <i class="bi bi-list"></i>
+          </button>
+        {% endif %}
+        <h1 class="h4 mb-0 text-white"><i class="bi bi-mortarboard me-2"></i>College Student Management System</h1>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        {% if user.is_authenticated %}
+          <button class="btn btn-outline-light position-relative" type="button" id="notificationBell" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-bell-fill"></i>
+            <span id="notificationCount" class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">0</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" id="notificationDropdown" style="max-height: 400px; overflow-y: auto; width: 350px;">
+            <li class="dropdown-header d-flex justify-content-between align-items-center">
+              <span>Notifications</span>
+              <small id="notificationTotal" class="text-muted">0 total</small>
+            </li>
+            <li id="noNotifications" class="dropdown-item text-center d-none">No notifications</li>
+          </ul>
+        {% endif %}
+        <button id="theme-toggle" class="btn btn-sm btn-outline-light"><i class="bi bi-moon-stars-fill"></i></button>
+        {% if user.is_authenticated %}
+          <button class="btn btn-sm btn-outline-light d-flex align-items-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#profileSidebar">
+            <i class="bi bi-person-circle me-1"></i>{{ user.username }}
+          </button>
+        {% else %}
+          <a href="{% url 'login' %}" class="btn btn-sm btn-primary d-flex align-items-center">
+            <i class="bi bi-box-arrow-in-right me-1"></i>Login
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  {% if messages %}
+    <div class="container mt-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <main class="content container-fluid px-4 {% if not user.is_authenticated %}landing-content{% endif %}">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% block footer %}
+  <footer class="footer text-center p-3">
+    <p class="mb-0"><i class="bi bi-c-circle me-1"></i>2025 College Student Management System</p>
+  </footer>
+  {% endblock %}
+</div>
+
+<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- CSRF Token Script -->
 <script>
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-    const csrftoken = getCookie('csrftoken');
-</script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const body = document.body;
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = themeToggle.querySelector('i');
+    const savedTheme = localStorage.getItem('theme') || 'dark-mode';
+    body.classList.remove('dark-mode', 'light-mode');
+    body.classList.add(savedTheme);
+    themeIcon.className = savedTheme === 'dark-mode' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
 
-<!-- Theme, Sidebar & Notification Script -->
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const body = document.body;
-        const themeToggle = document.getElementById('theme-toggle');
-        const themeIcon = themeToggle.querySelector('i');
-        const sidebar = document.getElementById('sidebar');
-        const pageWrapper = document.querySelector('.page-wrapper');
-
-        // Apply saved theme
-        const savedTheme = localStorage.getItem('theme') || 'dark-mode';
-        body.classList.remove('dark-mode', 'light-mode');
-        body.classList.add(savedTheme);
-        themeIcon.className = savedTheme === 'dark-mode' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
-
-        themeToggle.addEventListener('click', () => {
-            const newTheme = body.classList.contains('dark-mode') ? 'light-mode' : 'dark-mode';
-            body.classList.remove('dark-mode', 'light-mode');
-            body.classList.add(newTheme);
-            themeIcon.className = newTheme === 'dark-mode' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
-            localStorage.setItem('theme', newTheme);
-        });
-
-        // Sidebar submenu toggle
-        document.querySelectorAll('.sidebar-toggle').forEach(toggle => {
-            toggle.addEventListener('click', function (e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('data-target');
-                const submenu = document.getElementById(targetId);
-                const isOpen = submenu.classList.contains('open');
-
-                document.querySelectorAll('.submenu').forEach(menu => {
-                    if (menu !== submenu) {
-                        menu.classList.remove('open');
-                        menu.style.maxHeight = null;
-                    }
-                });
-
-                submenu.classList.toggle('open');
-                submenu.style.maxHeight = isOpen ? null : submenu.scrollHeight + 'px';
-            });
-        });
-
-        if (sidebar) {
-            sidebar.addEventListener('show.bs.offcanvas', () => pageWrapper.classList.add('shifted'));
-            sidebar.addEventListener('hide.bs.offcanvas', () => {
-                pageWrapper.classList.remove('shifted');
-                document.querySelectorAll('.submenu').forEach(menu => {
-                    menu.classList.remove('open');
-                    menu.style.maxHeight = null;
-                });
-            });
-
-            document.addEventListener('click', (e) => {
-                const isClickInsideSidebar = sidebar.contains(e.target);
-                const isClickOnToggle = sidebarToggle && sidebarToggle.contains(e.target);
-                if (!isClickInsideSidebar && !isClickOnToggle && window.innerWidth <= 768) {
-                    const bsSidebar = bootstrap.Offcanvas.getInstance(sidebar);
-                    if (bsSidebar && bsSidebar._isShown) {
-                        bsSidebar.hide();
-                    }
-                }
-            });
-        }
-
-        // Fetch and display all notifications
-        function fetchNotifications() {
-            {% if user.is_authenticated %}
-            fetch('{% url "notifications:get_unread_notifications" %}')
-                .then(response => response.json())
-                .then(data => {
-                    const notificationCount = document.getElementById('notificationCount');
-                    const notificationDropdown = document.getElementById('notificationDropdown');
-                    const noNotifications = document.getElementById('noNotifications');
-                    const notificationTotal = document.getElementById('notificationTotal');
-
-                    // Update unread notification count
-                    notificationCount.textContent = data.count;
-                    notificationCount.style.display = data.count > 0 ? 'inline-block' : 'none';
-
-                    // Fetch all notifications (only unread due to backend filter)
-                    fetch('/notifications/all/', {
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    })
-                        .then(response => response.json())
-                        .then(allData => {
-                            // Update total notification count
-                            notificationTotal.textContent = `${allData.notifications.length} total`;
-
-                            // Clear existing notifications (except header and no notifications message)
-                            const existingItems = notificationDropdown.querySelectorAll('.dropdown-item:not(#noNotifications), .dropdown-divider');
-                            existingItems.forEach(item => item.remove());
-
-                            if (allData.notifications.length === 0) {
-                                noNotifications.classList.remove('d-none');
-                            } else {
-                                noNotifications.classList.add('d-none');
-                                allData.notifications.forEach(notification => {
-                                    const notificationItem = document.createElement('li');
-                                    notificationItem.className = `dropdown-item ${notification.is_read ? '' : 'bg-warning-subtle'} d-flex justify-content-between align-items-center`;
-                                    const contentDiv = document.createElement('div');
-                                    contentDiv.className = 'flex-grow-1 me-2';
-
-                                    const link = document.createElement('a');
-                                    link.href = `/notifications/read/${notification.id}/`;
-                                    link.className = 'text-decoration-none d-block';
-                                    link.textContent = notification.message;
-                                    contentDiv.appendChild(link);
-
-                                    const time = document.createElement('small');
-                                    time.className = 'text-muted d-block';
-                                    time.textContent = new Date(notification.created_at).toLocaleString();
-                                    contentDiv.appendChild(time);
-
-                                    notificationItem.appendChild(contentDiv);
-
-                                    // Read/Unread toggle button
-                                    const toggleButton = document.createElement('button');
-                                    toggleButton.className = 'btn btn-sm btn-link p-0';
-                                    toggleButton.innerHTML = notification.is_read ? 
-                                        '<i class="bi bi-eye-slash text-muted" title="Mark as Unread"></i>' : 
-                                        '<i class="bi bi-eye text-success" title="Mark as Read"></i>';
-                                    toggleButton.onclick = (e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        fetch(`/notifications/toggle-read/${notification.id}/`, {
-                                            method: 'POST',
-                                            headers: {
-                                                'X-Requested-With': 'XMLHttpRequest',
-                                                'X-CSRFToken': csrftoken
-                                            }
-                                        })
-                                            .then(response => response.json())
-                                            .then(data => {
-                                                if (data.success) {
-                                                    // Clear read notifications after toggling
-                                                    fetch('/notifications/clear-read/', {
-                                                        method: 'POST',
-                                                        headers: {
-                                                            'X-Requested-With': 'XMLHttpRequest',
-                                                            'X-CSRFToken': csrftoken
-                                                        }
-                                                    })
-                                                        .then(response => response.json())
-                                                        .then(clearData => {
-                                                            if (clearData.success) {
-                                                                fetchNotifications();
-                                                            }
-                                                        })
-                                                        .catch(error => console.error('Error clearing read notifications:', error));
-                                                }
-                                            })
-                                            .catch(error => console.error('Error toggling read status:', error));
-                                    };
-                                    notificationItem.appendChild(toggleButton);
-
-                                    notificationDropdown.appendChild(notificationItem);
-                                    notificationDropdown.appendChild(document.createElement('li')).className = 'dropdown-divider';
-                                });
-                            }
-                        })
-                        .catch(error => console.error('Error fetching all notifications:', error));
-                })
-                .catch(error => console.error('Error fetching unread notifications:', error));
-            {% endif %}
-        }
-
-        // Fetch notifications on page load
-        fetchNotifications();
-
-        // Refresh notifications every 30 seconds
-        setInterval(fetchNotifications, 30000);
+    themeToggle.addEventListener('click', () => {
+      const newTheme = body.classList.contains('dark-mode') ? 'light-mode' : 'dark-mode';
+      body.classList.remove('dark-mode', 'light-mode');
+      body.classList.add(newTheme);
+      themeIcon.className = newTheme === 'dark-mode' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
+      localStorage.setItem('theme', newTheme);
     });
+  });
 </script>
-
 </body>
 </html>

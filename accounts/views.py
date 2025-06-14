@@ -12,7 +12,6 @@ from .models import StudentProfile, StaffProfile, Course, Department
 # Landing page view
 def landing_view(request):
     if request.user.is_authenticated:
-        # Redirect based on user group
         group_name = request.user.groups.first().name if request.user.groups.exists() else None
         if group_name == 'Admin':
             return redirect('admin_dashboard')
@@ -20,17 +19,13 @@ def landing_view(request):
             return redirect('staff_dashboard')
         elif group_name == 'Student':
             return redirect('student_dashboard')
-        else:
-            # If user has no group, redirect to login
-            messages.warning(request, "User does not belong to any recognized group.")
-            return redirect('login')
-    # If not authenticated, render the landing page
+        messages.warning(request, "User does not belong to any recognized group.")
+        return redirect('login')
     return render(request, 'landing.html')
 
 # Login view
 def login_view(request):
     if request.user.is_authenticated:
-        # Redirect based on user group
         group_name = request.user.groups.first().name if request.user.groups.exists() else None
         if group_name == 'Admin':
             return redirect('admin_dashboard')
@@ -38,39 +33,32 @@ def login_view(request):
             return redirect('staff_dashboard')
         elif group_name == 'Student':
             return redirect('student_dashboard')
-        else:
-            # If user has no group, redirect to login
-            messages.warning(request, "User does not belong to any recognized group.")
-            return redirect('login')
-    
+        messages.warning(request, "User does not belong to any recognized group.")
+        return redirect('login')
+
+    form = AuthenticationForm(request, data=request.POST or None)
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
             user = authenticate(request, username=username, password=password)
-            if user is not None:
+            if user:
                 login(request, user)
                 messages.success(request, f"Welcome back, {username}!")
-                # Redirect to dashboard after login
-                group_name = user.groups.first().name if user.groups.exists() else None
-                if group_name == 'Admin':
-                    return redirect('admin_dashboard')
-                elif group_name == 'Staff':
-                    return redirect('staff_dashboard')
-                elif group_name == 'Student':
-                    return redirect('student_dashboard')
-                else:
-                    messages.warning(request, "User does not belong to any recognized group.")
-                    return redirect('login')
-            else:
-                messages.error(request, "Invalid username or password.")
-        else:
-            messages.error(request, "Invalid username or password.")
-    else:
-        form = AuthenticationForm()
-    
+                group = user.groups.first().name if user.groups.exists() else None
+                return redirect(f'{group.lower()}_dashboard') if group else redirect('login')
+        messages.error(request, "Invalid username or password.")
     return render(request, 'login.html', {'form': form})
+
+# Logout view
+def logout_view(request):
+    logout(request)
+    return redirect('landing')
+
+# My Profile View (for the offcanvas right sidebar)
+@login_required
+def my_profile(request):
+    return render(request, 'accounts/profile.html')
 
 # Dashboards
 @login_required
@@ -88,26 +76,16 @@ def staff_dashboard(request):
 def student_dashboard(request):
     return render(request, 'dashboard/student_dashboard.html')
 
-# Logout
-def logout_view(request):
-    logout(request)
-    return redirect('landing')
-
 # Add user
 @login_required
 @allowed_users(allowed_roles=['Admin'])
 def add_user(request, role):
-    student_form = None
-    staff_form = None
-
-    if role.lower() == 'student':
-        student_form = StudentProfileForm(request.POST or None)
-    elif role.lower() == 'staff':
-        staff_form = StaffProfileForm(request.POST or None)
+    student_form = StudentProfileForm(request.POST or None) if role.lower() == 'student' else None
+    staff_form = StaffProfileForm(request.POST or None) if role.lower() == 'staff' else None
 
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
-        if form.is_valid() and (role.lower() != 'student' or student_form.is_valid()) and (role.lower() != 'staff' or staff_form.is_valid()):
+        if form.is_valid() and (not student_form or student_form.is_valid()) and (not staff_form or staff_form.is_valid()):
             user = form.save()
             try:
                 group = Group.objects.get(name=role.capitalize())
@@ -121,17 +99,16 @@ def add_user(request, role):
                         batch_number=student_form.cleaned_data['batch_number']
                     )
                 elif role.lower() == 'staff':
-                    # Create StaffProfile with optional department and course
                     StaffProfile.objects.create(
                         user=user,
-                        department=staff_form.cleaned_data['department'] or None,
-                        course=staff_form.cleaned_data['course'] or None
+                        department=staff_form.cleaned_data.get('department'),
+                        course=staff_form.cleaned_data.get('course')
                     )
 
                 messages.success(request, f"{role.capitalize()} account created for {user.username}")
                 return redirect('view_users_by_role', role=role.lower())
             except Group.DoesNotExist:
-                messages.error(request, f"Group '{role.capitalize()}' does not exist.")
+                messages.error(request, f"Group '{role}' does not exist.")
                 user.delete()
         else:
             messages.error(request, "Form is invalid. Please check the input.")
@@ -145,27 +122,25 @@ def add_user(request, role):
         'staff_form': staff_form,
     })
 
-# Role check
+# Check if user is admin
 def is_admin(user):
     return user.is_authenticated and user.groups.filter(name='Admin').exists()
 
-# View users by role with search
+# View users by role
 @login_required
 @user_passes_test(is_admin)
 def view_users_by_role(request, role):
     query = request.GET.get('q', '').strip()
     users = User.objects.filter(groups__name=role.capitalize())
-
     if query:
         users = users.filter(models.Q(username__icontains=query))
-
     return render(request, 'accounts/user_list.html', {
         'users': users,
         'role': role.capitalize(),
         'query': query,
     })
 
-# Delete user
+# Delete a user
 @login_required
 @user_passes_test(is_admin)
 def delete_user(request, user_id):
@@ -174,21 +149,16 @@ def delete_user(request, user_id):
     messages.success(request, "User deleted successfully.")
     return redirect(request.META.get('HTTP_REFERER', 'admin_dashboard'))
 
-# Change user password
+# Change user password (by Admin)
 @login_required
 @user_passes_test(is_admin)
 def change_password(request, user_id):
     user = get_object_or_404(User, id=user_id)
-
-    if request.method == 'POST':
-        form = PasswordChangeForm(user=user, data=request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, '✅ Password changed successfully!')
-            return redirect('view_users_by_role', role='Staff')  # or wherever
-    else:
-        form = PasswordChangeForm(user=user)
-
+    form = PasswordChangeForm(user=user, data=request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, '✅ Password changed successfully!')
+        return redirect('view_users_by_role', role='Staff')
     return render(request, 'accounts/change_user_password.html', {'form': form})
 
 # Bulk delete users
@@ -204,55 +174,36 @@ def bulk_delete_users(request):
             messages.warning(request, "No users selected for deletion.")
     return redirect(request.META.get('HTTP_REFERER', 'admin_dashboard'))
 
+# Student Profile Management
 @login_required
 @user_passes_test(is_admin)
 def student_profile(request, user_id):
-    # Get the user and their student profile
     profile_user = get_object_or_404(User, id=user_id)
     student_profile = get_object_or_404(StudentProfile, user=profile_user)
 
-    # Ensure only admins can access this page
-    if request.user.groups.all()[0].name != 'Admin':
-        messages.error(request, "You do not have permission to view this page.")
-        return redirect('landing')  # Updated redirect to landing page
-
-    # Get all courses and departments for the dropdowns
     all_courses = Course.objects.all()
     all_departments = Department.objects.all()
 
     if request.method == 'POST':
-        # Get form data
         course_id = request.POST.get('course')
         department_id = request.POST.get('department')
-        batch_number = request.POST.get('batch_number')
+        student_profile.batch_number = request.POST.get('batch_number')
 
-        # Update the student profile
-        student_profile.batch_number = batch_number
-        if course_id:
-            student_profile.course = get_object_or_404(Course, id=course_id)
-        else:
-            student_profile.course = None
-        if department_id:
-            student_profile.department = get_object_or_404(Department, id=department_id)
-        else:
-            student_profile.department = None
+        student_profile.course = get_object_or_404(Course, id=course_id) if course_id else None
+        student_profile.department = get_object_or_404(Department, id=department_id) if department_id else None
 
-        # Save the changes
         student_profile.save()
-
-        # Display success message
         messages.success(request, "Student profile updated successfully.")
         return redirect('student_profile', user_id=user_id)
 
-    # Context for the template
-    context = {
+    return render(request, 'accounts/student_profile.html', {
         'profile_user': profile_user,
         'student_profile': student_profile,
         'all_courses': all_courses,
         'all_departments': all_departments,
-    }
-    return render(request, 'accounts/student_profile.html', context)
+    })
 
+# Staff Profile View (Admin-only)
 @login_required
 @user_passes_test(is_admin)
 def staff_profile(request, user_id):
