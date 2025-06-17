@@ -1,0 +1,136 @@
+body {
+  background-color: #f0f4f8;
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-container {
+  display: flex;
+  width: 80vw;
+  height: calc(90vh - 120px);
+  max-height: 700px;
+  margin: 0 auto;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  background-color: #fff;
+  flex: 1;
+  align-self: center;
+  margin-top: 60px;
+  margin-bottom: 40px;
+}
+
+.left-panel {
+  background-color: #1e90ff;
+  color: #fff;
+  padding: 3.5vw;
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.left-panel .logo {
+  width: 8vw; /* Responsive size for logo */
+  max-width: 120px; /* Maximum width to prevent oversized logos */
+  height: auto; /* Maintain aspect ratio */
+  margin-bottom: 1.5vw;
+  object-fit: contain; /* Ensure logo fits without distortion */
+}
+
+.left-panel h1 {
+  font-size: 2vw; /* Slightly increased for balance */
+  font-weight: 600; /* Medium weight for a professional tone */
+  margin-bottom: 0.8vw;
+  line-height: 1.2; /* Improved readability */
+}
+
+.left-panel p {
+  font-size: 1vw; /* Slightly increased */
+  font-weight: 400;
+  opacity: 0.9; /* Slightly more opaque for clarity */
+  line-height: 1.5; /* Better spacing for professionalism */
+}
+
+.right-panel {
+  padding: 3.5vw;
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.right-panel h2 {
+  font-size: 1.8vw; /* Slightly increased */
+  font-weight: 600; /* Medium weight for professionalism */
+  margin-bottom: 2.5vw;
+  letter-spacing: 0.02em; /* Subtle spacing for refinement */
+}
+
+.form-group {
+  margin-bottom: 1.5vw; /* Slightly increased for better spacing */
+}
+
+.form-group label {
+  display: block;
+  font-size: 1vw; /* Slightly increased */
+  font-weight: 600; /* Bolder for emphasis */
+  margin-bottom: 0.4vw;
+  color: #333; /* Darker color for contrast */
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.7vw;
+  border: 1px solid #ddd;
+  border-radius: 0.3vw;
+  font-size: 1vw; /* Slightly increased */
+  font-weight: 400;
+  color: #333;
+  transition: border-color 0.3s; /* Added for subtle interaction */
+}
+
+.form-group input::placeholder {
+  color: #999; /* Slightly darker for better visibility */
+  font-weight: 400;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #1e90ff; /* Highlight on focus */
+}
+
+.btn-sign-in {
+  width: 100%;
+  padding: 0.9vw;
+  background-color: #1e90ff;
+  color: #fff;
+  border: none;
+  border-radius: 0.3vw;
+  font-size: 1.2vw; /* Slightly increased */
+  font-weight: 600; /* Medium weight for professionalism */
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s; /* Added transform for subtle effect */
+  letter-spacing: 0.05em; /* Added for a refined look */
+}
+
+.btn-sign-in:hover {
+  background-color: #1c86ee;
+  transform: translateY(-2px); /* Subtle lift on hover */
+}
+
+.back-link .btn-outline-primary {
+  padding: 0.7vw;
+  font-size: 1vw;
+  font-weight: 500;
+  border-radius: 0.3vw;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.back-link .btn-outline-primary:hover {
+  background-color: #313234;
+  transform: translateY(-2px);
+}
