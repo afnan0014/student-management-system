@@ -1,31 +1,39 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Admin Dashboard{% endblock %}
-
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
 {% block content %}
-<div class="container mt-4">
-
-    <!-- Unified Container Card -->
-    <div class="card shadow-sm p-4 mb-4">
-
-        <!-- Welcome Section -->
-        <div class="card shadow-sm p-4 mb-4">
-            <h2 class="card-title mb-3 text-center">Welcome to the Admin Dashboard</h2>
-            <p class="card-text text-center">
-                Hello, <strong>{{ user.username }}</strong>!<br>
-                You are logged in as an <span class="badge bg-primary">Admin</span>.
-            </p>
-        </div>
-
-        <!-- Summary Cards Partial -->
-        <div class="card shadow-sm p-4 mb-4">
-            {% include 'dashboard/partials/dashboard_cards.html' %}
-        </div>
-
-        <!-- Charts Partial -->
-        <div class="card shadow-sm p-4">
-            {% include 'dashboard/partials/charts.html' %}
-        </div>
-
+<div class="container-fluid mt-5">
+  <!-- Unified Container Card -->
+  <div class="dashboard-container card shadow-lg">
+    <!-- Header with Gradient -->
+    <div class="dashboard-header text-center text-white p-4">
+      <h1 class="display-5 fw-bold">Admin Dashboard</h1>
+      <p class="lead text-white-50">Manage students, staff, courses, and more with ease.</p>
     </div>
+
+    <!-- Welcome Section -->
+    <div class="card shadow-sm p-4 mb-4">
+      <h2 class="card-title mb-3 text-center">Welcome</h2>
+      <p class="card-text text-center">
+        Hello, <strong>{{ user.username }}</strong>!<br>
+        You are logged in as an <span class="badge bg-primary text-white">Admin</span>.
+      </p>
+    </div>
+
+    <!-- Summary Cards Partial -->
+    <div class="card-content p-4 mb-4">
+      {% include 'dashboard/partials/dashboard_cards.html' %}
+    </div>
+
+    <!-- Charts Partial -->
+    <div class="card-content p-4">
+      {% include 'dashboard/partials/charts.html' %}
+    </div>
+  </div>
 </div>
 {% endblock %}

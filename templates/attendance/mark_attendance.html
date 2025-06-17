@@ -1,111 +1,121 @@
 {% extends 'base.html' %}
+{% load static widget_tweaks %}
 {% block title %}Mark Attendance{% endblock %}
-
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/attendance.css' %}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+{% endblock %}
 {% block content %}
+<div class="container-fluid mt-5">
+  <!-- Back Button -->
+  <a href="javascript:history.back()" class="back-button" title="Go back">
+    <i class="bi bi-arrow-left"></i>
+  </a>
 
-<div class="mb-3">
-    <a href="javascript:history.back()" class="back-arrow" style="font-size: 1.5rem; text-decoration: none;" title="Go back">
-        <i class="bi bi-arrow-left"></i>
-    </a>
-</div>
-
-<div class="container mt-5">
-    <h2 class="card-title mb-4 text-center">
-      <i class="bi bi-clipboard-check me-2"></i>Mark Attendance
-    </h2>
+  <!-- Main Dashboard Container -->
+  <div class="dashboard-container card shadow-lg">
+    <!-- Header -->
+    <div class="dashboard-header text-center text-white p-4">
+      <h1 class="display-5 fw-bold"><i class="bi bi-clipboard-check me-2"></i>Mark Attendance</h1>
+      <p class="lead text-white-50">Record student attendance for selected course and date.</p>
+    </div>
 
     <!-- Messages -->
     {% if messages %}
+      <div class="card-content p-4">
         {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-3" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
         {% endfor %}
+      </div>
     {% endif %}
 
-    <!-- Course and Date Selection Container -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="mb-3"><i class="bi bi-funnel me-1"></i>Select Course and Date</h5>
-            <form method="get">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label for="course" class="form-label fw-bold"><i class="bi bi-book me-1"></i>Select Course:</label>
-                        <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
-                            <select name="course" id="course" class="form-select bg-secondary text-light border-0" onchange="this.form.submit();" required>
-                                <option value="">-- Select Course --</option>
-                                {% for course in courses %}
-                                    <option value="{{ course.id }}" {% if course.id|stringformat:"s" == course_id %}selected{% endif %}>
-                                        {{ course.name }} (Semester {{ course.semester }})
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="date" class="form-label fw-bold"><i class="bi bi-calendar me-1"></i>Select Date:</label>
-                        <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
-                            <input type="date" name="date" id="date" class="form-control bg-secondary text-light border-0" value="{{ selected_date }}" placeholder="Select date" onchange="this.form.submit();" required>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
+    <!-- Course and Date Selection -->
+    <div class="card-content p-4">
+      <div class="card search-card shadow-sm p-4 mb-4">
+        <h4 class="mb-3"><i class="bi bi-funnel me-1"></i>Select Course and Date</h4>
+        <form method="get">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="course" class="form-label"><i class="bi bi-book me-1"></i>Select Course</label>
+              <div class="input-wrapper">
+                <select name="course" id="course" class="form-select" onchange="this.form.submit();" required>
+                  <option value="">-- Select Course --</option>
+                  {% for course in courses %}
+                    <option value="{{ course.id }}" {% if course.id|stringformat:"s" == course_id %}selected{% endif %}>
+                      {{ course.name }} (Semester {{ course.semester }})
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label for="date" class="form-label"><i class="bi bi-calendar me-1"></i>Select Date</label>
+              <div class="input-wrapper">
+                <input type="date" name="date" id="date" class="form-control" value="{{ selected_date }}" onchange="this.form.submit();" required>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
 
-    <!-- Attendance Table Container -->
+    <!-- Attendance Table -->
     {% if students %}
-        <div class="card">
-            <div class="card-body">
-                <h5 class="mb-3"><i class="bi bi-person-check me-1"></i>Mark Attendance for Students</h5>
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="course" value="{{ course_id }}">
-                    <input type="hidden" name="date" value="{{ selected_date }}">
-
-                    <div class="table-responsive">
-                        <table class="table table-hover table-bordered">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th scope="col"><i class="bi bi-hash me-1"></i>#</th>
-                                    <th scope="col"><i class="bi bi-person me-1"></i>Student Name</th>
-                                    <th scope="col"><i class="bi bi-book me-1"></i>Course</th>
-                                    <th scope="col"><i class="bi bi-check-circle me-1"></i>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for student in students %}
-                                    <tr>
-                                        <td>{{ forloop.counter }}</td>
-                                        <td>{{ student.user.get_full_name|default:student.user.username }}</td>
-                                        <td>{{ student.course.name }}</td>
-                                        <td>
-                                            <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
-                                                <select name="status_{{ student.id }}" class="form-select bg-secondary text-light border-0" required>
-                                                    <option value="Present">Present</option>
-                                                    <option value="Absent">Absent</option>
-                                                </select>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="d-flex justify-content-center mt-4">
-                        <button type="submit" class="btn btn-sm btn-success px-5 py-2">
-                            <i class="bi bi-check-circle me-1"></i>Submit Attendance
-                        </button>
-                    </div>
-                </form>
+      <div class="card-content p-4">
+        <div class="card table-card shadow-sm p-4">
+          <h4 class="mb-3"><i class="bi bi-person-check me-1"></i>Mark Attendance for Students</h4>
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="course" value="{{ course_id }}">
+            <input type="hidden" name="date" value="{{ selected_date }}">
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped table-hover">
+                <thead class="table-dark">
+                  <tr>
+                    <th><i class="bi bi-hash me-1"></i>#</th>
+                    <th><i class="bi bi-person me-1"></i>Student Name</th>
+                    <th><i class="bi bi-book me-1"></i>Course</th>
+                    <th><i class="bi bi-check-circle me-1"></i>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for student in students %}
+                    <tr>
+                      <td>{{ forloop.counter }}</td>
+                      <td>{{ student.user.get_full_name|default:student.user.username }}</td>
+                      <td>{{ student.course.name }}</td>
+                      <td>
+                        <div class="input-wrapper">
+                          <select name="status_{{ student.id }}" class="form-select" required>
+                            <option value="Present">Present</option>
+                            <option value="Absent">Absent</option>
+                          </select>
+                        </div>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
+            <div class="d-flex justify-content-center mt-4">
+              <button type="submit" class="btn btn-success btn-wide">
+                <i class="bi bi-check-circle me-1"></i>Submit Attendance
+              </button>
+            </div>
+          </form>
         </div>
+      </div>
     {% elif course_id and selected_date %}
-        <div class="alert alert-info mt-4">
-            No students found for the selected course.
+      <div class="card-content p-4">
+        <div class="alert alert-info">
+          <i class="bi bi-info-circle-fill me-2"></i>No students found for the selected course.
         </div>
+      </div>
     {% endif %}
+  </div>
 </div>
 {% endblock %}

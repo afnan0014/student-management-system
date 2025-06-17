@@ -1,0 +1,408 @@
+/* Messaging Specific Styles */
+
+/* Define custom variables Variables */
+:root {
+    --accent: #1e90ff; /* Primary blue */
+    --secondary: #47ad47; /* Green */
+    --tertiary: #764ba2; /* Purple */
+    --danger: #dc3545; /* Red */
+    --info: #17a2b8; /* Info blue */
+    --warning: #ffc107; /* Yellow */
+    --text-content: #333333; /* Primary Text color in light mode */
+    --text-muted: #6c757d; /* Muted text in light mode */
+    --bg-light: #f0f4f8; /* Light background color */
+    --bg-dark: #1a1a1a; /* Dark mode background */
+    --border-light: #e0e0e0; /* Light border color */
+    --back-button-bg: #000000; /* Black back button in light mode */
+}
+
+/* Dark mode overrides */
+body.dark-mode {
+    --text-content: #ffffff;
+    --text-muted: #b0b0b0;
+    --bg-light: #2a2a2a;
+    --border-light: #444444;
+    --back-button-bg: #ffffff; /* White back button in dark mode */
+}
+
+/* General Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-content);
+    line-height: 1.6;
+}
+
+/* Dashboard Container */
+.dashboard-container {
+    background-color: transparent;
+    border: 2px solid var(--border-light);
+    border-radius: 1rem;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+/* Dashboard Header */
+.dashboard-header {
+    background: linear-gradient(90deg, var(--accent), #3e977e);
+    border-radius: 0.75rem 0.75rem 0 0;
+    border: 2px solid var(--border-light);
+    border-bottom: none;
+}
+
+.dashboard-header h1 {
+    font-weight: 700;
+    font-size: 2.5rem;
+}
+
+.dashboard-header .lead {
+    font-size: 1.2rem;
+}
+
+/* Card Content */
+.card-content {
+    background-color: transparent;
+    border: none;
+    animation: fadeInUp 0.5s ease;
+}
+
+/* Cards */
+.filter-card, .table-card {
+    border: 2px solid var(--border-light);
+    border-radius: 0.75rem;
+    background-color: #ffffff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding: 2rem;
+    min-height: 200px;
+}
+
+body.dark-mode .filter-card, body.dark-mode .table-card {
+    background-color: #2f2f2f;
+}
+
+.filter-card:hover, .table-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Form Inputs */
+.input-wrapper {
+    border: 2px solid var(--info);
+    border-radius: 0.5rem;
+    background-color: inherit;
+    transition: background-color 0.3s ease;
+}
+
+body.dark-mode .input-wrapper {
+    background-color: #3a3a3a;
+}
+
+.form-control, .form-select {
+    border: none !important;
+    background-color: transparent !important;
+    color: var(--text-content) !important;
+}
+
+body.dark-mode .form-control, body.dark-mode .form-select {
+    color: #ffffff !important;
+}
+
+/* Info Items */
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+}
+
+body.dark-mode .info-item {
+    background-color: #3a3a3a;
+}
+
+.info-item strong {
+    color: var(--text-content);
+}
+
+.info-item span {
+    color: var(--text-muted);
+}
+
+/* Message Items */
+.message-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid var(--accent);
+}
+
+body.dark-mode .message-item {
+    background-color: #3a3a3a;
+}
+
+.message-item.unread {
+    background-color: #e0f7ff;
+    font-weight: bold;
+}
+
+body.dark-mode .message-item.unread {
+    background-color: #4a4a4a;
+}
+
+/* Reply Items */
+.reply-item {
+    margin-left: 20px;
+    margin-top: 10px;
+    padding: 15px;
+    background-color: #e9f7ff;
+    border-radius: 8px;
+    border-left: 4px solid var(--secondary);
+}
+
+body.dark-mode .reply-item {
+    background-color: #3a4a4a;
+}
+
+.reply-item.nested-reply {
+    margin-left: 40px;
+    background-color: #d9edff;
+    border-left: 4px solid var(--info);
+}
+
+body.dark-mode .reply-item.nested-reply {
+    background-color: #4a5a5b;
+}
+
+/* Message Content */
+.message-content {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    border-left: 5px solid var(--accent);
+}
+
+body.dark-mode .message-content {
+    background-color: #3a3a3a;
+}
+
+/* Attachment Section */
+.attachment-section {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f1f3f5;
+    border-radius: 8px;
+}
+
+body.dark-mode .attachment-section {
+    background-color: #3a3a3a;
+}
+
+.attachment-item {
+    margin-top: 10px;
+}
+
+/* Buttons */
+.btn {
+    font-family: 'Poppins', sans-serif;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    padding: 0.5rem 1.5rem;
+}
+
+.btn:hover {
+    transform: scale(1.05);
+}
+
+.btn-primary {
+    background-color: var(--accent);
+    border-color: var(--accent);
+}
+
+.btn-primary:hover {
+    background-color: #1c86ee;
+    border-color: #1c86ee;
+}
+
+.btn-success {
+    background-color: var(--secondary);
+    border-color: var(--secondary);
+}
+
+.btn-success:hover {
+    background-color: #3e977e;
+    border-color: #3e977e;
+}
+
+.btn-danger {
+    background-color: var(--danger);
+    border-color: var(--danger);
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #c82333;
+}
+
+.btn-warning {
+    background-color: var(--warning);
+    border-color: var(--warning);
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+    border-color: #e0a800;
+}
+
+.btn-info {
+    background-color: var(--info);
+    border-color: var(--info);
+}
+
+.btn-info:hover {
+    background-color: #138496;
+    border-color: #138496;
+}
+
+/* Nav Tabs */
+.nav-tabs .nav-link {
+    color: var(--text-content);
+    border: 2px solid var(--border-light);
+    margin-right: 5px;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: var(--accent);
+    color: #ffffff;
+    border-color: var(--accent);
+}
+
+/* Alerts */
+.alert {
+    border: 2px solid var(--border-light);
+}
+
+.alert-warning {
+    background-color: var(--warning);
+    border-color: #e0a800;
+    color: #212529;
+}
+
+.alert-info {
+    background-color: var(--info);
+    border-color: #138496;
+    color: #ffffff;
+}
+
+body.dark-mode .alert-warning, body.dark-mode .alert-info {
+    color: #ffffff;
+}
+
+/* Back Button */
+.back-button {
+    position: fixed;
+    top: 7rem;
+    left: 0;
+    width: 50px;
+    height: 50px;
+    background-color: var(--back-button-bg);
+    border: 2px solid var(--border-light);
+    border-radius: 0 0.75rem 0.75rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: transform 0.2s ease, background-color 0.3s ease;
+    z-index: 1000;
+}
+
+.back-button:hover {
+    transform: translateX(5px);
+}
+
+.back-button i {
+    font-size: 1.5rem;
+    color: #ffffff;
+}
+
+body.dark-mode .back-button i {
+    color: #000000;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+    .dashboard-container {
+        max-width: 90%;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-header h1 {
+        font-size: 2rem;
+    }
+
+    .dashboard-header .lead {
+        font-size: 1rem;
+    }
+
+    .dashboard-container {
+        max-width: 95%;
+        padding: 1rem;
+    }
+
+    .filter-card, .table-card {
+        padding: 1.5rem;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .message-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .message-item > div:last-child {
+        margin-top: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .dashboard-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .dashboard-container {
+        max-width: 100%;
+        padding: 0.75rem;
+    }
+
+    .filter-card, .table-card {
+        padding: 1rem;
+    }
+
+    .btn {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.75rem;
+    }
+}

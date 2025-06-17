@@ -13,15 +13,18 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
     <!-- External Custom CSS -->
     <link href="{% static 'css/style.css' %}" rel="stylesheet" />
-    <!-- Inline Styles for Landing Page and Sidebars -->
+    <!-- Inline Styles for Landing Page, Login Page, and Sidebars -->
     <style>
-        body.landing-page .sidebar {
+        body.landing-page .sidebar,
+        body.login-page .sidebar {
             display: none;
         }
-        body.landing-page .page-wrapper {
+        body.landing-page .page-wrapper,
+        body.login-page .page-wrapper {
             margin-left: 0 !important;
         }
-        body.landing-page #sidebar-toggle {
+        body.landing-page #sidebar-toggle,
+        body.login-page #sidebar-toggle {
             display: none;
         }
         html {
@@ -78,10 +81,38 @@
         body.light-mode .offcanvas.bg-dark .btn-outline-danger:hover {
             background-color: #f5c6cb !important;
         }
+        /* Styles for dynamic header/footer visibility on login page only */
+        body.login-page .header,
+        body.login-page .footer {
+            transition: transform 0.3s ease-in-out;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            pointer-events: none; /* Prevent interaction when hidden */
+        }
+        body.login-page .header {
+            top: 0;
+            transform: translateY(-100%);
+        }
+        body.login-page .footer {
+            bottom: 0;
+            transform: translateY(100%);
+        }
+        body.login-page .header.visible,
+        body.login-page .footer.visible {
+            transform: translateY(0);
+            pointer-events: auto; /* Enable interaction when visible */
+        }
+        /* Ensure header/footer are stable on landing page and authenticated pages */
+        body:not(.login-page) .header,
+        body:not(.login-page) .footer {
+            position: relative;
+            transform: translateY(0);
+        }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
-<body class="{% if not user.is_authenticated %}landing-page{% endif %} dark-mode">
+<body class="{% if not user.is_authenticated %}{% block body_class %}landing-page{% endblock %}{% endif %} light-mode">
 
 {% if user.is_authenticated %}
 <!-- Sidebar (Menu) -->
@@ -287,28 +318,34 @@
     const csrftoken = getCookie('csrftoken');
 </script>
 
-<!-- Theme, Sidebar & Notification Script -->
+<!-- Theme, Sidebar, Notification & Header/Footer Visibility Script -->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const body = document.body;
         const themeToggle = document.getElementById('theme-toggle');
-        const themeIcon = themeToggle.querySelector('i');
+        const themeIcon = themeToggle?.querySelector('i');
         const sidebar = document.getElementById('sidebar');
         const pageWrapper = document.querySelector('.page-wrapper');
+        const header = document.querySelector('.header');
+        const footer = document.querySelector('.footer');
 
         // Apply saved theme
-        const savedTheme = localStorage.getItem('theme') || 'dark-mode';
+        const savedTheme = localStorage.getItem('theme') || 'light-mode';
         body.classList.remove('dark-mode', 'light-mode');
         body.classList.add(savedTheme);
-        themeIcon.className = savedTheme === 'dark-mode' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
+        if (themeIcon) {
+            themeIcon.className = savedTheme === 'dark-mode' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
+        }
 
-        themeToggle.addEventListener('click', () => {
-            const newTheme = body.classList.contains('dark-mode') ? 'light-mode' : 'dark-mode';
-            body.classList.remove('dark-mode', 'light-mode');
-            body.classList.add(newTheme);
-            themeIcon.className = newTheme === 'dark-mode' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
-            localStorage.setItem('theme', newTheme);
-        });
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                const newTheme = body.classList.contains('dark-mode') ? 'light-mode' : 'dark-mode';
+                body.classList.remove('dark-mode', 'light-mode');
+                body.classList.add(newTheme);
+                themeIcon.className = newTheme === 'dark-mode' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
+                localStorage.setItem('theme', newTheme);
+            });
+        }
 
         // Sidebar submenu toggle
         document.querySelectorAll('.sidebar-toggle').forEach(toggle => {
@@ -350,6 +387,32 @@
                     }
                 }
             });
+        }
+
+        // Dynamic header/footer visibility for login page only
+        if (body.classList.contains('login-page') && header && footer) {
+            document.addEventListener('mousemove', (e) => {
+                const windowHeight = window.innerHeight;
+                const mouseY = e.clientY;
+
+                // Show header if cursor is in top 100px (increased for better usability)
+                if (mouseY < 100) {
+                    header.classList.add('visible');
+                } else {
+                    header.classList.remove('visible');
+                }
+
+                // Show footer if cursor is in bottom 100px
+                if (mouseY > windowHeight - 100) {
+                    footer.classList.add('visible');
+                } else {
+                    footer.classList.remove('visible');
+                }
+            });
+
+            // Ensure initial state is hidden
+            header.classList.remove('visible');
+            footer.classList.remove('visible');
         }
 
         // Fetch and display all notifications

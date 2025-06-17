@@ -1,145 +1,159 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}My Report Card{% endblock %}
-
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/exam.css' %}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+{% endblock %}
 {% block content %}
+<div class="container-fluid mt-5">
+  <!-- Back Button -->
+  <a href="javascript:history.back()" class="back-button" title="Go back">
+    <i class="bi bi-arrow-left"></i>
+  </a>
 
-<div class="mb-3">
-    <a href="javascript:history.back()" class="back-arrow" style="font-size: 1.5rem; text-decoration: none;" title="Go back">
-        <i class="bi bi-arrow-left"></i>
-    </a>
-</div>
-
-<div class="container mt-5">
-  <h2 class="card-title mb-4 text-center"><i class="bi bi-clipboard-check me-2"></i>My Report Card</h2>
-
-  <!-- Filter Section -->
-  <div class="card mb-4 shadow-lg border-0">
-    <div class="card-body p-4">
-      <h5 class="mb-3"><i class="bi bi-funnel me-1"></i>Filter Results</h5>
-      <form method="get" class="d-flex flex-wrap gap-3 align-items-end">
-        <div class="d-flex flex-column" style="flex: 1; min-width: 200px;">
-          <label for="exam" class="form-label"><i class="bi bi-journal-text me-1"></i>Exam</label>
-          <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
-            <select id="exam" name="exam" class="form-control border-0">
-              <option value="">Select Exam</option>
-              {% for exam in exams %}
-                <option value="{{ exam.id }}" {% if exam.id|stringformat:"s" == selected_exam %}selected{% endif %}>{{ exam.name }}</option>
-              {% endfor %}
-            </select>
-          </div>
-        </div>
-        <div class="d-flex flex-column" style="flex: 1; min-width: 200px;">
-          <label for="subject" class="form-label"><i class="bi bi-book me-1"></i>Subject</label>
-          <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
-            <select id="subject" name="subject" class="form-control border-0">
-              <option value="">Select Subject</option>
-              {% for id, name in subjects %}
-                <option value="{{ id }}" {% if id|stringformat:"s" == selected_subject %}selected{% endif %}>{{ name }}</option>
-              {% endfor %}
-            </select>
-          </div>
-        </div>
-        <div class="d-flex flex-column" style="flex: 1; min-width: 200px;">
-          <label for="status" class="form-label"><i class="bi bi-check-circle me-1"></i>Status</label>
-          <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
-            <select id="status" name="status" class="form-control border-0">
-              <option value="">Select Status</option>
-              <option value="pass" {% if selected_status == 'pass' %}selected{% endif %}>Passed</option>
-              <option value="fail" {% if selected_status == 'fail' %}selected{% endif %}>Failed</option>
-            </select>
-          </div>
-        </div>
-        <div class="d-flex gap-2 align-self-end">
-          <button type="submit" class="btn btn-sm btn-primary"><i class="bi bi-funnel me-1"></i>Apply Filters</button>
-          <a href="{% url 'report_card' %}" class="btn btn-sm btn-secondary"><i class="bi bi-x-circle me-1"></i>Reset</a>
-        </div>
-      </form>
+  <!-- Main Dashboard Container -->
+  <div class="dashboard-container card shadow-lg">
+    <!-- Header -->
+    <div class="dashboard-header text-center text-white p-4">
+      <h1 class="display-5 fw-bold"><i class="bi bi-clipboard-check me-2"></i>My Report Card</h1>
+      <p class="lead text-white-50">View your exam results.</p>
     </div>
-  </div>
 
-  <!-- Summary Counters -->
-  <div class="card mb-4 shadow-lg border-0">
-    <div class="card-body p-4">
-      <h5 class="mb-3"><i class="bi bi-bar-chart me-1"></i>Summary</h5>
-      <div class="d-flex flex-wrap gap-3">
-        <div class="d-flex align-items-center">
-          <span class="fw-bold me-2"><i class="bi bi-check-circle me-1"></i>Passed:</span>
-          {% if total_passed >= total_failed %}
-            <span class="badge bg-success fs-5">{{ total_passed }}</span>
-          {% else %}
-            <span class="badge bg-warning text-dark fs-5">{{ total_passed }}</span>
-          {% endif %}
-        </div>
-        <div class="d-flex align-items-center">
-          <span class="fw-bold me-2"><i class="bi bi-x-circle me-1"></i>Failed:</span>
-          {% if total_failed > total_passed %}
-            <span class="badge bg-danger fs-5">{{ total_failed }}</span>
-          {% else %}
-            <span class="badge bg-warning text-dark fs-5">{{ total_failed }}</span>
-          {% endif %}
+    <!-- Filter Section -->
+    <div class="card-content p-4">
+      <div class="card search-card shadow-sm p-4 mb-4">
+        <h4 class="mb-3"><i class="bi bi-funnel me-1"></i>Filter Results</h4>
+        <form method="get" class="d-flex flex-wrap gap-3 align-items-end">
+          <div class="d-flex flex-column flex-grow-1">
+            <label for="exam" class="form-label"><i class="bi bi-journal-text me-1"></i>Exam</label>
+            <div class="input-wrapper">
+              <select id="exam" name="exam" class="form-select">
+                <option value="">Select Exam</option>
+                {% for exam in exams %}
+                  <option value="{{ exam.id }}" {% if exam.id|stringformat:"s" == selected_exam %}selected{% endif %}>{{ exam.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="d-flex flex-column flex-grow-1">
+            <label for="subject" class="form-label"><i class="bi bi-book me-1"></i>Subject</label>
+            <div class="input-wrapper">
+              <select id="subject" name="subject" class="form-select">
+                <option value="">Select Subject</option>
+                {% for id, name in subjects %}
+                  <option value="{{ id }}" {% if id|stringformat:"s" == selected_subject %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="d-flex flex-column flex-grow-1">
+            <label for="status" class="form-label"><i class="bi bi-check-circle me-1"></i>Status</label>
+            <div class="input-wrapper">
+              <select id="status" name="status" class="form-select">
+                <option value="">Select Status</option>
+                <option value="pass" {% if selected_status == 'pass' %}selected{% endif %}>Passed</option>
+                <option value="fail" {% if selected_status == 'fail' %}selected{% endif %}>Failed</option>
+              </select>
+            </div>
+          </div>
+          <div class="d-flex gap-2 align-self-end">
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-funnel me-1"></i>Apply Filters
+            </button>
+            <a href="{% url 'report_card' %}" class="btn btn-secondary">
+              <i class="bi bi-x-circle me-1"></i>Reset
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Summary Counters -->
+    <div class="card-content p-4">
+      <div class="card summary-card shadow-sm p-4 mb-4">
+        <h4 class="mb-3"><i class="bi bi-bar-chart me-1"></i>Summary</h4>
+        <div class="d-flex flex-wrap gap-3">
+          <div class="d-flex align-items-center">
+            <span class="fw-bold me-2"><i class="bi bi-check-circle me-1"></i>Passed:</span>
+            {% if total_passed >= total_failed %}
+              <span class="badge bg-success fs-5">{{ total_passed }}</span>
+            {% else %}
+              <span class="badge bg-warning text-dark fs-5">{{ total_passed }}</span>
+            {% endif %}
+          </div>
+          <div class="d-flex align-items-center">
+            <span class="fw-bold me-2"><i class="bi bi-x-circle me-1"></i>Failed:</span>
+            {% if total_failed > total_passed %}
+              <span class="badge bg-danger fs-5">{{ total_failed }}</span>
+            {% else %}
+              <span class="badge bg-warning text-dark fs-5">{{ total_failed }}</span>
+            {% endif %}
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Exam-wise Grouped Tables -->
-  {% for exam in grouped_results %}
-    <div class="card shadow-lg border-0 mb-4">
-      <div class="card-body p-4">
-        <h5 class="mb-3"><i class="bi bi-journal-text me-1"></i>{{ exam.name }} — {{ exam.date }}</h5>
-        <div class="table-responsive">
-          <table class="table table-bordered table-striped align-middle">
-            <thead class="table-dark">
-              <tr>
-                <th><i class="bi bi-book me-1"></i>Subject</th>
-                <th><i class="bi bi-123 me-1"></i>Max Mark</th>
-                <th><i class="bi bi-123 me-1"></i>Obtained Mark</th>
-                <th><i class="bi bi-award me-1"></i>Grade</th>
-                <th><i class="bi bi-check-circle me-1"></i>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for mark in exam.marks %}
+    <!-- Exam-wise Grouped Tables -->
+    {% for exam in grouped_results %}
+      <div class="card-content p-4">
+        <div class="card table-card shadow-sm p-4 mb-4">
+          <h4 class="mb-3"><i class="bi bi-journal-text me-1"></i>{{ exam.name }} — {{ exam.date }}</h4>
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover">
+              <thead class="table-dark">
                 <tr>
-                  <td>{{ mark.subject.name }}</td>
-                  <td>100</td>
-                  <td>{{ mark.marks_obtained }}</td>
-                  <td>{{ mark.grade }}</td>
-                  <td>
-                    {% if mark.status == 'Passed' %}
-                      <span class="badge bg-success"><i class="bi bi-check me-1"></i>Passed</span>
-                    {% else %}
-                      <span class="badge bg-danger"><i class="bi bi-x me-1"></i>Failed</span>
-                    {% endif %}
-                  </td>
+                  <th><i class="bi bi-book me-1"></i>Subject</th>
+                  <th><i class="bi bi-123 me-1"></i>Max Mark</th>
+                  <th><i class="bi bi-123 me-1"></i>Obtained Mark</th>
+                  <th><i class="bi bi-award me-1"></i>Grade</th>
+                  <th><i class="bi bi-check-circle me-1"></i>Status</th>
                 </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Totals Section -->
-        <div class="d-flex flex-wrap gap-3 mt-3">
-          <div class="p-2 bg-light rounded">
-            <strong><i class="bi bi-123 me-1"></i>Total Max:</strong> {{ exam.total_max }}
+              </thead>
+              <tbody>
+                {% for mark in exam.marks %}
+                  <tr>
+                    <td>{{ mark.subject.name }}</td>
+                    <td>100</td>
+                    <td>{{ mark.marks_obtained }}</td>
+                    <td>{{ mark.grade }}</td>
+                    <td>
+                      {% if mark.status == 'Passed' %}
+                        <span class="badge bg-success"><i class="bi bi-check me-1"></i>Passed</span>
+                      {% else %}
+                        <span class="badge bg-danger"><i class="bi bi-x me-1"></i>Failed</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
           </div>
-          <div class="p-2 bg-light rounded">
-            <strong><i class="bi bi-123 me-1"></i>Total Obtained:</strong> {{ exam.total_obtained }}
-          </div>
-          <div class="p-2 bg-light rounded">
-            <strong><i class="bi bi-check-circle me-1"></i>Subjects Passed:</strong> {{ exam.pass_count }}
-          </div>
-          <div class="p-2 bg-light rounded">
-            <strong><i class="bi bi-x-circle me-1"></i>Subjects Failed:</strong> {{ exam.fail_count }}
+          <!-- Totals Section -->
+          <div class="d-flex flex-wrap gap-3 mt-3">
+            <div class="p-2 summary-box rounded">
+              <strong><i class="bi bi-123 me-1"></i>Total Max:</strong> {{ exam.total_max }}
+            </div>
+            <div class="p-2 summary-box rounded">
+              <strong><i class="bi bi-123 me-1"></i>Total Obtained:</strong> {{ exam.total_obtained }}
+            </div>
+            <div class="p-2 summary-box rounded">
+              <strong><i class="bi bi-check-circle me-1"></i>Subjects Passed:</strong> {{ exam.pass_count }}
+            </div>
+            <div class="p-2 summary-box rounded">
+              <strong><i class="bi bi-x-circle me-1"></i>Subjects Failed:</strong> {{ exam.fail_count }}
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  {% empty %}
-    <div class="alert alert-warning"><i class="bi bi-exclamation-triangle-fill me-2"></i>No marks available for your selection.</div>
-  {% endfor %}
+    {% empty %}
+      <div class="card-content p-4">
+        <div class="alert alert-warning">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>No marks available for your selection.
+        </div>
+      </div>
+    {% endfor %}
+  </div>
 </div>
-
-<!-- Include Bootstrap Icons -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 {% endblock %}

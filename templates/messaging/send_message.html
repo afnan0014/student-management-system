@@ -1,191 +1,226 @@
-{% extends "base.html" %}
-
+{% extends 'base.html' %}
+{% load static %}
 {% block title %}{% if is_reply %}Reply to Message{% else %}Send Message{% endif %}{% endblock %}
-
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/messaging.css' %}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+{% endblock %}
 {% block content %}
+<div class="container-fluid mt-5">
+  <!-- Back Button -->
+  <a href="{% url 'messaging:inbox' %}?view={{ request.GET.view|default:'sent' }}" class="back-button" title="Go back">
+    <i class="bi bi-arrow-left"></i>
+  </a>
 
-<div class="mb-3">
-    <a href="{% url 'messaging:inbox' %}?view={{ request.GET.view|default:'sent' }}" class="back-arrow" style="font-size: 1.5rem; text-decoration: none;" title="Go back">
-        <i class="bi bi-arrow-left"></i>
-    </a>
-</div>
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-
-<style>
-    .messaging-container {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 30px 20px;
-    }
-    .messaging-header {
-        background: linear-gradient(90deg, #007bff, #00c4ff);
-        color: #ffffff;
-        padding: 20px;
-        border-radius: 10px 10px 0 0;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-    .messaging-body {
-        background: #fff;
-        padding: 30px;
-        border-radius: 0 0 10px 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-    .attachment-section {
-        margin-top: 20px;
-    }
-    .attachment-section .row {
-        margin-bottom: 10px;
-    }
-</style>
-
-<div class="messaging-container">
-    <div class="messaging-header">
-        <h3 class="mb-0"><i class="bi bi-envelope me-2"></i>{% if is_reply %}Reply to Message{% else %}Send Message{% endif %}</h3>
+  <!-- Main Dashboard Container -->
+  <div class="dashboard-container card shadow-lg">
+    <!-- Header -->
+    <div class="dashboard-header text-center text-white p-4">
+      <h1 class="display-5 fw-bold"><i class="bi bi-envelope me-2"></i>{% if is_reply %}Reply to Message{% else %}Send Message{% endif %}</h1>
+      <p class="lead text-white-50">Compose a new message or reply.</p>
     </div>
 
-    <div class="messaging-body">
-        {% if parent_message %}
-            <div class="mb-3">
-                <h5>Original Message:</h5>
-                <p><strong>From:</strong> {{ parent_message.sender.get_full_name|default:parent_message.sender.username }}</p>
-                <p><strong>Sent At:</strong> {{ parent_message.timestamp }}</p>
-                <p><strong>Message:</strong> {{ parent_message.content }}</p>
-            </div>
-        {% endif %}
+    <!-- Messages -->
+    {% if messages %}
+      <div class="card-content p-4">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
 
+    <!-- Original Message -->
+    {% if parent_message %}
+      <div class="card-content p-4">
+        <div class="card filter-card shadow-sm p-4 mb-4">
+          <h5>Original Message</h5>
+          <div class="info-item">
+            <strong>From:</strong> <span>{{ parent_message.sender.get_full_name|default:parent_message.sender.username }}</span>
+          </div>
+          <div class="info-item">
+            <strong>Sent At:</strong> <span>{{ parent_message.timestamp }}</span>
+          </div>
+          <div class="info-item">
+            <strong>Message:</strong> <span>{{ parent_message.content }}</span>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Form Section -->
+    <div class="card-content p-4">
+      <div class="card filter-card shadow-sm p-4">
         <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="{{ form.content.id_for_label }}" class="form-label">Message Content</label>
+            <div class="input-wrapper">
+              {{ form.content }}
+            </div>
+          </div>
+
+          {% if request.user.is_superuser %}
             <div class="mb-3">
-                <label for="content" class="form-label"><strong>Message Content</strong></label>
-                {{ form.content }}
+              <label for="{{ form.message_type.id_for_label }}" class="form-label">Message Type</label>
+              <div class="input-wrapper">
+                {{ form.message_type }}
+              </div>
             </div>
-
-            {% if request.user.is_superuser %}
-                <div class="mb-3">
-                    <label for="message_type" class="form-label"><strong>Message Type</strong></label>
-                    {{ form.message_type }}
-                </div>
-                <div class="mb-3" id="course_semester_fields" style="display: none;">
-                    <label for="course" class="form-label"><strong>Course</strong></label>
-                    {{ form.course }}
-                    <label for="semester" class="form-label"><strong>Semester</strong></label>
-                    {{ form.semester }}
-                </div>
-            {% elif request.user.groups.all.0.name == 'Staff' and not is_reply %}
-                <div class="mb-3">
-                    <label for="staff_message_type" class="form-label"><strong>Message Type</strong></label>
-                    {{ form.staff_message_type }}
-                </div>
-                <div class="mb-3" id="recipient_field">
-                    <label for="recipient" class="form-label"><strong>Recipient</strong></label>
-                    {{ form.recipient }}
-                </div>
-                <div class="mb-3" id="course_semester_fields" style="display: none;">
-                    <label for="course" class="form-label"><strong>Course</strong></label>
-                    {{ form.course }}
-                    <label for="semester" class="form-label"><strong>Semester</strong></label>
-                    {{ form.semester }}
-                </div>
-            {% endif %}
-
-            <div class="attachment-section">
-                <h5>Attachments</h5>
-                <div id="link-attachments">
-                    <div class="row">
-                        <div class="col-md-10">
-                            <input type="url" name="links[]" class="form-control" placeholder="Add a link (optional)">
-                        </div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-primary add-link-btn">Add Link</button>
-                        </div>
-                    </div>
-                </div>
-                <div id="file-attachments" class="mt-3">
-                    <div class="row">
-                        <div class="col-md-10">
-                            <input type="file" name="files[]" class="form-control">
-                        </div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-primary add-file-btn">Add File</button>
-                        </div>
-                    </div>
-                </div>
+            <div class="mb-3" id="course-semester-fields" style="display: none;">
+              <label for="{{ form.course.id_for_label }}" class="form-label">Course</label>
+              <div class="input-wrapper">
+                {{ form.course }}
+              </div>
+              <label for="{{ form.semester.id_for_label }}" class="form-label">Semester</label>
+              <div class="input-wrapper">
+                {{ form.semester }}
+              </div>
             </div>
+          {% elif request.user.groups.all.0.name == 'Staff' and not is_reply %}
+            <div class="mb-3">
+              <label for="{{ form.staff_message_type.id_for_label }}" class="form-label">Message Type</label>
+              <div class="input-wrapper">
+                {{ form.staff_message_type }}
+              </div>
+            </div>
+            <div class="mb-3" id="recipient-field">
+              <label for="{{ form.recipient.id_for_label }}" class="form-label">Recipient</label>
+              <div class="input-wrapper">
+                {{ form.recipient }}
+              </div>
+            </div>
+            <div class="mb-3" id="course-semester-fields" style="display: none;">
+              <label for="{{ form.course.id_for_label }}" class="form-label">Course</label>
+              <div class="input-wrapper">
+                {{ form.course }}
+              </div>
+              <label for="{{ form.semester.id_for_label }}" class="form-label">Semester</label>
+              <div class="input-wrapper">
+                {{ form.semester }}
+              </div>
+            </div>
+          {% endif %}
 
-            <button type="submit" class="btn btn-primary mt-3">{% if is_reply %}Send Reply{% else %}Send Message{% endif %}</button>
+          <!-- Attachments -->
+          <div class="attachment-section mb-4">
+            <h5>Attachments</h5>
+            <div id="links-container">
+              <div class="input-group mb-2 link-input-group">
+                <div class="input-wrapper flex-grow-1">
+                  <input type="url" name="links[]" class="form-control" placeholder="Enter URL">
+                </div>
+                <button type="button" class="btn btn-danger" onclick="removeLink(this)">Remove</button>
+              </div>
+            </div>
+            <button type="button" class="btn btn-primary mt-2" onclick="addLink()">Add Another Link</button>
+            <div id="files-container" class="mt-3">
+              <div class="input-group mb-2 file-input-group">
+                <div class="input-wrapper flex-grow-1">
+                  <input type="file" name="files[]" class="form-control">
+                </div>
+                <button type="button" class="btn btn-danger" onclick="removeFile(this)">Remove</button>
+              </div>
+            </div>
+            <button type="button" class="btn btn-primary mt-2" onclick="addFile()">Add Another File</button>
+          </div>
+
+          <button type="submit" class="btn btn-success mt-3">
+            {% if is_reply %}Send Reply{% else %}Send Message{% endif %}
+          </button>
         </form>
+      </div>
     </div>
+  </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const messageTypeSelect = document.querySelector('#id_message_type');
-        const staffMessageTypeSelect = document.querySelector('#id_staff_message_type');
-        const courseSemesterFields = document.querySelector('#course_semester_fields');
-        const recipientField = document.querySelector('#recipient_field');
+document.addEventListener('DOMContentLoaded', function () {
+  const messageTypeSelect = document.querySelector('#id_message_type');
+  const staffMessageTypeSelect = document.querySelector('#id_staff_message_type');
+  const courseSemesterFields = document.querySelector('#course-semester-fields');
+  const recipientField = document.querySelector('#recipient-field');
 
-        if (messageTypeSelect) {
-            messageTypeSelect.addEventListener('change', function () {
-                if (this.value === 'students_only') {
-                    courseSemesterFields.style.display = 'block';
-                } else {
-                    courseSemesterFields.style.display = 'none';
-                }
-            });
-        }
-
-        if (staffMessageTypeSelect) {
-            staffMessageTypeSelect.addEventListener('change', function () {
-                if (this.value === 'group') {
-                    courseSemesterFields.style.display = 'block';
-                    recipientField.style.display = 'none';
-                } else {
-                    courseSemesterFields.style.display = 'none';
-                    recipientField.style.display = 'block';
-                }
-            });
-        }
-
-        document.querySelector('.add-link-btn').addEventListener('click', function () {
-            const linkContainer = document.querySelector('#link-attachments');
-            const newLinkInput = document.createElement('div');
-            newLinkInput.className = 'row mt-2';
-            newLinkInput.innerHTML = `
-                <div class="col-md-10">
-                    <input type="url" name="links[]" class="form-control" placeholder="Add a link (optional)">
-                </div>
-                <div class="col-md-2">
-                    <button type="button" class="btn btn-danger remove-link-btn">Remove</button>
-                </div>
-            `;
-            linkContainer.appendChild(newLinkInput);
-        });
-
-        document.querySelector('.add-file-btn').addEventListener('click', function () {
-            const fileContainer = document.querySelector('#file-attachments');
-            const newFileInput = document.createElement('div');
-            newFileInput.className = 'row mt-2';
-            newFileInput.innerHTML = `
-                <div class="col-md-10">
-                    <input type="file" name="files[]" class="form-control">
-                </div>
-                <div class="col-md-2">
-                    <button type="button" class="btn btn-danger remove-file-btn">Remove</button>
-                </div>
-            `;
-            fileContainer.appendChild(newFileInput);
-        });
-
-        document.addEventListener('click', function (e) {
-            if (e.target.classList.contains('remove-link-btn')) {
-                e.target.parentElement.parentElement.remove();
-            }
-            if (e.target.classList.contains('remove-file-btn')) {
-                e.target.parentElement.parentElement.remove();
-            }
-        });
+  // Toggle course/semester fields for admin
+  if (messageTypeSelect) {
+    messageTypeSelect.addEventListener('change', function () {
+      if (this.value === 'students_only') {
+        courseSemesterFields.style.display = 'block';
+      } else {
+        courseSemesterFields.style.display = 'none';
+      }
     });
-</script>
+    // Trigger change event to set initial state
+    messageTypeSelect.dispatchEvent(new Event('change'));
+  }
 
+  // Toggle course/semester and recipient fields for staff
+  if (staffMessageTypeSelect) {
+    staffMessageTypeSelect.addEventListener('change', function () {
+      if (this.value === 'group') {
+        courseSemesterFields.style.display = 'block';
+        if (recipientField) recipientField.style.display = 'none';
+      } else {
+        courseSemesterFields.style.display = 'none';
+        if (recipientField) recipientField.style.display = 'block';
+      }
+    });
+    // Trigger change event to set initial state
+    staffMessageTypeSelect.dispatchEvent(new Event('change'));
+  }
+
+  // Add link field
+  function addLink() {
+    const container = document.getElementById('links-container');
+    const newInputGroup = document.createElement('div');
+    newInputGroup.className = 'input-group mb-2 link-input-group';
+    newInputGroup.innerHTML = `
+      <div class="input-wrapper flex-grow-1">
+        <input type="url" name="links[]" class="form-control" placeholder="Enter URL">
+      </div>
+      <button type="button" class="btn btn-danger" onclick="removeLink(this)">Remove</button>
+    `;
+    container.appendChild(newInputGroup);
+  }
+
+  // Remove link field
+  function removeLink(btn) {
+    const inputGroup = btn.closest('.link-input-group');
+    if (document.querySelectorAll('.link-input-group').length > 1) {
+      inputGroup.remove();
+    }
+  }
+
+  // Add file field
+  function addFile() {
+    const container = document.getElementById('files-container');
+    const newInputGroup = document.createElement('div');
+    newInputGroup.className = 'input-group mb-2 file-input-group';
+    newInputGroup.innerHTML = `
+      <div class="input-wrapper flex-grow-1">
+        <input type="file" name="files[]" class="form-control">
+      </div>
+      <button type="button" class="btn btn-danger" onclick="removeFile(this)">Remove</button>
+    `;
+    container.appendChild(newInputGroup);
+  }
+
+  // Remove file field
+  function removeFile(btn) {
+    const inputGroup = btn.closest('.file-input-group');
+    if (document.querySelectorAll('.file-input-group').length > 1) {
+      inputGroup.remove();
+    }
+  }
+
+  // Expose functions to global scope for onclick handlers
+  window.addLink = addLink;
+  window.removeLink = removeLink;
+  window.addFile = addFile;
+  window.removeFile = removeFile;
+});
+</script>
 {% endblock %}
