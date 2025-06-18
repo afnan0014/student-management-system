@@ -103,7 +103,8 @@ new Chart(barCtx, {
 new Chart(pieCtx, {
     type: 'pie',
     data: {
-        labels: [{% for item in pie_data %}"{{ item.department__name }}"{% if not forloop.last %}, {% endif %}{% endfor %}],
+        labels: [{% for item in pie_data %}"{{ item.course__department__name }}"{% if not forloop.last %}, {% endif %}{% endfor %}],
+
         datasets: [{
             data: [{% for item in pie_data %}{{ item.count }}{% if not forloop.last %}, {% endif %}{% endfor %}],
             backgroundColor: ['#47ad92', '#764ba2', '#dc3545'],

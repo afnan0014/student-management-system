@@ -27,7 +27,8 @@ def admin_dashboard(request):
 
     # Chart Data
     bar_data = StudentProfile.objects.values('course__name').annotate(count=Count('attendance')).order_by('course__name')
-    pie_data = StaffProfile.objects.values('department__name').annotate(count=Count('id'))
+    pie_data = StudentProfile.objects.values('course__department__name').annotate(count=Count('id'))
+
 
     context = {
         'total_students': total_students,
