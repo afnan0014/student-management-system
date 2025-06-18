@@ -1,34 +1,38 @@
-<div class="row">
-    <div class="col-md-3">
-        <div class="card shadow-sm p-3 mb-4">
-            <div class="card-body text-center">
-                <h5>Total Students</h5>
-                <h2>{{ total_students }}</h2>
-            </div>
-        </div>
+<div class="row dashboard-content">
+  <div class="col-md-3 col-sm-6 mb-4">
+    <div class="card summary-card shadow-sm student-card text-center h-100">
+      <div class="card-body">
+        <i class="bi bi-people-fill display-4 mb-3"></i>
+        <h5 class="card-title">Total Students</h5>
+        <h2 class="card-value">{{ total_students }}</h2>
+      </div>
     </div>
-    <div class="col-md-3">
-        <div class="card shadow-sm p-3 mb-4">
-            <div class="card-body text-center">
-                <h5>Total Staff</h5>
-                <h2>{{ total_staff }}</h2>
-            </div>
-        </div>
+  </div>
+  <div class="col-md-3 col-sm-6 mb-4">
+    <div class="card summary-card shadow-sm staff-card text-center h-100">
+      <div class="card-body">
+        <i class="bi bi-person-gear display-4 mb-3"></i>
+        <h5 class="card-title">Total Staff</h5>
+        <h2 class="card-value">{{ total_staff }}</h2>
+      </div>
     </div>
-    <div class="col-md-3">
-        <div class="card shadow-sm p-3 mb-4">
-            <div class="card-body text-center">
-                <h5>Attendance Rate</h5>
-                <h2>{{ attendance_rate }}%</h2>
-            </div>
-        </div>
+  </div>
+  <div class="col-md-3 col-sm-6 mb-4">
+    <div class="card summary-card shadow-sm attendance-card text-center h-100">
+      <div class="card-body">
+        <i class="bi bi-check-circle-fill display-4 mb-3"></i>
+        <h5 class="card-title">Attendance Rate</h5>
+        <h2 class="card-value">{{ attendance_rate }}%</h2>
+      </div>
     </div>
-    <div class="col-md-3">
-        <div class="card shadow-sm p-3 mb-4">
-            <div class="card-body text-center">
-                <h5>Total Exams</h5>
-                <h2>{{ total_exams }}</h2>
-            </div>
-        </div>
+  </div>
+  <div class="col-md-3 col-sm-6 mb-4">
+    <div class="card summary-card shadow-sm exam-card text-center h-100">
+      <div class="card-body">
+        <i class="bi bi-file-text-fill display-4 mb-3"></i>
+        <h5 class="card-title">Total Exams</h5>
+        <h2 class="card-value">{{ total_exams }}</h2>
+      </div>
     </div>
+  </div>
 </div>

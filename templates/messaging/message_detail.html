@@ -1,193 +1,221 @@
-{% extends "base.html" %}
-
+{% extends 'base.html' %}
+{% load static %}
 {% block title %}Message Detail{% endblock %}
-
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/messaging.css' %}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+{% endblock %}
 {% block content %}
+<div class="container-fluid mt-5">
+  <!-- Back Button -->
+  <a href="{% url 'messaging:inbox' %}?view={{ request.GET.view|default:'sent' }}" class="back-button" title="Go back">
+    <i class="bi bi-arrow-left"></i>
+  </a>
 
-<div class="mb-3">
-    <a href="{% url 'messaging:inbox' %}?view={{ request.GET.view|default:'sent' }}" class="back-arrow" style="font-size: 1.5rem; text-decoration: none;" title="Go back">
-        <i class="bi bi-arrow-left"></i>
-    </a>
-</div>
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-
-<style>
-    .message-container {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 30px 20px;
-    }
-    .message-header {
-        background: linear-gradient(90deg, #007bff, #00c4ff);
-        color: #ffffff;
-        padding: 20px;
-        border-radius: 10px 10px 0 0;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-    .message-body {
-        background: #fff;
-        padding: 30px;
-        border-radius: 0 0 10px 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-    .message-content {
-        margin-bottom: 20px;
-        padding: 15px;
-        background: #f8f9fa;
-        border-radius: 5px;
-        border-left: 5px solid #007bff;
-    }
-    .attachment-item {
-        margin-top: 10px;
-    }
-    .reply-item {
-        margin-left: 20px;
-        margin-top: 10px;
-        padding: 10px;
-        background: #e9f7ff;
-        border-radius: 5px;
-        border-left: 4px solid #28a745;
-    }
-    .nested-reply {
-        margin-left: 40px;
-        background: #d9edff;
-        border-left: 4px solid #17a2b8;
-    }
-    .reply-form {
-        margin-top: 15px;
-        padding: 15px;
-        background: #f0f0f0;
-        border-radius: 5px;
-    }
-    .reply-section {
-        margin-top: 20px;
-    }
-</style>
-
-<div class="message-container">
-    <div class="message-header">
-        <h3 class="mb-0"><i class="bi bi-envelope me-2"></i>Message Detail</h3>
+  <!-- Main Dashboard Container -->
+  <div class="dashboard-container card shadow-lg">
+    <!-- Header -->
+    <div class="dashboard-header text-center text-white p-4">
+      <h1 class="display-5 fw-bold"><i class="bi bi-envelope me-2"></i>Message Detail</h1>
+      <p class="lead text-white-50">View message and replies.</p>
     </div>
 
-    <div class="message-body">
-        <!-- Main Message -->
+    <!-- Messages -->
+    {% if messages %}
+      <div class="card-content p-4">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Main Message -->
+    <div class="card-content p-4">
+      <div class="card filter-card shadow-sm p-4 mb-4">
+        <h5>Main Message</h5>
         <div class="message-content">
-            <p><strong>From:</strong> {{ message.sender.get_full_name|default:message.sender.username }}</p>
-            <p><strong>Sent At:</strong> {{ message.timestamp }}</p>
-            {% if message.last_edited %}
-                <p><strong>Last Edited:</strong> {{ message.last_edited }}</p>
-            {% endif %}
-            <p><strong>Message:</strong> {{ message.content }}</p>
-
-            {% if message.attachments.all %}
-                <p><strong>Attachments:</strong></p>
+          <div class="info-item">
+            <strong>From:</strong> <span>{{ message.sender.get_full_name|default:message.sender.username }}</span>
+          </div>
+          <div class="info-item">
+            <strong>Sent At:</strong> <span>{{ message.timestamp }}</span>
+          </div>
+          {% if message.last_edited %}
+            <div class="info-item">
+              <strong>Last Edited:</strong> <span>{{ message.last_edited }}</span>
+            </div>
+          {% endif %}
+          <div class="info-item">
+            <strong>Message:</strong> <span>{{ message.content }}</span>
+          </div>
+          {% if message.attachments.all %}
+            <div class="info-item">
+              <strong>Attachments:</strong>
+              <div>
                 {% for attachment in message.attachments.all %}
-                    <div class="attachment-item">
-                        {% if attachment.attachment_type == 'link' %}
-                            <a href="{{ attachment.link }}" target="_blank">{{ attachment.link }}</a>
-                        {% else %}
-                            <a href="{{ attachment.file.url }}" target="_blank">{{ attachment.file.name }}</a>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        </div>
-
-        <!-- Reply Form -->
-        {% if not request.user.groups.all.0.name == 'Student' or not message.sender.is_superuser %}
-            <div class="reply-form">
-                <h5>Reply to Message</h5>
-                <form method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="content" class="form-label"><strong>Message Content</strong></label>
-                        <textarea name="content" class="form-control" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-success mt-3">Send Reply</button>
-                </form>
-            </div>
-        {% endif %}
-
-        <!-- Replies Section -->
-        {% if replies %}
-            <div class="reply-section">
-                <h5>Replies:</h5>
-                {% for reply in replies %}
-                    {% if reply.parent_message.id == message.id %}  <!-- Direct reply to main message -->
-                        <div class="reply-item">
-                            <p><strong>From:</strong> {{ reply.sender.get_full_name|default:reply.sender.username }}</p>
-                            <p><strong>Sent At:</strong> {{ reply.timestamp }}</p>
-                            <p><strong>Message:</strong> {{ reply.content }}</p>
-                            {% if reply.attachments.all %}
-                                <p><strong>Attachments:</strong></p>
-                                {% for attachment in reply.attachments.all %}
-                                    <div class="attachment-item">
-                                        {% if attachment.attachment_type == 'link' %}
-                                            <a href="{{ attachment.link }}" target="_blank">{{ attachment.link }}</a>
-                                        {% else %}
-                                            <a href="{{ attachment.file.url }}" target="_blank">{{ attachment.file.name }}</a>
-                                        {% endif %}
-                                    </div>
-                                {% endfor %}
-                            {% endif %}
-                            {% if not request.user.groups.all.0.name == "Student" or not reply.sender.is_superuser %}
-                                <div class="reply-form">
-                                    <h6>Reply to {{ reply.sender.get_full_name|default:reply.sender.username }}</h6>
-                                    <form method="post" enctype="multipart/form-data">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="parent_reply_id" value="{{ reply.id }}">
-                                        <div class="mb-3">
-                                            <label for="content" class="form-label"><strong>Message Content</strong></label>
-                                            <textarea name="content" class="form-control" required></textarea>
-                                        </div>
-                                        <button type="submit" class="btn btn-success mt-3">Send Reply</button>
-                                    </form>
-                                </div>
-                            {% endif %}
-
-                            <!-- Nested Replies -->
-                            {% for nested_reply in replies %}
-                                {% if nested_reply.parent_message.id == reply.id %}
-                                    <div class="reply-item nested-reply">
-                                        <p><strong>From:</strong> {{ nested_reply.sender.get_full_name|default:nested_reply.sender.username }}</p>
-                                        <p><strong>Sent At:</strong> {{ nested_reply.timestamp }}</p>
-                                        <p><strong>Message:</strong> {{ nested_reply.content }}</p>
-                                        {% if nested_reply.attachments.all %}
-                                            <p><strong>Attachments:</strong></p>
-                                            {% for attachment in nested_reply.attachments.all %}
-                                                <div class="attachment-item">
-                                                    {% if attachment.attachment_type == 'link' %}
-                                                        <a href="{{ attachment.link }}" target="_blank">{{ attachment.link }}</a>
-                                                    {% else %}
-                                                        <a href="{{ attachment.file.url }}" target="_blank">{{ attachment.file.name }}</a>
-                                                    {% endif %}
-                                                </div>
-                                            {% endfor %}
-                                        {% endif %}
-                                        {% if not request.user.groups.all.0.name == "Student" or not nested_reply.sender.is_superuser %}
-                                            <div class="reply-form">
-                                                <h6>Reply to {{ nested_reply.sender.get_full_name|default:nested_reply.sender.username }}</h6>
-                                                <form method="post" enctype="multipart/form-data">
-                                                    {% csrf_token %}
-                                                    <input type="hidden" name="parent_reply_id" value="{{ nested_reply.id }}">
-                                                    <div class="mb-3">
-                                                        <label for="content" class="form-label"><strong>Message Content</strong></label>
-                                                        <textarea name="content" class="form-control" required></textarea>
-                                                    </div>
-                                                    <button type="submit" class="btn btn-success mt-3">Send Reply</button>
-                                                </form>
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
+                  <div class="attachment-item">
+                    {% if attachment.attachment_type == 'link' %}
+                      <a href="{{ attachment.link }}" target="_blank" class="btn btn-primary btn-sm me-2">
+                        <i class="bi bi-link-45deg me-1"></i> View Link
+                      </a>
+                    {% else %}
+                      <a href="{{ attachment.file.url }}" target="_blank" class="btn btn-primary btn-sm me-2">
+                        <i class="bi bi-file-earmark me-1"></i> View File
+                      </a>
+                      <a href="{{ attachment.file.url }}" download class="btn btn-success btn-sm">
+                        <i class="bi bi-download me-1"></i> Download
+                      </a>
                     {% endif %}
+                  </div>
                 {% endfor %}
+              </div>
             </div>
-        {% endif %}
+          {% endif %}
+        </div>
+      </div>
     </div>
-</div>
 
+    <!-- Reply Form -->
+    {% if not request.user.groups.all.0.name == 'Student' or not message.sender.is_superuser %}
+      <div class="card-content p-4">
+        <div class="card filter-card shadow-sm p-4 mb-4">
+          <h5>Reply to Message</h5>
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="content" class="form-label">Message Content</label>
+              <div class="input-wrapper">
+                <textarea name="content" class="form-control" required></textarea>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-success">Send Reply</button>
+          </form>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Replies Section -->
+    {% if replies %}
+      <div class="card-content p-4">
+        <div class="card filter-card shadow-sm p-4">
+          <h5>Replies</h5>
+          {% for reply in replies %}
+            {% if reply.parent_message.id == message.id %}
+              <div class="reply-item">
+                <div class="info-item">
+                  <strong>From:</strong> <span>{{ reply.sender.get_full_name|default:reply.sender.username }}</span>
+                </div>
+                <div class="info-item">
+                  <strong>Sent At:</strong> <span>{{ reply.timestamp }}</span>
+                </div>
+                <div class="info-item">
+                  <strong>Message:</strong> <span>{{ reply.content }}</span>
+                </div>
+                {% if reply.attachments.all %}
+                  <div class="info-item">
+                    <strong>Attachments:</strong>
+                    <div>
+                      {% for attachment in reply.attachments.all %}
+                        <div class="attachment-item">
+                          {% if attachment.attachment_type == 'link' %}
+                            <a href="{{ attachment.link }}" target="_blank" class="btn btn-primary btn-sm me-2">
+                              <i class="bi bi-link-45deg me-1"></i> View Link
+                            </a>
+                          {% else %}
+                            <a href="{{ attachment.file.url }}" target="_blank" class="btn btn-primary btn-sm me-2">
+                              <i class="bi bi-file-earmark me-1"></i> View File
+                            </a>
+                            <a href="{{ attachment.file.url }}" download class="btn btn-success btn-sm">
+                              <i class="bi bi-download me-1"></i> Download
+                            </a>
+                          {% endif %}
+                        </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                {% endif %}
+                {% if not request.user.groups.all.0.name == "Student" or not reply.sender.is_superuser %}
+                  <div class="form-content mt-3">
+                    <h6>Reply to {{ reply.sender.get_full_name|default:reply.sender.username }}</h6>
+                    <form method="post" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      <input type="hidden" name="parent_reply_id" value="{{ reply.id }}">
+                      <div class="mb-3">
+                        <label for="content-{{ reply.id }}" class="form-label">Message Content</label>
+                        <div class="input-wrapper">
+                          <textarea name="content" class="form-control" id="content-{{ reply.id }}" required></textarea>
+                        </div>
+                      </div>
+                      <button type="submit" class="btn btn-success mt-3">Send Reply</button>
+                    </form>
+                  </div>
+                {% endif %}
+
+                <!-- Nested Replies -->
+                {% for nested_reply in replies %}
+                  {% if nested_reply.parent_reply_id == reply.id %}
+                    <div class="reply-item nested-reply">
+                      <div class="info-item">
+                        <strong>From:</strong> <span>{{ nested_reply.sender.get_full_name|default:nested_reply.sender.username }}</span>
+                      </div>
+                      <div class="info-item">
+                        <strong>Sent At:</strong> <span>{{ nested_reply.timestamp }}</span>
+                      </div>
+                      <div class="info-item">
+                        <strong>Message:</strong> <span>{{ nested_reply.content }}</span>
+                      </div>
+                      {% if nested_reply.attachments.all %}
+                        <div class="info-item">
+                          <strong>Attachments:</strong>
+                          <div>
+                            {% for attachment in nested_reply.attachments.all %}
+                              <div class="attachment-item">
+                                {% if attachment.attachment_type == 'link' %}
+                                  <a href="{{ attachment.link }}" target="_blank" class="btn btn-primary btn-sm me-2">
+                                    <i class="bi bi-link-45deg me-1"></i> View Link
+                                  </a>
+                                {% else %}
+                                  <a href="{{ attachment.file.url }}" target="_blank" class="btn btn-primary btn-sm me-2">
+                                    <i class="bi bi-file-earmark me-1"></i> View File
+                                  </a>
+                                  <a href="{{ attachment.file.url }}" download class="btn btn-success btn-sm">
+                                    <i class="bi bi-download me-1"></i> Download
+                                  </a>
+                                {% endif %}
+                              </div>
+                            {% endfor %}
+                          </div>
+                        </div>
+                      {% endif %}
+                      {% if not request.user.groups.all.0.name == "Student" or not nested_reply.sender.is_superuser %}
+                        <div class="form-content mt-3">
+                          <h6>Reply to {{ nested_reply.sender.get_full_name|default:nested_reply.sender.username }}</h6>
+                          <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="hidden" name="parent_reply_id" value="{{ nested_reply.id }}">
+                            <div class="mb-3">
+                              <label for="content-{{ nested_reply.id }}" class="form-label">Message Content</label>
+                              <div class="input-wrapper">
+                                <textarea name="content" class="form-control" id="content-{{ nested_reply.id }}" required></textarea>
+                              </div>
+                            </div>
+                            <button type="submit" class="btn btn-success mt-3">Send Reply</button>
+                          </form>
+                        </div>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
 {% endblock %}

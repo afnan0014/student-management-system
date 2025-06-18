@@ -1,173 +1,160 @@
 {% extends "base.html" %}
-{% block title %}Student Profile - {{ user.username }}{% endblock %}
-
+{% load static %}
+{% block title %}Student Profile - {{ profile_user.username }}{% endblock %}
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/accounts.css' %}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+{% endblock %}
 {% block content %}
-<style>
-  .btn-wide {
-    padding: 0.5rem 3rem;
-    min-width: 200px;
-  }
-
-  .card .btn:hover {
-    transform: scale(1.05);
-  }
-</style>
-
-<div class="mb-3">
-  <a href="javascript:history.back()" class="back-arrow" style="font-size: 1.5rem; text-decoration: none;" title="Go back">
+<div class="container-fluid mt-5">
+  <!-- Back Button -->
+  <a href="javascript:history.back()" class="back-button" title="Go back">
     <i class="bi bi-arrow-left"></i>
   </a>
-</div>
 
-<div class="mt-5">
-  <div class="card mx-auto shadow-lg border-0" style="max-width: 700px;">
-    <div class="card-body p-3">
-      <h4 class="card-title mb-4 text-center">
-        <i class="bi bi-mortarboard me-2"></i>Student Profile
-      </h4>
+  <!-- Main Dashboard Container -->
+  <div class="dashboard-container card shadow-lg">
+    <!-- Header -->
+    <div class="dashboard-header text-center text-white p-4">
+      <h1 class="display-5 fw-bold"><i class="bi bi-mortarboard me-2"></i>Student Profile</h1>
+      <p class="lead text-white-50">View and edit student profile details.</p>
+    </div>
 
-      <!-- Display success message if it exists -->
-      {% if messages %}
-        {% for message in messages %}
-          <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-        {% endfor %}
-      {% endif %}
-
-      <!-- Read-only view -->
-      <div id="profile-view" class="profile-view">
-        <div class="d-flex flex-column gap-3">
-          <div class="d-flex flex-column">
-            <label class="form-label fw-bold"><i class="bi bi-person me-1"></i>Username</label>
-            <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
-              <p class="form-control bg-secondary text-light border-0 mb-0">{{ profile_user.username }}</p>
+    <!-- Profile Section -->
+    <div class="card-content p-4">
+      <div class="card form-card shadow-sm p-4" style="max-width: 700px; margin: 0 auto;">
+        <!-- Display success message -->
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-          </div>
+          {% endfor %}
+        {% endif %}
 
-          <div class="d-flex flex-column">
-            <label class="form-label fw-bold"><i class="bi bi-book me-1"></i>Course</label>
-            <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
-              <p class="form-control bg-secondary text-light border-0 mb-0">
-                {{ student_profile.course.name|default:"Not assigned" }}
-              </p>
+        <!-- Read-only view -->
+        <div id="profile-view" class="profile-view">
+          <div class="d-flex flex-column gap-3">
+            <div class="d-flex flex-column">
+              <label class="form-label fw-bold"><i class="bi bi-person me-1"></i>Username</label>
+              <div class="input-wrapper">
+                <p class="form-control mb-0">{{ profile_user.username }}</p>
+              </div>
             </div>
-          </div>
 
-          <div class="d-flex flex-column">
-            <label class="form-label fw-bold"><i class="bi bi-building me-1"></i>Department</label>
-            <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
-              <p class="form-control bg-secondary text-light border-0 mb-0">
-                {{ student_profile.department.name|default:"Not assigned" }}
-              </p>
+            <div class="d-flex flex-column">
+              <label class="form-label fw-bold"><i class="bi bi-book me-1"></i>Course</label>
+              <div class="input-wrapper">
+                <p class="form-control mb-0">{{ student_profile.course.name|default:"Not assigned" }}</p>
+              </div>
             </div>
-          </div>
 
-          <div class="d-flex flex-column">
-            <label class="form-label fw-bold"><i class="bi bi-calendar me-1"></i>Batch Year</label>
-            <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
-              <p class="form-control bg-secondary text-light border-0 mb-0">
-                {{ student_profile.batch_number }}
-              </p>
+            <div class="d-flex flex-column">
+              <label class="form-label fw-bold"><i class="bi bi-building me-1"></i>Department</label>
+              <div class="input-wrapper">
+                <p class="form-control mb-0">{{ student_profile.department.name|default:"Not assigned" }}</p>
+              </div>
             </div>
-          </div>
 
-          <div class="d-flex justify-content-center">
-            <button class="btn btn-sm btn-primary py-2 btn-wide" onclick="toggleEditMode()">
-              <i class="bi bi-pencil me-1"></i>Edit Profile
-            </button>
+            <div class="d-flex flex-column">
+              <label class="form-label fw-bold"><i class="bi bi-calendar me-1"></i>Batch Year</label>
+              <div class="input-wrapper">
+                <p class="form-control mb-0">{{ student_profile.batch_number }}</p>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-center">
+              <button class="btn btn-primary btn-wide" onclick="toggleEditMode()">
+                <i class="bi bi-pencil me-1"></i>Edit Profile
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Editable form view -->
-      <form id="profile-form" class="profile-form d-none" method="POST" action="{% url 'student_profile' profile_user.id %}">
-        {% csrf_token %}
-        <div class="d-flex flex-column gap-3">
-          <div class="d-flex flex-column">
-            <label class="form-label fw-bold"><i class="bi bi-person me-1"></i>Username</label>
-            <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
-              <p class="form-control bg-secondary text-light border-0 mb-0">{{ profile_user.username }}</p>
+        <!-- Edit Form -->
+        <form id="profile-form" class="profile-form d-none" method="POST" action="{% url 'student_profile' profile_user.id %}">
+          {% csrf_token %}
+          <div class="d-flex flex-column gap-3">
+            <div class="d-flex flex-column">
+              <label class="form-label fw-bold"><i class="bi bi-person me-1"></i>Username</label>
+              <div class="input-wrapper">
+                <p class="form-control mb-0">{{ profile_user.username }}</p>
+              </div>
+            </div>
+
+            <div class="d-flex flex-column">
+              <label class="form-label fw-bold"><i class="bi bi-book me-1"></i>Course</label>
+              <div class="input-wrapper">
+                <select name="course" class="form-select">
+                  <option value="">-- Select a Course --</option>
+                  {% for course in all_courses %}
+                    <option value="{{ course.id }}" {% if student_profile.course.id == course.id %}selected{% endif %}>
+                      {{ course.name }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <div class="d-flex flex-column">
+              <label class="form-label fw-bold"><i class="bi bi-building me-1"></i>Department</label>
+              <div class="input-wrapper">
+                <select name="department" class="form-select">
+                  <option value="">-- Select a Department --</option>
+                  {% for dept in all_departments %}
+                    <option value="{{ dept.id }}" {% if student_profile.department.id == dept.id %}selected{% endif %}>
+                      {{ dept.name }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <div class="d-flex flex-column">
+              <label class="form-label fw-bold"><i class="bi bi-calendar me-1"></i>Batch Year</label>
+              <div class="input-wrapper">
+                <input type="number" name="batch_number" class="form-control" 
+                       value="{{ student_profile.batch_number }}" 
+                       required min="1900" max="9999">
+              </div>
+            </div>
+
+            <div class="d-flex gap-2 justify-content-center">
+              <button type="submit" class="btn btn-success btn-wide">
+                <i class="bi bi-check-circle me-1"></i>Save
+              </button>
+              <button type="button" class="btn btn-danger btn-wide" onclick="toggleEditMode()">
+                <i class="bi bi-x-circle me-1"></i>Cancel
+              </button>
             </div>
           </div>
+        </form>
 
-          <div class="d-flex flex-column">
-            <label class="form-label fw-bold"><i class="bi bi-book me-1"></i>Course</label>
-            <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
-              <select name="course" class="form-select bg-secondary text-light border-0">
-                <option value="">-- Select a Course --</option>
-                {% for course in all_courses %}
-                  <option value="{{ course.id }}" {% if student_profile.course.id == course.id %}selected{% endif %}>
-                    {{ course.name }}
-                  </option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-
-          <div class="d-flex flex-column">
-            <label class="form-label fw-bold"><i class="bi bi-building me-1"></i>Department</label>
-            <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
-              <select name="department" class="form-select bg-secondary text-light border-0">
-                <option value="">-- Select a Department --</option>
-                {% for dept in all_departments %}
-                  <option value="{{ dept.id }}" {% if student_profile.department.id == dept.id %}selected{% endif %}>
-                    {{ dept.name }}
-                  </option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-
-          <div class="d-flex flex-column">
-            <label class="form-label fw-bold"><i class="bi bi-calendar me-1"></i>Batch Year</label>
-            <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
-              <input type="number" name="batch_number" class="form-control bg-secondary text-light border-0" 
-                     value="{{ student_profile.batch_number }}" placeholder="Enter batch year (e.g., 2023)" 
-                     required min="1900" max="9999">
-            </div>
-          </div>
-
-          <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-sm btn-success flex-grow-1 py-2 btn-wide">
-              <i class="bi bi-check-circle me-1"></i>Save
-            </button>
-            <button type="button" class="btn btn-sm btn-danger flex-grow-1 py-2 btn-wide" onclick="toggleEditMode()">
-              <i class="bi bi-x-circle me-1"></i>Cancel
-            </button>
-          </div>
+        <div class="d-flex justify-content-center mt-3">
+          <a href="{% url 'view_users_by_role' role='student' %}" class="btn btn-primary btn-wide">
+            <i class="bi bi-arrow-left me-1"></i>Back to Students List
+          </a>
         </div>
-      </form>
-
-      <div class="d-flex justify-content-center mt-3">
-        <a href="{% url 'view_users_by_role' role='student' %}" class="btn btn-sm btn-info py-2 btn-wide">
-          <i class="bi bi-arrow-left me-1"></i>Back to Students List
-        </a>
       </div>
     </div>
   </div>
 </div>
-
-<!-- Include Bootstrap Icons -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-
+{% endblock %}
 {% block scripts %}
 <script>
-  function toggleEditMode() {
-    const profileView = document.getElementById('profile-view');
-    const profileForm = document.getElementById('profile-form');
-    
-    if (profileView.classList.contains('d-none')) {
-      // Switch to read-only view
-      profileView.classList.remove('d-none');
-      profileForm.classList.add('d-none');
-    } else {
-      // Switch to edit mode
-      profileView.classList.add('d-none');
-      profileForm.classList.remove('d-none');
-    }
+function toggleEditMode() {
+  const profileView = document.getElementById('profile-view');
+  const profileForm = document.getElementById('profile-form');
+  
+  if (profileView.classList.contains('d-none')) {
+    profileView.classList.remove('d-none');
+    profileForm.classList.add('d-none');
+  } else {
+    profileView.classList.add('d-none');
+    profileForm.classList.remove('d-none');
   }
+}
 </script>
-{% endblock %}
 {% endblock %}

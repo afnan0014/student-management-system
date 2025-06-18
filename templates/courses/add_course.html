@@ -1,174 +1,148 @@
 {% extends "base.html" %}
-{% load widget_tweaks %}
+{% load static widget_tweaks %}
 {% block title %}Add Course{% endblock %}
-
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/courses.css' %}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+{% endblock %}
 {% block content %}
-<style>
-  input[type="checkbox"][name$="-DELETE"] {
-    display: none;
-  }
-
-  .subject-form-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .remove-subject {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.5rem;
-    width: 38px;
-    height: 38px;
-  }
-
-  #add-subject {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .btn-wide {
-    padding: 0.5rem 3rem;
-    min-width: 200px;
-  }
-</style>
-
-<div class="mb-3">
-  <a href="javascript:history.back()" class="back-arrow" style="font-size: 1.5rem; text-decoration: none;" title="Go back">
+<div class="container-fluid mt-5">
+  <!-- Back Button -->
+  <a href="javascript:history.back()" class="back-button" title="Go back">
     <i class="bi bi-arrow-left"></i>
   </a>
-</div>
 
-<div class="mt-5">
-  <div class="card mx-auto shadow-lg border-0" style="max-width: 700px;">
-    <div class="card-body p-3">
-      <h4 class="card-title mb-4 text-center"><i class="bi bi-book me-2"></i>Add Course</h4>
+  <!-- Main Dashboard Container -->
+  <div class="dashboard-container card shadow-lg">
+    <!-- Header with Gradient -->
+    <div class="dashboard-header text-center text-white p-4">
+      <h1 class="display-5 fw-bold"><i class="bi bi-book me-2"></i>Add Course</h1>
+      <p class="lead text-white-50">Create a new course with subjects and staff assignment.</p>
+    </div>
 
-      <form method="POST">
-        {% csrf_token %}
-        <div class="d-flex flex-column gap-3">
-          <!-- Course Name -->
-          <div class="d-flex flex-column">
-            <label for="{{ form.name.id_for_label }}" class="form-label"><i class="bi bi-book me-1"></i>Course Name</label>
-            <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
-              {{ form.name|add_class:"form-control border-0"|attr:"placeholder:Enter course name" }}
-            </div>
-          </div>
-
-          <!-- Department -->
-          <div class="d-flex flex-column">
-            <label for="{{ form.department.id_for_label }}" class="form-label"><i class="bi bi-building me-1"></i>Department</label>
-            <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
-              {{ form.department|add_class:"form-select border-0" }}
-            </div>
-          </div>
-
-          <!-- Semester -->
-          <div class="d-flex flex-column">
-            <label for="{{ form.semester.id_for_label }}" class="form-label"><i class="bi bi-list-ol me-1"></i>Semester</label>
-            <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
-              {{ form.semester|add_class:"form-control border-0"|attr:"placeholder:Enter semester number" }}
-            </div>
-          </div>
-
-          <!-- Assigned Staff -->
-          <div class="d-flex flex-column">
-            <label for="{{ form.assigned_staff.id_for_label }}" class="form-label"><i class="bi bi-person-gear me-1"></i>Assign Staff</label>
-            <div style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
-              {{ form.assigned_staff|add_class:"form-select border-0" }}
-            </div>
-          </div>
-
-          <!-- Subjects Section -->
-          <hr class="border-info">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="mb-0"><i class="bi bi-journals me-1"></i>Subjects</h5>
-            <button type="button" id="add-subject" class="btn btn-sm btn-info">
-              <i class="bi bi-plus-circle me-1"></i>Add Subject
-            </button>
-          </div>
-
-          <div id="subject-formset">
-            {% for subject_form in subject_formset %}
-              <div class="mb-3 subject-form-row w-100">
-                <div class="flex-grow-1" style="border: 1px solid #17a2b8; border-radius: 0.5rem;">
-                  {{ subject_form.name|add_class:"form-control border-0" }}
-                </div>
-                {% if subject_form.instance.pk %}
-                  <div class="form-check">
-                    <label class="form-check-label text-danger">
-                      {{ subject_form.DELETE }} <i class="bi bi-trash"></i>
-                    </label>
-                  </div>
-                {% else %}
-                  <button type="button" class="btn btn-sm btn-danger remove-subject">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                {% endif %}
+    <!-- Form Card -->
+    <div class="card-content p-4">
+      <div class="card shadow-sm p-4" style="max-width: 700px; margin: 0 auto;">
+        <form method="POST">
+          {% csrf_token %}
+          <div class="d-flex flex-column gap-3">
+            <!-- Course Name -->
+            <div class="d-flex flex-column">
+              <label for="{{ form.name.id_for_label }}" class="form-label"><i class="bi bi-book me-1"></i>Course Name</label>
+              <div class="input-wrapper">
+                {{ form.name|add_class:"form-control" }}
               </div>
-            {% endfor %}
-          </div>
+            </div>
 
-          {{ subject_formset.management_form }}
+            <!-- Department -->
+            <div class="d-flex flex-column">
+              <label for="{{ form.department.id_for_label }}" class="form-label"><i class="bi bi-building me-1"></i>Department</label>
+              <div class="input-wrapper">
+                {{ form.department|add_class:"form-select" }}
+              </div>
+            </div>
 
-          <!-- Submit Button -->
-          <div class="d-flex justify-content-center">
-            <button type="submit" class="btn btn-sm btn-success py-2 btn-wide">
-              <i class="bi bi-check-circle me-1"></i>Save Course
-            </button>
+            <!-- Semester -->
+            <div class="d-flex flex-column">
+              <label for="{{ form.semester.id_for_label }}" class="form-label"><i class="bi bi-list-ol me-1"></i>Semester</label>
+              <div class="input-wrapper">
+                {{ form.semester|add_class:"form-control" }}
+              </div>
+            </div>
+
+            <!-- Assigned Staff -->
+            <div class="d-flex flex-column">
+              <label for="{{ form.assigned_staff.id_for_label }}" class="form-label"><i class="bi bi-person-gear me-1"></i>Assign Staff</label>
+              <div class="input-wrapper">
+                {{ form.assigned_staff|add_class:"form-select" }}
+              </div>
+            </div>
+
+            <!-- Subjects Section -->
+            <hr class="border-info">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0"><i class="bi bi-journals me-1"></i>Subjects</h5>
+              <button type="button" id="add-subject" class="btn btn-info">
+                <i class="bi bi-plus-circle me-1"></i>Add Subject
+              </button>
+            </div>
+
+            <div id="subject-formset">
+              {% for subject_form in subject_formset %}
+                <div class="mb-3 subject-form-row w-100">
+                  <div class="flex-grow-1 input-wrapper">
+                    {{ subject_form.name|add_class:"form-control" }}
+                  </div>
+                  {% if subject_form.instance.pk %}
+                    <div class="form-check">
+                      <label class="form-check-label delete-label">
+                        {{ subject_form.DELETE }} <i class="bi bi-trash"></i>
+                      </label>
+                    </div>
+                  {% else %}
+                    <button type="button" class="btn btn-danger remove-subject">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </div>
+
+            {{ subject_formset.management_form }}
+
+            <!-- Submit Button -->
+            <div class="d-flex justify-content-center">
+              <button type="submit" class="btn btn-success btn-wide">
+                <i class="bi bi-check-circle me-1"></i>Save Course
+              </button>
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- Include Bootstrap Icons -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-
-<!-- JavaScript for Dynamic Subject Add/Delete -->
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    let formIdx = Number("{{ subject_formset.total_form_count }}");
-    const formsetDiv = document.getElementById('subject-formset');
-    const totalFormsInput = document.getElementsByName('form-TOTAL_FORMS')[0];
+document.addEventListener('DOMContentLoaded', function () {
+  let formIdx = Number("{{ subject_formset.total_form_count }}");
+  const formsetDiv = document.getElementById('subject-formset');
+  const totalFormsInput = document.getElementsByName('form-TOTAL_FORMS')[0];
 
-    document.getElementById('add-subject').addEventListener('click', function () {
-      const newFormHtml = '{{ subject_formset.empty_form.as_p|escapejs }}'.replace(/__prefix__/g, formIdx);
+  document.getElementById('add-subject').addEventListener('click', function () {
+    const newFormHtml = '{{ subject_formset.empty_form.as_p|escapejs }}'.replace(/__prefix__/g, formIdx);
 
-      const tempWrapper = document.createElement('div');
-      tempWrapper.innerHTML = newFormHtml;
-      const nameField = tempWrapper.querySelector('input');
+    const tempWrapper = document.createElement('div');
+    tempWrapper.innerHTML = newFormHtml;
+    const nameField = tempWrapper.querySelector('input');
 
-      const wrapper = document.createElement('div');
-      wrapper.className = 'mb-3 subject-form-row w-100';
+    const wrapper = document.createElement('div');
+    wrapper.className = 'mb-3 subject-form-row w-100';
 
-      const inputWrapper = document.createElement('div');
-      inputWrapper.className = 'flex-grow-1';
-      inputWrapper.style.border = "1px solid #17a2b8";
-      inputWrapper.style.borderRadius = "0.5rem";
-      inputWrapper.appendChild(nameField);
+    const inputWrapper = document.createElement('div');
+    inputWrapper.className = 'flex-grow-1 input-wrapper';
+    inputWrapper.appendChild(nameField);
 
-      const removeBtn = document.createElement('button');
-      removeBtn.type = 'button';
-      removeBtn.className = 'btn btn-sm btn-danger remove-subject';
-      removeBtn.innerHTML = '<i class="bi bi-trash"></i>';
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'btn btn-danger remove-subject';
+    removeBtn.innerHTML = '<i class="bi bi-trash"></i>';
 
-      wrapper.appendChild(inputWrapper);
-      wrapper.appendChild(removeBtn);
-      formsetDiv.appendChild(wrapper);
+    wrapper.appendChild(inputWrapper);
+    wrapper.appendChild(removeBtn);
+    formsetDiv.appendChild(wrapper);
 
-      formIdx++;
-      totalFormsInput.value = formIdx;
-    });
-
-    document.addEventListener('click', function (e) {
-      if (e.target.closest('.remove-subject')) {
-        e.target.closest('.subject-form-row').remove();
-      }
-    });
+    formIdx++;
+    totalFormsInput.value = formIdx;
   });
+
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('.remove-subject')) {
+      e.target.closest('.subject-form-row').remove();
+      totalFormsInput.value = document.querySelectorAll('.subject-form-row').length;
+    }
+  });
+});
 </script>
 {% endblock %}

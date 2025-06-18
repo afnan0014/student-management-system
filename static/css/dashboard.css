@@ -1,0 +1,314 @@
+/* Dashboard Specific Styles */
+
+/* Define custom variables */
+:root {
+  --accent: #1e90ff; /* Primary blue */
+  --secondary: #47ad92; /* Green for student/courses */
+  --tertiary: #764ba2; /* Purple for staff */
+  --danger: #dc3545; /* Red for exams/pending */
+  --attendance: #1c86ee; /* Darker blue for attendance */
+  --course: #28a745; /* Green for student course */
+  --text-content: #333333; /* Text color in light mode */
+  --text-muted: #6c757d; /* Muted text in light mode */
+  --bg-light: #f0f4f8; /* Light background */
+  --bg-dark: #1a1a1a; /* Dark mode background */
+  --border-light: #e0e0e0; /* Border color in light mode */
+  --border-dark: #444444; /* Border color in dark mode */
+  --gradient-bg: linear-gradient(135deg, #1e90ff33 0%, #47ad9233 50%, #764ba233 100%); /* Mixed color background */
+}
+
+/* Dark mode overrides */
+body.dark-mode {
+  --text-content: #ffffff;
+  --text-muted: #b0b0b0;
+  --bg-light: #2a2a2a;
+  --border-light: var(--border-dark);
+  --gradient-bg: linear-gradient(135deg, #1e90ff66 0%, #47ad9266 50%, #764ba266 100%);
+}
+
+/* General Styles */
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-content);
+  line-height: 1.6;
+}
+
+/* Dashboard Container */
+.dashboard-container {
+  background: var(--gradient-bg);
+  border: 2px solid var(--border-light);
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+body.dark-mode .dashboard-container {
+  background: var(--gradient-bg);
+}
+
+/* Dashboard Header */
+.dashboard-header {
+  background: linear-gradient(135deg, var(--accent) 0%, #3e977e 100%);
+  border-radius: 0.75rem 0.75rem 0 0;
+  border: 2px solid var(--border-light);
+  border-bottom: none;
+}
+
+.dashboard-header h1 {
+  font-weight: 700;
+  font-size: 2.5rem;
+}
+
+.dashboard-header .lead {
+  font-size: 1.2rem;
+}
+
+/* Card Content */
+.card-content {
+  background-color: transparent;
+  border: none;
+  animation: fadeInUp 0.5s ease;
+}
+
+/* Summary Cards */
+.summary-card {
+  border: 2px solid var(--border-light);
+  border-radius: 0.75rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+}
+
+.summary-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.student-card {
+  background: linear-gradient(135deg, var(--secondary) 0%, #6bc2a7 100%);
+  color: #ffffff;
+}
+
+.courses-card, .course-card {
+  background: linear-gradient(135deg, var(--course) 0%, #4ac963 100%);
+  color: #ffffff;
+}
+
+.staff-card {
+  background: linear-gradient(135deg, var(--tertiary) 0%, #8e66b8 100%);
+  color: #ffffff;
+}
+
+.attendance-card {
+  background: linear-gradient(135deg, var(--attendance) 0%, #4aa8ff 100%);
+  color: #ffffff;
+}
+
+.exam-card {
+  background: linear-gradient(135deg, var(--danger) 0%, #f05865 100%);
+  color: #ffffff;
+}
+
+.summary-card .card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.summary-card .card-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.summary-card .bi {
+  opacity: 0.8;
+}
+
+/* Chart Cards */
+.chart-card {
+  background-color: #ffffff;
+  border: 2px solid var(--border-light);
+  border-radius: 0.75rem;
+  transition: transform 0.3s ease;
+}
+
+body.dark-mode .chart-card {
+  background-color: #2f2f2f;
+}
+
+.chart-card:hover {
+  transform: translateY(-5px);
+}
+
+.chart-card .card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-content);
+}
+
+.chart-container {
+  min-height: 350px;
+  position: relative;
+}
+
+.chart-card canvas {
+  max-height: 350px !important;
+  width: 100% !important;
+}
+
+/* Assignment Card */
+.assignment-card {
+  background-color: #ffffff;
+  border: 2px solid var(--border-light);
+  border-radius: 0.75rem;
+  transition: transform 0.3s ease;
+  min-height: 350px; /* Match chart-container height */
+}
+
+body.dark-mode .assignment-card {
+  background-color: #2f2f2f;
+}
+
+.assignment-card:hover {
+  transform: translateY(-5px);
+}
+
+.assignment-card .card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-content);
+}
+
+.assignment-card .list-group-item {
+  color: var(--text-content);
+}
+
+.assignment-card .fw-semibold {
+  color: var(--text-content);
+}
+
+/* Classes Card */
+.classes-card {
+  background-color: #ffffff;
+  border: 2px solid var(--border-light);
+  border-radius: 0.75rem;
+}
+
+body.dark-mode .classes-card {
+  background-color: #2f2f2f;
+}
+
+.classes-card .list-group-item {
+  background-color: transparent;
+  border: none;
+  color: var(--text-content);
+}
+
+/* Welcome Card */
+.card.shadow-sm {
+  border: 2px solid var(--border-light);
+  border-radius: 0.75rem;
+  background-color: #ffffff;
+  animation: fadeInUp 0.5s ease;
+}
+
+body.dark-mode .card.shadow-sm {
+  background-color: #2f2f2f;
+}
+
+.card-title {
+  font-weight: 600;
+  color: var(--text-content);
+}
+
+.card-text {
+  color: var(--text-muted);
+}
+
+.badge.bg-primary {
+  background-color: var(--accent) !important;
+}
+
+.badge.bg-success {
+  background-color: var(--secondary) !important;
+}
+
+.badge.bg-info {
+  background-color: #17a2b8 !important;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+  .dashboard-container {
+    max-width: 90%;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-header h1 {
+    font-size: 2rem;
+  }
+
+  .dashboard-header .lead {
+    font-size: 1rem;
+  }
+
+  .summary-card .card-value {
+    font-size: 2rem;
+  }
+
+  .chart-container, .assignment-card {
+    min-height: 300px;
+  }
+
+  .chart-card canvas {
+    max-height: 300px !important;
+  }
+
+  .dashboard-container {
+    max-width: 95%;
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .summary-card .card-title {
+    font-size: 1rem;
+  }
+
+  .summary-card .card-value {
+    font-size: 1.75rem;
+  }
+
+  .chart-container, .assignment-card {
+    min-height: 250px;
+  }
+
+  .chart-card canvas {
+    max-height: 250px !important;
+  }
+
+  .dashboard-container {
+    max-width: 100%;
+    padding: 0.75rem;
+  }
+}
