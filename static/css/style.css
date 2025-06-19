@@ -6,7 +6,7 @@
   --bg-card: #343a40;
   --bg-alt: #212529;
   --text-base: #ECEFF1;
-  --text-sidebar: #D1D4D6;
+  --text-sidebar: #0e0e0e;
   --text-content: #E0E3E5;
   --text-muted: #adb5bd;
   --accent: #10A37F;
@@ -22,8 +22,8 @@ body.light-mode {
   --bg-dark: #F8F9FA;
   --bg-card: #E9ECEF;
   --bg-alt: #D3D6DA;
-  --text-base: #343a40; /* Fixed: Darker text for light mode */
-  --text-sidebar: #2e3133;
+  --text-base: #343a40;
+  --text-sidebar: #0e0e0e;
   --text-content: #495057;
   --text-muted: #6c757d;
   --accent: #0D7A5F;
@@ -36,47 +36,48 @@ body.light-mode {
 /* Apply text colors to specific sections */
 .header,
 .footer {
-  color: #faf6f6f5 !important; /* Fixed to white in both modes */
-  background-color: #000000 !important; /* Fixed to black in both modes */
+  color: #faf6f6f5 !important;
+  background-color: #000000 !important;
 }
 
 /* Ensure all text within header and footer is white, including links */
 .header a,
 .footer a {
-  color: #777474 !important; /* Fixed to white in both modes */
+  color: #777474 !important;
 }
 
 /* Style buttons in header and footer */
 .header .btn-outline-light,
 .footer .btn-outline-light {
-  color: #ffffff !important; /* Fixed to white in both modes */
-  border-color: #ffffff !important; /* Fixed to white border in both modes */
+  color: #ffffff !important;
+  border-color: #ffffff !important;
 }
 
 .header .btn-outline-light:hover,
 .footer .btn-outline-light:hover {
-  background-color: #808080 !important; /* Grey background on hover */
-  color: #ffffff !important; /* Keep text white on hover */
+  background-color: #808080 !important;
+  color: #ffffff !important;
 }
 
 .header .btn-outline-light i,
 .footer .btn-outline-light i {
-  color: #ffffff !important; /* Fixed to white in both modes */
+  color: #ffffff !important;
 }
 
 /* Ensure primary button (e.g., Login) in header/footer has consistent styling */
 .header .btn-primary,
 .footer .btn-primary {
-  background-color: #106da3 !important; /* Keep accent color for primary button */
-  color: #ffffff !important; /* Fixed to white in both modes */
+  background-color: #106da3 !important;
+  color: #ffffff !important;
 }
 
 .header .btn-primary:hover,
 .footer .btn-primary:hover {
-  background-color: #808080 !important; /* Grey background on hover */
-  color: #ffffff !important; /* Keep text white on hover */
+  background-color: #808080 !important;
+  color: #ffffff !important;
 }
 
+/* Sidebar and content text colors */
 .sidebar,
 .sidebar .nav-link,
 .sidebar .submenu-item,
@@ -172,12 +173,21 @@ body {
   position: relative;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 .page-wrapper {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   transition: margin-left 0.3s ease-in-out;
   margin-left: 0;
+}
+
+body.landing-page .page-wrapper,
+body.login-page .page-wrapper {
+  margin-left: 0 !important;
 }
 
 .page-wrapper.shifted {
@@ -187,17 +197,17 @@ body {
 /* Ensure main content grows to fill space and remains scrollable */
 main {
   flex-grow: 1;
-  overflow-y: auto; /* Ensure main content is scrollable */
+  overflow-y: auto;
   position: relative;
-  z-index: 1; /* Ensure main content is below header but above background */
+  z-index: 1;
 }
 
 /* Header */
 .header {
-  background-color: #000000 !important; /* Fixed to black in both modes */
+  background-color: #000000 !important;
   padding: 15px 0;
   border-bottom: 1px solid var(--border);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add subtle shadow for depth */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Adjust spacing for the sidebar toggle button on the left */
@@ -207,52 +217,170 @@ main {
 
 /* Sidebar Styling */
 .sidebar {
-  width: var(--sidebar-width) !important;
-  background-color: var(--bg-alt) !important;
-  transition: transform 0.3s ease-in-out !important;
+  width: var(--sidebar-width);
+}
+
+#sidebar {
+  background-color: #f6fcfb !important;
+}
+
+#sidebar .offcanvas-header {
+  background-color: #16826e !important;
+}
+
+#sidebar .offcanvas-header .text-light,
+#sidebar .offcanvas-body .text-light {
+  color: #333333 !important;
+}
+
+#sidebar .offcanvas-header .border-light,
+#sidebar .offcanvas-body .border-light {
+  border-color: #333333 !important;
+}
+
+body.landing-page .sidebar,
+body.login-page .sidebar {
+  display: none;
+}
+
+body.landing-page #sidebar-toggle,
+body.login-page #sidebar-toggle {
+  display: none;
+}
+
+/* Profile Sidebar */
+#profileSidebar {
+  width: 350px;
+  background-color: #f6fcfb !important;
+}
+
+#profileSidebar .offcanvas-header {
+  background-color: #16826e !important;
+}
+
+#profileSidebar .text-light {
+  color: #333333 !important;
+}
+
+#profileSidebar .border-light {
+  border-color: #333333 !important;
+}
+
+body.light-mode .btn-close-white,
+body.dark-mode #sidebar .btn-close-white,
+body.dark-mode #profileSidebar .btn-close-white {
+  filter: invert(1) grayscale(100%) brightness(0%) !important;
+}
+
+.offcanvas-body .d-grid.gap-2 {
+  gap: 0.25rem !important;
+}
+
+#sidebar .btn-outline-light,
+#profileSidebar .btn-outline-light {
+  background-color: transparent !important;
+  border-color: #333333 !important;
+  color: #333333 !important;
+}
+
+#sidebar .btn-outline-light:hover,
+#profileSidebar .btn-outline-light:hover {
+  background-color: #B0E0E6 !important;
+}
+
+body.light-mode #profileSidebar .btn-outline-danger,
+body.dark-mode #profileSidebar .btn-outline-danger {
+  background-color: #f8d7da !important;
+  border-color: #dc3545 !important;
+  color: #dc3545 !important;
+}
+
+body.light-mode #profileSidebar .btn-outline-danger:hover,
+body.dark-mode #profileSidebar .btn-outline-danger:hover {
+  background-color: #d95b67 !important;
+}
+
+/* Dynamic header/footer visibility for login page */
+body.login-page .header,
+body.login-page .footer {
+  transition: transform 0.3s ease-in-out;
   position: fixed;
+  width: 100%;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+body.login-page .header {
   top: 0;
+  transform: translateY(-100%);
+}
+
+body.login-page .footer {
   bottom: 0;
-  z-index: 999; /* Below header but above main content */
+  transform: translateY(100%);
 }
 
-.sidebar .offcanvas-header {
-  background-color: var(--sidebar-header-bg);
-  border-bottom: 1px solid var(--border);
+body.login-page .header.visible,
+body.login-page .footer.visible {
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
-.sidebar .offcanvas-title {
-  font-weight: 600;
+/* Ensure header/footer are stable on landing page and authenticated pages */
+body:not(.login-page) .header,
+body:not(.login-page) .footer {
+  position: relative;
+  transform: translateY(0);
 }
 
+/* Notification Dropdown */
+#notificationDropdown {
+  z-index: 10000 !important; /* UPDATE: Increased from 2000 to 10000 to ensure it appears above all other elements */
+  max-height: 400px;
+  overflow-y: auto;
+  width: 350px;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode #notificationDropdown {
+  background-color: #343a40 !important;
+  border-color: #495057 !important;
+  color: #ffffff !important;
+}
+
+#notificationDropdown .dropdown-item {
+  white-space: normal;
+}
+
+#notificationDropdown .dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+body.dark-mode #notificationDropdown .dropdown-item:hover {
+  background-color: #495057;
+}
+
+/* Sidebar menu and submenu */
 .sidebar .sidebar-menu {
   padding: 0;
   margin: 0;
 }
 
 .sidebar .nav-link {
-  padding: 12px 20px !important;
+  padding: 10px 15px;
   border-radius: 5px;
   margin: 5px 10px;
-  transition: all 0.3s ease !important;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
 }
 
 .sidebar .nav-link:hover {
-  background-color: var(--bg-card) !important;
+  background-color: #B0E0E6 !important;
 }
 
-/* Toggle Icon Styling */
-.sidebar .toggle-icon {
-  transition: transform 0.3s ease;
-}
-
-.sidebar .toggle-icon.rotate {
-  transform: rotate(180deg);
-}
-
-/* Submenu Styling */
 .sidebar .submenu {
   list-style: none;
   padding: 0;
@@ -267,42 +395,12 @@ main {
 }
 
 .sidebar .submenu-item {
-  padding-left: 40px !important;
-  font-size: 0.95rem;
+  padding-left: 30px !important;
+  font-size: 0.9rem;
 }
 
 .sidebar .submenu-item:hover {
-  background-color: var(--dropdown-hover-bg) !important;
-}
-
-/* Content Styling */
-.content {
-  padding: 2rem;
-  background-color: var(--bg-dark);
-}
-
-/* Footer */
-.footer {
-  background-color: #000000 !important; /* Fixed to black in both modes */
-  border-top: 1px solid var(--border);
-}
-
-/* Footer Links */
-.footer a {
-  text-decoration: none;
-  color: #ffffff !important; /* Fixed to white in both modes */
-  transition: color 0.3s ease;
-}
-
-.footer a:hover {
-  text-decoration: underline;
-  color: #ffffff !important; /* Keep white on hover, but allow underline */
-}
-
-/* Footer HR */
-.footer hr {
-  border-color: var(--border);
-  opacity: 0.5;
+  background-color: #B0E0E6 !important;
 }
 
 /* Ensure sidebar behaves as offcanvas on mobile */
@@ -320,7 +418,6 @@ main {
     margin-left: 0 !important;
   }
 
-  /* On mobile, ensure main content remains scrollable when sidebar is open */
   .page-wrapper.shifted main {
     overflow-y: auto;
   }
@@ -553,12 +650,20 @@ body.light-mode .badge.bg-warning {
 }
 
 /* Adjust alert text color in light mode */
-body.light-mode .alert-warning {
-  color: #856404 !important;
+#alert-warning {
+  background-color: #F2C94C;
+  color: #000000 !important;
 }
 
 /* Ensure alerts within cards have no extra margin */
-.card .alert {
+.card .alert-info {
+  background-color: #D2E7F6;
+  color: #000000;
+  margin-bottom: 0;
+}
+.card .alert-warning {
+  background-color: #FFF3CD;
+  color: #000000;
   margin-bottom: 0;
 }
 
@@ -610,10 +715,11 @@ body.light-mode .table td {
 }
 
 .reset-btn {
-  background-color: #6b7280; /* Tailwind gray-500 for a distinct, professional look */
+  background-color: #6b7280;
   border-color: #6b7280;
 }
+
 .reset-btn:hover {
-  background-color: #4b5563; /* Darker shade on hover */
+  background-color: #4b5563;
   border-color: #4b5563;
 }
