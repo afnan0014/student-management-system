@@ -8,7 +8,7 @@
 {% endblock %}
 {% block content %}
 <div class="container-fluid mt-5">
-  <div class="dashboard-container card shadow-lg">
+  <!-- <div class="dashboard-container card shadow-lg"> -->
     <!-- Header with Gradient -->
     <div class="dashboard-header text-center text-white p-4">
       <h1 class="display-5 fw-bold">Home | Dashboard</h1>
@@ -17,56 +17,68 @@
 
     <!-- Welcome Card -->
     <div class="card shadow-sm p-4 mb-4 text-center">
-      <h2 class="card-title mb-4 text-success">Welcome</h2>
+      <h2 class="card-title mb-4 text-info">Welcome</h2>
       <p class="card-text">
         Hello, <strong>{{ user.username }}</strong>!<br>
       </p>
     </div>
 
     <!-- Summary Cards -->
-    <div class="card-content p-4 mb-4">
-      <div class="row dashboard-content">
-        <div class="col-md-3 col-sm-6 mb-4">
-          <div class="card summary-card shadow-sm courses-card text-center h-100">
-            <div class="card-body">
-              <i class="bi bi-book display-4 mb-3"></i>
-              <h5 class="card-title">Courses Handled</h5>
-              <h2 class="card-value">{{ courses_handled }}</h2>
-            </div>
-          </div>
+<div class="card-content p-4 mb-4">
+  <div class="row dashboard-content">
+    <div class="col-md-3 col-sm-6 mb-4">
+      <div class="card summary-card courses-card d-flex flex-row align-items-center p-3">
+        <div class="icon-box me-3">
+          <i class="bi bi-book icon-left"></i>
         </div>
-        <div class="col-md-3 col-sm-6 mb-4">
-          <div class="card summary-card shadow-sm student-card text-center h-100">
-            <div class="card-body">
-              <i class="bi bi-people-fill display-4 mb-3"></i>
-              <h5 class="card-title">Total Students</h5>
-              <h2 class="card-value">{{ total_students }}</h2>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3 col-sm-6 mb-4">
-          <div class="card summary-card shadow-sm attendance-card text-center h-100">
-            <div class="card-body">
-              <i class="bi bi-check-circle-fill display-4 mb-3"></i>
-              <h5 class="card-title">Attendance Taken</h5>
-              <h2 class="card-value">{{ attendance_taken }}</h2>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3 col-sm-6 mb-4">
-          <div class="card summary-card shadow-sm exam-card text-center h-100">
-            <div class="card-body">
-              <i class="bi bi-file-text-fill display-4 mb-3"></i>
-              <h5 class="card-title">Upcoming Exams</h5>
-              <h2 class="card-value">{{ upcoming_exams }}</h2>
-            </div>
-          </div>
+        <div class="text-box text-center flex-grow-1">
+          <p class="mb-1 card-title">Courses Handled</p>
+          <h4 class="card-value mb-0">{{ courses_handled }}</h4>
         </div>
       </div>
     </div>
 
+    <div class="col-md-3 col-sm-6 mb-4">
+      <div class="card summary-card student-card d-flex flex-row align-items-center p-3">
+        <div class="icon-box me-3">
+          <i class="bi bi-people-fill icon-left"></i>
+        </div>
+        <div class="text-box text-center flex-grow-1">
+          <p class="mb-1 card-title">Total Students</p>
+          <h4 class="card-value mb-0">{{ total_students }}</h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6 mb-4">
+      <div class="card summary-card attendance-card d-flex flex-row align-items-center p-3">
+        <div class="icon-box me-3">
+          <i class="bi bi-check-circle-fill icon-left"></i>
+        </div>
+        <div class="text-box text-center flex-grow-1">
+          <p class="mb-1 card-title">Attendance Taken</p>
+          <h4 class="card-value mb-0">{{ attendance_taken }}</h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6 mb-4">
+      <div class="card summary-card exam-card d-flex flex-row align-items-center p-3">
+        <div class="icon-box me-3">
+          <i class="bi bi-file-text-fill icon-left"></i>
+        </div>
+        <div class="text-box text-center flex-grow-1">
+          <p class="mb-1 card-title">Upcoming Exams</p>
+          <h4 class="card-value mb-0">{{ upcoming_exams }}</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
     <!-- Attendance Chart -->
-    <div class="card-content p-4">
+    <div class="card-content p-3">
       <div class="card chart-card shadow-sm p-4">
         <h5 class="card-title text-center mb-4">Attendance Submission Over Time</h5>
         <div class="chart-container">

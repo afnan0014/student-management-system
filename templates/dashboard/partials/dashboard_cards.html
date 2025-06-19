@@ -1,37 +1,48 @@
 <div class="row dashboard-content">
   <div class="col-md-3 col-sm-6 mb-4">
-    <div class="card summary-card shadow-sm student-card text-center h-100">
-      <div class="card-body">
-        <i class="bi bi-people-fill display-4 mb-3"></i>
-        <h5 class="card-title">Total Students</h5>
-        <h2 class="card-value">{{ total_students }}</h2>
+    <div class="card summary-card student-card d-flex flex-row align-items-center p-3">
+      <div class="icon-box me-3">
+        <i class="bi bi-people-fill icon-left"></i>
+      </div>
+      <div class="text-box text-center flex-grow-1">
+        <p class="mb-1 card-title">Total Students</p>
+        <h4 class="card-value mb-0">{{ total_students }}</h4>
       </div>
     </div>
   </div>
+
   <div class="col-md-3 col-sm-6 mb-4">
-    <div class="card summary-card shadow-sm staff-card text-center h-100">
-      <div class="card-body">
-        <i class="bi bi-person-gear display-4 mb-3"></i>
-        <h5 class="card-title">Total Staff</h5>
-        <h2 class="card-value">{{ total_staff }}</h2>
+    <div class="card summary-card staff-card d-flex flex-row align-items-center p-3">
+      <div class="icon-box me-3">
+        <i class="bi bi-person-gear icon-left"></i>
+      </div>
+      <div class="text-box text-center flex-grow-1">
+        <p class="mb-1 card-title">Total Staff</p>
+        <h4 class="card-value mb-0">{{ total_staff }}</h4>
       </div>
     </div>
   </div>
+
   <div class="col-md-3 col-sm-6 mb-4">
-    <div class="card summary-card shadow-sm attendance-card text-center h-100">
-      <div class="card-body">
-        <i class="bi bi-check-circle-fill display-4 mb-3"></i>
-        <h5 class="card-title">Attendance Rate</h5>
-        <h2 class="card-value">{{ attendance_rate }}%</h2>
+    <div class="card summary-card attendance-card d-flex flex-row align-items-center p-3">
+      <div class="icon-box me-3">
+        <i class="bi bi-check-circle-fill icon-left"></i>
+      </div>
+      <div class="text-box text-center flex-grow-1">
+        <p class="mb-1 card-title">Attendance Rate</p>
+        <h4 class="card-value mb-0">{{ attendance_rate }}%</h4>
       </div>
     </div>
   </div>
+
   <div class="col-md-3 col-sm-6 mb-4">
-    <div class="card summary-card shadow-sm exam-card text-center h-100">
-      <div class="card-body">
-        <i class="bi bi-file-text-fill display-4 mb-3"></i>
-        <h5 class="card-title">Total Exams</h5>
-        <h2 class="card-value">{{ total_exams }}</h2>
+    <div class="card summary-card exam-card d-flex flex-row align-items-center p-3">
+      <div class="icon-box me-3">
+        <i class="bi bi-file-text-fill icon-left"></i>
+      </div>
+      <div class="text-box text-center flex-grow-1">
+        <p class="mb-1 card-title">Total Exams</p>
+        <h4 class="card-value mb-0">{{ total_exams }}</h4>
       </div>
     </div>
   </div>

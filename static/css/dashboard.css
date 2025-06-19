@@ -2,8 +2,8 @@
 
 /* Define custom variables */
 :root {
-  --accent: #1e90ff; /* Primary blue */
-  --secondary: #47ad92; /* Green for student/courses */
+  --accent: #0077ee; /* Primary blue */
+  --secondary: #1b94f8; /* Green for student/courses */
   --tertiary: #764ba2; /* Purple for staff */
   --danger: #dc3545; /* Red for exams/pending */
   --attendance: #1c86ee; /* Darker blue for attendance */
@@ -14,7 +14,7 @@
   --bg-dark: #1a1a1a; /* Dark mode background */
   --border-light: #e0e0e0; /* Border color in light mode */
   --border-dark: #444444; /* Border color in dark mode */
-  --gradient-bg: linear-gradient(135deg, #aeceef 0%, #aeceef 50%, #aeceef 100%); /* Mixed color background */
+  --gradient-bg: linear-gradient(135deg, #60a9f1 0%, #539ce6 50%, #52a2f1 100%); /* Mixed color background */
 }
 
 /* Dark mode overrides */
@@ -52,7 +52,7 @@ body.dark-mode .dashboard-container {
 
 /* Dashboard Header */
 .dashboard-header {
-  background: linear-gradient(135deg, var(--accent) 0%, #23c1cc 100%);
+  background: linear-gradient(135deg, #0e9eff 100%);
   border-radius: 0.75rem 0.75rem 0 0;
   border: 2px solid var(--border-light);
   border-bottom: none;
@@ -311,4 +311,46 @@ body.dark-mode .card.shadow-sm {
     max-width: 100%;
     padding: 0.75rem;
   }
+}
+/* Summary Cards Compact Horizontal Layout */
+.summary-card {
+  height: 120px;
+  border-radius: 0.75rem;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.icon-box {
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+}
+
+.card-title {
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin: 0;
+  color: #f8f9fa;
+}
+
+.card-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0;
+  color: #fff;
+}
+
+.icon-left {
+  color: #fff;
 }
