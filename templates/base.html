@@ -84,11 +84,12 @@
         /* Styles for dynamic header/footer visibility on login page only */
         body.login-page .header,
         body.login-page .footer {
-            transition: transform 0.3s ease-in-out;
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
             position: fixed;
             width: 100%;
             z-index: 1000;
             pointer-events: none; /* Prevent interaction when hidden */
+            opacity: 0; /* Hide by default */
         }
         body.login-page .header {
             top: 0;
@@ -101,6 +102,7 @@
         body.login-page .header.visible,
         body.login-page .footer.visible {
             transform: translateY(0);
+            opacity: 1; /* Show when visible */
             pointer-events: auto; /* Enable interaction when visible */
         }
         /* Ensure header/footer are stable on landing page and authenticated pages */
@@ -108,6 +110,7 @@
         body:not(.login-page) .footer {
             position: relative;
             transform: translateY(0);
+            opacity: 1; /* Always visible on non-login pages */
         }
     </style>
     {% block extra_head %}{% endblock %}
@@ -118,7 +121,14 @@
 <!-- Sidebar (Menu) -->
 <div class="offcanvas offcanvas-start sidebar bg-dark" tabindex="-1" id="sidebar" aria-labelledby="sidebarLabel" data-bs-backdrop="false">
     <div class="offcanvas-header">
-        <h5 class="offcanvas-title text-light" id="sidebarLabel"><i class="bi bi-list me-2"></i>Menu</h5>
+        <!-- Logo and Two-Line Text -->
+        <div class="sidebar-logo-text">
+            <img src="{% static 'images/logo2.png' %}" alt="Logo" class="sidebar-logo">
+            <div class="sidebar-text">
+                <span class="sidebar-title">Student</span>
+                <span class="sidebar-title">Management System</span>
+            </div>
+        </div>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body d-flex flex-column">
@@ -239,7 +249,7 @@
                         <i class="bi bi-list"></i>
                     </button>
                 {% endif %}
-                <h1 class="h4 mb-0 text-white"><i class="bi bi-mortarboard me-2"></i>College Student Management System</h1>
+                <!-- Removed "College Student Management System" text from header -->
             </div>
             <div class="d-flex align-items-center gap-2">
                 {% if user.is_authenticated %}

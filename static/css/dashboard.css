@@ -14,7 +14,7 @@
   --bg-dark: #1a1a1a; /* Dark mode background */
   --border-light: #e0e0e0; /* Border color in light mode */
   --border-dark: #444444; /* Border color in dark mode */
-  --gradient-bg: linear-gradient(135deg, #1e90ff33 0%, #47ad9233 50%, #764ba233 100%); /* Mixed color background */
+  --gradient-bg: linear-gradient(135deg, #aeceef 0%, #aeceef 50%, #aeceef 100%); /* Mixed color background */
 }
 
 /* Dark mode overrides */
@@ -23,7 +23,7 @@ body.dark-mode {
   --text-muted: #b0b0b0;
   --bg-light: #2a2a2a;
   --border-light: var(--border-dark);
-  --gradient-bg: linear-gradient(135deg, #1e90ff66 0%, #47ad9266 50%, #764ba266 100%);
+  --gradient-bg: linear-gradient(135deg, #aeceef 0%, #aeceef 50%, #aeceef 100%);
 }
 
 /* General Styles */
@@ -52,7 +52,7 @@ body.dark-mode .dashboard-container {
 
 /* Dashboard Header */
 .dashboard-header {
-  background: linear-gradient(135deg, var(--accent) 0%, #3e977e 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, #23c1cc 100%);
   border-radius: 0.75rem 0.75rem 0 0;
   border: 2px solid var(--border-light);
   border-bottom: none;
