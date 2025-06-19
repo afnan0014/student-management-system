@@ -6,15 +6,15 @@
   --bg-card: #343a40;
   --bg-alt: #212529;
   --text-base: #ECEFF1;
-  --text-sidebar: #0e0e0e;
+  --text-sidebar: #e6ebee;
   --text-content: #E0E3E5;
   --text-muted: #adb5bd;
   --accent: #10A37F;
   --border: #495057;
   --btn-primary-hover: #326f61;
-  --sidebar-header-bg: #2c3034;
+  --sidebar-header-bg: #2e3133;
   --dropdown-hover-bg: #495057;
-  --sidebar-width: 300px;
+  --sidebar-width: 330px;
 }
 
 /* Light mode overrides */
@@ -22,62 +22,61 @@ body.light-mode {
   --bg-dark: #F8F9FA;
   --bg-card: #E9ECEF;
   --bg-alt: #D3D6DA;
-  --text-base: #343a40;
-  --text-sidebar: #0e0e0e;
+  --text-base: #343a40; /* Fixed: Darker text for light mode */
+  --text-sidebar: #2e3133;
   --text-content: #495057;
   --text-muted: #6c757d;
   --accent: #0D7A5F;
   --border: #606365;
   --btn-primary-hover: #326f61;
-  --sidebar-header-bg: #CED4DA;
+  --sidebar-header-bg: #fafbfc;
   --dropdown-hover-bg: #CED4DA;
 }
 
 /* Apply text colors to specific sections */
 .header,
 .footer {
-  color: #faf6f6f5 !important;
-  background-color: #000000 !important;
+  color: #faf6f6f5 !important; /* Fixed to white in both modes */
+  background-color: #000000 !important; /* Fixed to black in both modes */
 }
 
 /* Ensure all text within header and footer is white, including links */
 .header a,
 .footer a {
-  color: #777474 !important;
+  color: #777474 !important; /* Fixed to white in both modes */
 }
 
 /* Style buttons in header and footer */
 .header .btn-outline-light,
 .footer .btn-outline-light {
-  color: #ffffff !important;
-  border-color: #ffffff !important;
+  color: #ffffff !important; /* Fixed to white in both modes */
+  border-color: #ffffff !important; /* Fixed to white border in both modes */
 }
 
 .header .btn-outline-light:hover,
 .footer .btn-outline-light:hover {
-  background-color: #808080 !important;
-  color: #ffffff !important;
+  background-color: #808080 !important; /* Grey background on hover */
+  color: #ffffff !important; /* Keep text white on hover */
 }
 
 .header .btn-outline-light i,
 .footer .btn-outline-light i {
-  color: #ffffff !important;
+  color: #ffffff !important; /* Fixed to white in both modes */
 }
 
 /* Ensure primary button (e.g., Login) in header/footer has consistent styling */
 .header .btn-primary,
 .footer .btn-primary {
-  background-color: #106da3 !important;
-  color: #ffffff !important;
+  background-color: #106da3 !important; /* Keep accent color for primary button */
+  color: #ffffff !important; /* Fixed to white in both modes */
 }
 
 .header .btn-primary:hover,
 .footer .btn-primary:hover {
-  background-color: #808080 !important;
-  color: #ffffff !important;
+  background-color: #808080 !important; /* Grey background on hover */
+  color: #ffffff !important; /* Keep text white on hover */
 }
 
-/* Sidebar and content text colors */
 .sidebar,
 .sidebar .nav-link,
 .sidebar .submenu-item,
@@ -173,21 +172,12 @@ body {
   position: relative;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 .page-wrapper {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   transition: margin-left 0.3s ease-in-out;
   margin-left: 0;
-}
-
-body.landing-page .page-wrapper,
-body.login-page .page-wrapper {
-  margin-left: 0 !important;
 }
 
 .page-wrapper.shifted {
@@ -197,17 +187,17 @@ body.login-page .page-wrapper {
 /* Ensure main content grows to fill space and remains scrollable */
 main {
   flex-grow: 1;
-  overflow-y: auto;
+  overflow-y: auto; /* Ensure main content is scrollable */
   position: relative;
-  z-index: 1;
+  z-index: 1; /* Ensure main content is below header but above background */
 }
 
 /* Header */
 .header {
-  background-color: #000000 !important;
+  background-color: #000000 !important; /* Fixed to black in both modes */
   padding: 15px 0;
   border-bottom: 1px solid var(--border);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add subtle shadow for depth */
 }
 
 /* Adjust spacing for the sidebar toggle button on the left */
@@ -217,521 +207,446 @@ main {
 
 /* Sidebar Styling */
 .sidebar {
-  width: var(--sidebar-width);
-}
-
-#sidebar {
-  background-color: #f6fcfb !important;
-}
-
-#sidebar .offcanvas-header {
-  background-color: #16826e !important;
-}
-
-#sidebar .offcanvas-header .text-light,
-#sidebar .offcanvas-body .text-light {
-  color: #333333 !important;
-}
-
-#sidebar .offcanvas-header .border-light,
-#sidebar .offcanvas-body .border-light {
-  border-color: #333333 !important;
-}
-
-body.landing-page .sidebar,
-body.login-page .sidebar {
-  display: none;
-}
-
-body.landing-page #sidebar-toggle,
-body.login-page #sidebar-toggle {
-  display: none;
-}
-
-/* Profile Sidebar */
-#profileSidebar {
-  width: 350px;
-  background-color: #f6fcfb !important;
-}
-
-#profileSidebar .offcanvas-header {
-  background-color: #16826e !important;
-}
-
-#profileSidebar .text-light {
-  color: #333333 !important;
-}
-
-#profileSidebar .border-light {
-  border-color: #333333 !important;
-}
-
-body.light-mode .btn-close-white,
-body.dark-mode #sidebar .btn-close-white,
-body.dark-mode #profileSidebar .btn-close-white {
-  filter: invert(1) grayscale(100%) brightness(0%) !important;
-}
-
-.offcanvas-body .d-grid.gap-2 {
-  gap: 0.25rem !important;
-}
-
-#sidebar .btn-outline-light,
-#profileSidebar .btn-outline-light {
-  background-color: transparent !important;
-  border-color: #333333 !important;
-  color: #333333 !important;
-}
-
-#sidebar .btn-outline-light:hover,
-#profileSidebar .btn-outline-light:hover {
-  background-color: #B0E0E6 !important;
-}
-
-body.light-mode #profileSidebar .btn-outline-danger,
-body.dark-mode #profileSidebar .btn-outline-danger {
-  background-color: #f8d7da !important;
-  border-color: #dc3545 !important;
-  color: #dc3545 !important;
-}
-
-body.light-mode #profileSidebar .btn-outline-danger:hover,
-body.dark-mode #profileSidebar .btn-outline-danger:hover {
-  background-color: #d95b67 !important;
-}
-
-/* Dynamic header/footer visibility for login page */
-body.login-page .header,
-body.login-page .footer {
-  transition: transform 0.3s ease-in-out;
+  width: var(--sidebar-width) !important;
+  background-color: var(--bg-alt) !important;
+  transition: transform 0.3s ease-in-out !important;
   position: fixed;
-  width: 100%;
-  z-index: 1000;
-  pointer-events: none;
-}
-
-body.login-page .header {
   top: 0;
-  transform: translateY(-100%);
-}
-
-body.login-page .footer {
   bottom: 0;
-  transform: translateY(100%);
+  z-index: 999; /* Below header but above main content */
 }
 
-body.login-page .header.visible,
-body.login-page .footer.visible {
-  transform: translateY(0);
-  pointer-events: auto;
+.sidebar .offcanvas-header {
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-/* Ensure header/footer are stable on landing page and authenticated pages */
-body:not(.login-page) .header,
-body:not(.login-page) .footer {
-  position: relative;
-  transform: translateY(0);
+.sidebar-logo-text {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between logo and text */
 }
 
-/* Notification Dropdown */
-#notificationDropdown {
-  z-index: 10000 !important; /* UPDATE: Increased from 2000 to 10000 to ensure it appears above all other elements */
-  max-height: 400px;
-  overflow-y: auto;
-  width: 350px;
-  background-color: #ffffff;
-  border: 1px solid #cccccc;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.sidebar-logo {
+    width: 40px; /* Reduced size for better fit */
+    height: auto;
 }
 
-body.dark-mode #notificationDropdown {
-  background-color: #343a40 !important;
-  border-color: #495057 !important;
-  color: #ffffff !important;
+.sidebar-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2; /* Tighten line spacing */
 }
 
-#notificationDropdown .dropdown-item {
-  white-space: normal;
+.sidebar-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-sidebar);
 }
 
-#notificationDropdown .dropdown-item:hover {
-  background-color: #f8f9fa;
-}
-
-body.dark-mode #notificationDropdown .dropdown-item:hover {
-  background-color: #495057;
-}
-
-/* Sidebar menu and submenu */
 .sidebar .sidebar-menu {
-  padding: 0;
-  margin: 0;
+    padding: 0;
+    margin: 0;
 }
 
 .sidebar .nav-link {
-  padding: 10px 15px;
-  border-radius: 5px;
-  margin: 5px 10px;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
+    padding: 16px 20px !important; /* Increased padding for more spacing */
+    border-radius: 5px;
+    margin: 8px 10px; /* Increased margin for more spacing between items */
+    transition: all 0.3s ease !important;
+    display: flex;
+    align-items: center;
 }
 
 .sidebar .nav-link:hover {
-  background-color: #B0E0E6 !important;
+    background-color: var(--bg-card) !important;
 }
 
+/* Toggle Icon Styling */
+.sidebar .toggle-icon {
+    transition: transform 0.3s ease;
+}
+
+.sidebar .toggle-icon.rotate {
+    transform: rotate(180deg);
+}
+
+/* Submenu Styling */
 .sidebar .submenu {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease-in-out;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
 }
 
 .sidebar .submenu.open {
-  max-height: 500px;
+    max-height: 500px;
 }
 
 .sidebar .submenu-item {
-  padding-left: 30px !important;
-  font-size: 0.9rem;
+    padding: 12px 40px !important; /* Adjusted padding for submenu items */
+    margin: 4px 10px; /* Added margin for spacing */
+    font-size: 0.95rem;
 }
 
 .sidebar .submenu-item:hover {
-  background-color: #B0E0E6 !important;
+    background-color: var(--dropdown-hover-bg) !important;
+}
+
+/* Content Styling */
+.content {
+    padding: 2rem;
+    background-color: var(--bg-dark);
+}
+
+/* Footer */
+.footer {
+    background-color: #000000 !important; /* Fixed to black in both modes */
+    border-top: 1px solid var(--border);
+}
+
+/* Footer Links */
+.footer a {
+    text-decoration: none;
+    color: #ffffff !important; /* Fixed to white in both modes */
+    transition: color 0.3s ease;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+    color: #ffffff !important; /* Keep white on hover, but allow underline */
+}
+
+/* Footer HR */
+.footer hr {
+    border-color: var(--border);
+    opacity: 0.5;
 }
 
 /* Ensure sidebar behaves as offcanvas on mobile */
 @media (max-width: 768px) {
-  .sidebar {
-    position: fixed;
-    transform: translateX(-100%);
-  }
+    .sidebar {
+        position: fixed;
+        transform: translateX(-100%);
+    }
 
-  .sidebar.show {
-    transform: translateX(0);
-  }
+    .sidebar.show {
+        transform: translateX(0);
+    }
 
-  .page-wrapper.shifted {
-    margin-left: 0 !important;
-  }
+    .page-wrapper.shifted {
+        margin-left: 0 !important;
+    }
 
-  .page-wrapper.shifted main {
-    overflow-y: auto;
-  }
+    /* On mobile, ensure main content remains scrollable when sidebar is open */
+    .page-wrapper.shifted main {
+        overflow-y: auto;
+    }
 }
 
 /* Card Styling */
 .card,
 .card-large,
 .card-user-list {
-  background-color: var(--bg-card);
-  color: var(--text-content);
-  box-shadow: 0 8px 16px rgba(61, 60, 60, 0.4);
-  border: 1px solid var(--border);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  transition: transform 0.3s ease;
+    background-color: var(--bg-card);
+    color: var(--text-content);
+    box-shadow: 0 8px 16px rgba(61, 60, 60, 0.4);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    transition: transform 0.3s ease;
 }
 
 .card:hover,
 .card-large:hover,
 .card-user-list:hover {
-  transform: translateY(-4px);
+    transform: translateY(-4px);
 }
 
 body.light-mode .card,
 body.light-mode .card-large,
 body.light-mode .card-user-list {
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 /* Card hover effect for testimonials */
 .card:hover {
-  transform: translateY(-5px);
+    transform: translateY(-5px);
 }
 
 /* Testimonial images */
 .card img.rounded-circle {
-  border: 2px solid var(--accent);
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+    border: 2px solid var(--accent);
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* Table Styles */
 .table-container {
-  max-width: 960px;
-  width: 100%;
+    max-width: 960px;
+    width: 100%;
 }
 
 .table {
-  background-color: var(--bg-card);
-  color: var(--text-content);
-  border-radius: 0.5rem;
-  overflow: hidden;
-  border: 2px solid var(--border);
-  width: 100%;
+    background-color: var(--bg-card);
+    color: var(--text-content);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 2px solid var(--border);
+    width: 100%;
 }
 
 .table thead {
-  background-color: var(--bg-alt);
-  color: var(--text-content);
-  border-bottom: 2px solid var(--accent);
+    background-color: var(--bg-alt);
+    color: var(--text-content);
+    border-bottom: 2px solid var(--accent);
 }
 
 body.dark-mode .table thead {
-  background-color: #2A3B4C;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    background-color: #2A3B4C;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 body.light-mode .table thead {
-  background-color: #D3D6DA;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #D3D6DA;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Enhance table cell padding and alignment */
 .table th,
 .table td {
-  border-color: var(--border);
-  padding: 0.75rem 1rem;
-  vertical-align: middle;
-  text-align: left;
+    border-color: var(--border);
+    padding: 0.75rem 1rem;
+    vertical-align: middle;
+    text-align: left;
 }
 
 /* Improve table hover and striped effects */
 .table tbody tr:hover {
-  background-color: var(--bg-alt);
-  transition: background-color 0.2s ease;
+    background-color: var(--bg-alt);
+    transition: background-color 0.2s ease;
 }
 
 body.dark-mode .table-striped tbody tr:nth-of-type(odd) {
-  background-color: rgba(255, 255, 255, 0.05);
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
 body.light-mode .table-striped tbody tr:nth-of-type(odd) {
-  background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgba(0, 0, 0, 0.05);
 }
 
 /* Layout container for buttons */
 .action-bar {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  max-width: 960px;
-  width: 100%;
-  margin: 0 auto 1.5rem auto;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 960px;
+    width: 100%;
+    margin: 0 auto 1.5rem auto;
 }
 
 /* Adjust action bar when sidebar is open */
 .page-wrapper.shifted .action-bar {
-  max-width: 660px;
+    max-width: 660px;
 }
 
 /* Buttons container */
 .action-bar .buttons-container {
-  display: flex;
-  gap: 1rem;
+    display: flex;
+    gap: 1rem;
 }
 
 /* Ensure buttons wrap properly on smaller screens */
 @media (max-width: 992px) {
-  .action-bar {
-    max-width: 100%;
-    flex-wrap: wrap;
-  }
+    .action-bar {
+        max-width: 100%;
+        flex-wrap: wrap;
+    }
 
-  .page-wrapper.shifted .action-bar {
-    max-width: 100%;
-  }
+    .page-wrapper.shifted .action-bar {
+        max-width: 100%;
+    }
 
-  .action-bar .btn {
-    height: 36px;
-  }
+    .action-bar .btn {
+        height: 36px;
+    }
 }
 
 /* Buttons */
 .btn {
-  border: none;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-  border-radius: 0.5rem;
-  padding: 0 1rem;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap;
-  font-size: 1rem;
+    border: none;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    border-radius: 0.5rem;
+    padding: 0 1rem;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    font-size: 1rem;
 }
 
 .btn:hover {
-  transform: scale(1.05);
+    transform: scale(1.05);
 }
 
 .btn-primary {
-  background-color: var(--accent);
-  color: #fff;
+    background-color: var(--accent);
+    color: #fff;
 }
 
 .btn-primary:hover {
-  background-color: var(--btn-primary-hover);
+    background-color: var(--btn-primary-hover);
 }
 
 .btn-success {
-  background-color: #2D9CDB;
+    background-color: #2D9CDB;
 }
 
 .btn-success:hover {
-  background-color: #2377B8;
+    background-color: #2377B8;
 }
 
 .btn-warning {
-  background-color: #F2C94C;
-  color: #000;
+    background-color: #F2C94C;
+    color: #000;
 }
 
 .btn-warning:hover {
-  background-color: #D1A830;
+    background-color: #D1A830;
 }
 
 .btn-danger {
-  background-color: #EB5757;
+    background-color: #EB5757;
 }
 
 .btn-danger:hover {
-  background-color: #C94444;
+    background-color: #C94444;
 }
 
 /* Style for btn-secondary */
 .btn-secondary {
-  background-color: var(--bg-alt);
-  color: var(--text-content);
+    background-color: var(--bg-alt);
+    color: var(--text-content);
 }
 
 .btn-secondary:hover {
-  background-color: var(--dropdown-hover-bg);
+    background-color: var(--dropdown-hover-bg);
 }
 
 /* Badges */
 .badge {
-  padding: 0.5em 1em;
-  border-radius: 0.5rem;
-  font-weight: 500;
+    padding: 0.5em 1em;
+    border-radius: 0.5rem;
+    font-weight: 500;
 }
 
 /* Support larger badges */
 .badge.fs-5 {
-  padding: 0.6em 1.2em;
+    padding: 0.6em 1.2em;
 }
 
 /* Ensure badge text is readable in light mode */
 body.light-mode .badge.bg-success,
 body.light-mode .badge.bg-danger {
-  color: #fff !important;
+    color: #fff !important;
 }
 
 body.light-mode .badge.bg-warning {
-  color: #000 !important;
+    color: #000 !important;
 }
 
 /* Alerts */
 .alert {
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    padding: 1rem 1.5rem;
 }
 
 /* Ensure alert icons and text align nicely */
 .alert.d-flex {
-  gap: 0.5rem;
+    gap: 0.5rem;
 }
 
 /* Adjust alert text color in light mode */
-#alert-warning {
-  background-color: #F2C94C;
-  color: #000000 !important;
+body.light-mode .alert-warning {
+    color: #856404 !important;
 }
 
 /* Ensure alerts within cards have no extra margin */
-.card .alert-info {
-  background-color: #D2E7F6;
-  color: #000000;
-  margin-bottom: 0;
-}
-.card .alert-warning {
-  background-color: #FFF3CD;
-  color: #000000;
-  margin-bottom: 0;
+.card .alert {
+    margin-bottom: 0;
 }
 
 /* Headings */
 .card-title,
 .table-heading {
-  color: var(--accent);
-  font-weight: 600;
-  font-size: 1.75rem;
-  text-align: center;
-  margin-bottom: 1.5rem;
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 1.75rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
 }
 
 /* Date-time */
 .date-time {
-  background-color: var(--bg-card);
-  color: var(--text-content);
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  text-align: center;
-  margin: 1rem auto;
-  max-width: 300px;
+    background-color: var(--bg-card);
+    color: var(--text-content);
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    margin: 1rem auto;
+    max-width: 300px;
 }
 
 /* Light mode specific adjustments */
 body.light-mode .btn-outline-light {
-  color: var(--text-base);
-  border-color: var(--text-base);
+    color: var(--text-base);
+    border-color: var(--text-base);
 }
 
 body.light-mode .btn-outline-light:hover {
-  background-color: var(--text-base);
-  color: var(--bg-dark);
+    background-color: var(--text-base);
+    color: var(--bg-dark);
 }
 
 body.light-mode .offcanvas-header .btn-close-white,
 body.light-mode .alert-dismissible .btn-close-white {
-  filter: invert(1);
+    filter: invert(1);
 }
 
 body.light-mode .table {
-  background-color: var(--bg-card);
-  color: var(--text-content);
+    background-color: var(--bg-card);
+    color: var(--text-content);
 }
 
 body.light-mode .table th,
 body.light-mode .table td {
-  border-color: var(--border);
+    border-color: var(--border);
 }
 
 .reset-btn {
-  background-color: #6b7280;
-  border-color: #6b7280;
+    background-color: #6b7280; /* Tailwind gray-500 for a distinct, professional look */
+    border-color: #6b7280;
 }
-
 .reset-btn:hover {
-  background-color: #4b5563;
-  border-color: #4b5563;
+    background-color: #4b5563; /* Darker shade on hover */
+    border-color: #4b5563;
 }
 /* Ensure dropdown shows above everything */
 .dropdown-menu {
-  z-index: 1100 !important;
-  position: absolute !important;
+    z-index: 1100 !important;
+    position: absolute !important;
 }
 
 /* Ensure header doesn't block dropdown */
 .header {
-  z-index: 1030 !important;
-  position: relative !important;
+    z-index: 1030 !important;
+    position: relative !important;
 }
-

@@ -13,6 +13,106 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
     <!-- External Custom CSS -->
     <link href="{% static 'css/style.css' %}" rel="stylesheet" />
+    <!-- Inline Styles for Landing Page, Login Page, and Sidebars -->
+    <style>
+        body.landing-page .sidebar,
+        body.login-page .sidebar {
+            display: none;
+        }
+        body.landing-page .page-wrapper,
+        body.login-page .page-wrapper {
+            margin-left: 0 !important;
+        }
+        body.landing-page #sidebar-toggle,
+        body.login-page #sidebar-toggle {
+            display: none;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        #profileSidebar {
+            width: 350px; /* Match menu sidebar default width */
+        }
+        body.light-mode .offcanvas.bg-dark {
+            background: #ffffff !important;
+            color: #333333 !important;
+        }
+        body.light-mode .offcanvas.bg-dark .text-light {
+            color: #333333 !important;
+        }
+        body.light-mode .offcanvas.bg-dark .border-light {
+            border-color: #cccccc !important;
+        }
+        body.light-mode .btn-close-white {
+            filter: invert(1) grayscale(100%) brightness(0%) !important;
+        }
+        .offcanvas-body .d-grid.gap-2 {
+            gap: 0.25rem !important; /* Further reduced gap between buttons */
+        }
+        body.dark-mode .offcanvas.bg-dark .btn-outline-light {
+            background-color: #343a40 !important;
+            border-color: #ffffff !important;
+            color: #ffffff !important;
+        }
+        body.dark-mode .offcanvas.bg-dark .btn-outline-light:hover {
+            background-color: #495057 !important;
+        }
+        body.light-mode .offcanvas.bg-dark .btn-outline-light {
+            background-color: #e9ecef !important;
+            border-color: #333333 !important;
+            color: #333333 !important;
+        }
+        body.light-mode .offcanvas.bg-dark .btn-outline-light:hover {
+            background-color: #dee2e6 !important;
+        }
+        body.dark-mode .offcanvas.bg-dark .btn-outline-danger {
+            background-color: #dc3545 !important;
+            border-color: #ffffff !important;
+            color: #ffffff !important;
+        }
+        body.dark-mode .offcanvas.bg-dark .btn-outline-danger:hover {
+            background-color: #c82333 !important;
+        }
+        body.light-mode .offcanvas.bg-dark .btn-outline-danger {
+            background-color: #f8d7da !important;
+            border-color: #dc3545 !important;
+            color: #dc3545 !important;
+        }
+        body.light-mode .offcanvas.bg-dark .btn-outline-danger:hover {
+            background-color: #f5c6cb !important;
+        }
+        /* Styles for dynamic header/footer visibility on login page only */
+        body.login-page .header,
+        body.login-page .footer {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            pointer-events: none; /* Prevent interaction when hidden */
+            opacity: 0; /* Hide by default */
+        }
+        body.login-page .header {
+            top: 0;
+            transform: translateY(-100%);
+        }
+        body.login-page .footer {
+            bottom: 0;
+            transform: translateY(100%);
+        }
+        body.login-page .header.visible,
+        body.login-page .footer.visible {
+            transform: translateY(0);
+            opacity: 1; /* Show when visible */
+            pointer-events: auto; /* Enable interaction when visible */
+        }
+        /* Ensure header/footer are stable on landing page and authenticated pages */
+        body:not(.login-page) .header,
+        body:not(.login-page) .footer {
+            position: relative;
+            transform: translateY(0);
+            opacity: 1; /* Always visible on non-login pages */
+        }
+    </style>
     {% block extra_head %}{% endblock %}
 </head>
 <body class="{% if not user.is_authenticated %}{% block body_class %}landing-page{% endblock %}{% endif %} light-mode">
@@ -21,7 +121,14 @@
 <!-- Sidebar (Menu) -->
 <div class="offcanvas offcanvas-start sidebar bg-dark" tabindex="-1" id="sidebar" aria-labelledby="sidebarLabel" data-bs-backdrop="false">
     <div class="offcanvas-header">
-        <h5 class="offcanvas-title text-light" id="sidebarLabel"><i class="bi bi-list me-2"></i>Menu</h5>
+        <!-- Logo and Two-Line Text -->
+        <div class="sidebar-logo-text">
+            <img src="{% static 'images/logo2.png' %}" alt="Logo" class="sidebar-logo">
+            <div class="sidebar-text">
+                <span class="sidebar-title">Student</span>
+                <span class="sidebar-title">Management System</span>
+            </div>
+        </div>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body d-flex flex-column">
@@ -142,17 +249,17 @@
                         <i class="bi bi-list"></i>
                     </button>
                 {% endif %}
-                <h1 class="h4 mb-0 text-white"><i class="bi bi-mortarboard me-2"></i>College Student Management System</h1>
+                <!-- Removed "College Student Management System" text from header -->
             </div>
             <div class="d-flex align-items-center gap-2">
                 {% if user.is_authenticated %}
                     <!-- Notification Bell Icon -->
-                    <div class="dropdown position-relative">
+                    <div class="dropdown">
                         <button class="btn btn-outline-light position-relative" type="button" id="notificationBell" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-bell-fill"></i>
                             <span id="notificationCount" class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">0</span>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end notification-dropdown" id="notificationDropdown" aria-labelledby="notificationBell">
+                        <ul class="dropdown-menu dropdown-menu-end" id="notificationDropdown" aria-labelledby="notificationBell" style="max-height: 400px; overflow-y: auto; width: 350px;">
                             <li class="dropdown-header d-flex justify-content-between align-items-center">
                                 <span>Notifications</span>
                                 <small id="notificationTotal" class="text-muted">0 total</small>
@@ -231,8 +338,6 @@
         const pageWrapper = document.querySelector('.page-wrapper');
         const header = document.querySelector('.header');
         const footer = document.querySelector('.footer');
-        const mainContent = document.querySelector('.content');
-        const notificationDropdown = document.getElementById('notificationDropdown');
 
         // Apply saved theme
         const savedTheme = localStorage.getItem('theme') || 'light-mode';
@@ -273,29 +378,13 @@
         });
 
         if (sidebar) {
-            sidebar.addEventListener('show.bs.offcanvas', () => {
-                pageWrapper.classList.add('shifted');
-                // Ensure main content is scrollable when sidebar is open
-                mainContent.style.overflowY = 'auto';
-                mainContent.style.position = 'relative';
-                // Ensure notification dropdown is not overlapped by sidebar
-                if (notificationDropdown) {
-                    notificationDropdown.style.zIndex = '10001';
-                }
-            });
+            sidebar.addEventListener('show.bs.offcanvas', () => pageWrapper.classList.add('shifted'));
             sidebar.addEventListener('hide.bs.offcanvas', () => {
                 pageWrapper.classList.remove('shifted');
                 document.querySelectorAll('.submenu').forEach(menu => {
                     menu.classList.remove('open');
                     menu.style.maxHeight = null;
                 });
-                // Reset main content scroll behavior
-                mainContent.style.overflowY = '';
-                mainContent.style.position = '';
-                // Reset notification dropdown z-index
-                if (notificationDropdown) {
-                    notificationDropdown.style.zIndex = '10000';
-                }
             });
 
             document.addEventListener('click', (e) => {
@@ -310,30 +399,13 @@
             });
         }
 
-        // Ensure notification dropdown is brought to front when opened
-        if (notificationDropdown) {
-            const notificationBell = document.getElementById('notificationBell');
-            notificationBell.addEventListener('click', () => {
-                notificationDropdown.style.zIndex = '10001';
-                // Force re-render to ensure stacking context
-                notificationDropdown.style.display = 'none';
-                notificationDropdown.offsetHeight; // Trigger reflow
-                notificationDropdown.style.display = '';
-            });
-
-            // Reset z-index when dropdown is closed
-            notificationDropdown.addEventListener('hidden.bs.dropdown', () => {
-                notificationDropdown.style.zIndex = '10000';
-            });
-        }
-
         // Dynamic header/footer visibility for login page only
         if (body.classList.contains('login-page') && header && footer) {
             document.addEventListener('mousemove', (e) => {
                 const windowHeight = window.innerHeight;
                 const mouseY = e.clientY;
 
-                // Show header if cursor is in top 100px
+                // Show header if cursor is in top 100px (increased for better usability)
                 if (mouseY < 100) {
                     header.classList.add('visible');
                 } else {

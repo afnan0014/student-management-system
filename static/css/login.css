@@ -5,6 +5,8 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  justify-content: center; /* Center vertically */
+  align-items: center; /* Center horizontally */
 }
 
 .login-container {
@@ -12,15 +14,13 @@ body {
   width: 80vw;
   height: calc(90vh - 120px);
   max-height: 700px;
-  margin: 0 auto;
+  margin: 0 auto; /* Centered horizontally with auto margins */
   border-radius: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   background-color: #fff;
   flex: 1;
-  align-self: center;
-  margin-top: 60px;
-  margin-bottom: 40px;
+  align-self: center; /* Ensure container aligns with centered body */
 }
 
 .left-panel {
