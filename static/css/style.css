@@ -723,3 +723,15 @@ body.light-mode .table td {
   background-color: #4b5563;
   border-color: #4b5563;
 }
+/* Ensure dropdown shows above everything */
+.dropdown-menu {
+  z-index: 1100 !important;
+  position: absolute !important;
+}
+
+/* Ensure header doesn't block dropdown */
+.header {
+  z-index: 1030 !important;
+  position: relative !important;
+}
+
