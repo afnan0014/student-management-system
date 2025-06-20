@@ -3,7 +3,7 @@
 /* Define custom variables */
 :root {
   --accent: #1e90ff; /* Primary blue */
-  --secondary: #47ad92; /* Green */
+  --secondary: #1c86ee; /* Green */
   --tertiary: #764ba2; /* Purple */
   --danger: #dc3545; /* Red */
   --info: #17a2b8; /* Info blue */
@@ -48,7 +48,7 @@ body {
 
 /* Dashboard Header */
 .dashboard-header {
-  background: linear-gradient(135deg, var(--accent) 0%, #3e977e 100%);
+  background: linear-gradient(135deg, #1c86ee 100%);
   border-radius: 0.75rem 0.75rem 0 0;
   border: 2px solid var(--border-light);
   border-bottom: none;
@@ -193,8 +193,8 @@ body.dark-mode .student-option:hover {
 }
 
 .btn-primary {
-  background-color: var(--accent);
-  border-color: var(--accent);
+  background-color: #1c86ee;
+  border-color: #1c86ee;
 }
 
 .btn-primary:hover {

@@ -2,18 +2,18 @@
 
 /* Define custom variables Variables */
 :root {
-    --accent: #1e90ff; /* Primary blue */
-    --secondary: #47ad47; /* Green */
-    --tertiary: #764ba2; /* Purple */
-    --danger: #dc3545; /* Red */
-    --info: #17a2b8; /* Info blue */
-    --warning: #ffc107; /* Yellow */
-    --text-content: #333333; /* Primary Text color in light mode */
-    --text-muted: #6c757d; /* Muted text in light mode */
-    --bg-light: #f0f4f8; /* Light background color */
-    --bg-dark: #1a1a1a; /* Dark mode background */
-    --border-light: #e0e0e0; /* Light border color */
-    --back-button-bg: #000000; /* Black back button in light mode */
+  --accent: #1e90ff; /* Primary blue */
+  --secondary: #28c2ff; /* Green */
+  --tertiary: #764ba2; /* Purple */
+  --danger: #dc3545; /* Red */
+  --info: #17a2b8; /* Info blue */
+  --text-content: #333333; /* Text color in light mode */
+  --text-muted: #5b6268; /* Muted text in light mode */
+  --bg-light: #f0f4f8; /* Light background */
+  --bg-dark: #1a1a1a; /* Dark mode background */
+  --border-light: #e0e0e0; /* Border color in light mode */
+  --border-dark: #444444; /* Border color in dark mode */
+  --back-button-bg: #000000; /* Black background for back button in light mode */
 }
 
 /* Dark mode overrides */
@@ -47,7 +47,7 @@ body {
 
 /* Dashboard Header */
 .dashboard-header {
-    background: linear-gradient(90deg, var(--accent), #3e977e);
+    background: linear-gradient(90deg, #1c86ee);
     border-radius: 0.75rem 0.75rem 0 0;
     border: 2px solid var(--border-light);
     border-bottom: none;
@@ -221,8 +221,8 @@ body.dark-mode .attachment-section {
 }
 
 .btn-primary {
-    background-color: var(--accent);
-    border-color: var(--accent);
+    background-color: #1c86ee;
+    border-color: #1c86ee;
 }
 
 .btn-primary:hover {
@@ -272,15 +272,15 @@ body.dark-mode .attachment-section {
 
 /* Nav Tabs */
 .nav-tabs .nav-link {
-    color: var(--text-content);
+    color: #1c86ee;
     border: 2px solid var(--border-light);
     margin-right: 5px;
 }
 
 .nav-tabs .nav-link.active {
-    background-color: var(--accent);
+    background-color: #1c86ee;
     color: #ffffff;
-    border-color: var(--accent);
+    border-color: #1c86ee
 }
 
 /* Alerts */
