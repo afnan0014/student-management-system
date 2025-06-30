@@ -161,7 +161,7 @@ body.dark-mode .features-section .content-item:hover {
 
 /* Style individual items in Programs section */
 .content.landing-content .programs-section .content-item {
-  background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); /* Blue-to-light-blue gradient in light mode */
+  background: linear-gradient(135deg, #558eeb 0%, #c2e9fb 100%); /* Blue-to-light-blue gradient in light mode */
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow */
   border-radius: 1.25rem; /* More pronounced curved edges */
   padding: 2rem; /* Increased padding */
